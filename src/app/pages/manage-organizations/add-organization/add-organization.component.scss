@@ -1,0 +1,21 @@
+.new-departments {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.new-departments span {
+  background: #FFEDE5;
+  color: #fc4d1f;
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+
+app-client-tab {
+  width: 100%;
+}
+
+h6 span.action {
+  display: inline-block;
+}

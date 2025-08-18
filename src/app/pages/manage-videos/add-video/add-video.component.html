@@ -1,0 +1,268 @@
+<div class="main-dashboard-area">
+  <div class="dashboard-left">
+    <app-left-sidebar></app-left-sidebar>
+  </div>
+  <div class="dashboard-right">
+    <div class="dashboard-right-head">
+      <div class="dashboard-right-head-left">
+        <div class="backIcon static">
+          <button (click)="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+        <h1 class="mb-md-0">Video Details</h1>
+      </div>
+      <!-- <button
+        *ngIf="
+        videoData?.id && dataService.currentUserData.role != 'Admin' && (dataService?.currentUserData?.id != videoData?.uploaded_by || dataService.currentUserData.role != videoData?.uploader)"
+        class="btn btn-primary ml-auto" (click)="cloneItem(vId,'video')" [disabled]="dataService.isLoading">Clone
+        Video</button> -->
+      <div class="dashboard-right-head-right"
+        *ngIf="dataService?.currentUserData?.role == 'Admin' || (dataService?.currentUserData?.id ==videoData?.uploaded_by && dataService?.currentUserData?.role ==videoData?.uploader)">
+        <!-- <button
+          *ngIf="videoData?.id && (dataService?.currentUserData?.id != videoData?.uploaded_by || dataService.currentUserData.role != videoData?.uploader)"
+          class="btn btn-primary" (click)="cloneItem(vId,'video')" [disabled]="dataService.isLoading">Clone
+          Video</button> -->
+        <button *ngIf="videoData?.id" class="btn btn-p" [ngClass]="videoData?.is_active?'btn-success':'btn-danger'"
+          data-bs-toggle="modal" data-bs-target="#actionModal" data-bs-title="Click for change Status"
+          appTooltip>{{videoData?.is_active?'Active':'Blocked'}}</button>
+        <button
+          *ngIf="vId && !isEdit && dataService?.currentUserData?.id == videoData?.uploaded_by && dataService.currentUserData.role == videoData?.uploader"
+          type="submit" class="filter-btn" data-bs-toggle="tooltip" data-bs-title="Edit Video" (click)="onEdit()"><i
+            class="fa-solid fa-pencil"></i></button>
+        <button type="submit" class="filter-btn w-auto btn-p" data-bs-toggle="tooltip" data-bs-title="Cancel Edit"
+          *ngIf="vId && isEdit" (click)="onEdit()">Cancel Edit</button>
+        <button (click)="checkDeletion()" *ngIf="vId" type="submit" class="filter-btn" style="background: red;"
+          data-bs-toggle="modal" data-bs-target="#dModal" data-bs-title="Delete Video" appTooltip><i
+            class="fa-solid fa-trash-can" style="color: #fff;"></i></button>
+      </div>
+    </div>
+    <div class="dashboard-content">
+      <div class="g-form">
+        <form [formGroup]="vForm">
+          <div class="row flex-md-row-reverse">
+            <div class="col-md-4">
+              <div class="text-center justify-content-md-center"
+                *ngIf="isEdit && vForm.get('video_format')?.value === 'url'">
+                <div class="upload-image-tab tlm">
+                  <label for="uploadPhoto" class="upload-photo-tab">
+                    <input formControlName="video_thumbnail" type="file" accept="image/*" id="uploadPhoto"
+                      class="form-control" (change)="onImageSelected($event)" *ngIf="isEdit">
+                    <div class="preview-img" *ngIf="imageUrl">
+                      <img [src]="imageUrl" class="img-fluid w-100" />
+                    </div>
+                    <div class="preview-img" *ngIf="!isEdit && !imageUrl">
+                      <img src="..//../../../assets/images/default-thumbnail.jpg" class="img-fluid w-100" />
+                    </div>
+                    <div class="upload-img" *ngIf="isEdit && !imageUrl">
+                      <img src="../../assets/images/upload-icon.svg" class="img-fluid w-auto" />
+                      Upload Thumbnail
+                    </div>
+                  </label>
+                  <div class="remove-icon" *ngIf="imageUrl && isEdit" (click)="removeImage()">
+                    <i class="fa-solid fa-xmark"></i>
+                  </div>
+                  <div class="text-center text-danger" style="font-size: 14px;margin-top:-10px"
+                    *ngIf="isSubmitted && f.video_thumbnail?.errors">
+                    Attach Thumbnail.
+                  </div>
+                </div>
+                <p class="text-warning" *ngIf="!imageUrl && isEdit && vForm.get('video_format')?.value === 'url'">If no
+                  thumbnail is uploaded
+                  for a video, the
+                  system will automatically assign a default thumbnail to
+                  ensure visual consistency.<br /> <a style="color: black;" target="_blank"
+                    href="./../../../../assets/images/default-thumbnail.jpg">View
+                    Thumbnail</a></p>
+              </div>
+              <div class="main-tab" [ngClass]="videoPlaying ? 'videoplaying' : ''"
+                *ngIf="!isEdit && videoData?.video_file">
+                <video [style]="videoPlaying ?'opacity:1':''" [controls]="videoPlaying ? 'true' : false"
+                  disablepictureinpicture controlslist="nodownload noplaybackrate" id="videoPlayer"
+                  class="video modal-video" width="100%" poster="{{ videoData?.video_thumbnail }}">
+                  <source src="{{ videoData?.video_file }}" type="video/mp4" />
+                </video>
+                <div (click)="toggleVideo()" class="video-play-btn" id="btnPlayPause" #btnPlayPause>
+                  <span *ngIf="!videoPlaying"><i class="fa-solid fa-play"></i></span><span *ngIf="videoPlaying"><i
+                      class="fa-solid fa-pause"></i></span>
+                </div>
+              </div>
+              <div class="text-center justify-content-md-center"
+                *ngIf="isEdit && vForm.get('video_format')?.value === 'file'">
+                <div class="upload-image-tab tlm">
+                  <label for="uploadPhoto" class="upload-photo-tab">
+                    <input formControlName="video_file" type="file" accept="video/*" id="uploadPhoto"
+                      class="form-control" (change)="onFileSelected($event)" *ngIf="isEdit">
+                    <div class="preview-img" *ngIf="imageUrl">
+                      <img [src]="imageUrl" class="img-fluid w-100" />
+                    </div>
+                    <div class="preview-img" *ngIf="!isEdit && !imageUrl">
+                      <img src="..//../../../assets/images/default-thumbnail.jpg" class="img-fluid w-100" />
+                    </div>
+                    <div class="upload-img" *ngIf="isEdit && !imageUrl">
+                      <img src="../../assets/images/upload-icon.svg" class="img-fluid w-auto" />
+                      Upload Video*
+                    </div>
+                  </label>
+                  <div class="remove-icon" *ngIf="imageUrl && isEdit" (click)="removeImage()">
+                    <i class="fa-solid fa-xmark"></i>
+                  </div>
+                  <div class="text-center text-danger" style="font-size: 14px;margin-top:-10px"
+                    *ngIf="isSubmitted && f.video_file?.errors">
+                    Attach Video.
+                  </div>
+                </div>
+              </div>
+              <div class="main-tab" *ngIf="!isEdit && videoData?.video_url"><img class="img-fluid w-100"
+                  [src]="videoData?.video_thumbnail || '../../../../assets/images/default-thumbnail.jpg'">
+                <div class="main-tab-video-action"><a target="_blank" role="button"
+                    [href]="(vId && !isEdit) ? videoData?.video_url : ''"><i><img
+                        src="../../assets/images/video-icon.svg" class="img-fluid"></i></a></div>
+              </div>
+
+            </div>
+            <div class="col-md-8">
+              <div class="row mb-3">
+                <div class="col-md-6 col-12 mb-3"><label>Type*</label><select type="text" class="form-select"
+                    formControlName="video_format" [attr.disabled]=" !isEdit?true:null">
+                    <option value="file">File</option>
+                    <option value="url">Url</option>
+                  </select>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.video_format?.errors">
+                    This Field is Invalid.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3" *ngIf="vForm.get('video_format')?.value === 'url'">
+                  <label>Url*</label><input type="text" placeholder="Enter Here*" class="form-control"
+                    formControlName="video_url" [readonly]=" !isEdit?true:false">
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.video_url?.errors">
+                    Please enter a valid URL.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3"><label>Title*</label><input type="text" placeholder="Enter Here*"
+                    class="form-control" formControlName="video_title" [readonly]=" !isEdit?true:false">
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.video_title?.errors?.required">
+                    Required Field
+                  </div>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.video_title?.errors?.minlength">Minimum length should
+                    be greater then 4.</div>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.video_title?.errors?.maxlength">Maximum length should not
+                    be greater then 100.</div>
+                </div>
+                <div class="col-md-6 col-12 mb-3">
+                  <label>Tags</label>
+                  <ng-select [multiple]="true" [closeOnSelect]="false" [addTag]="dataService.addCustomWithTrim"
+                    addTagText="Add Custom:" placeholder="Add Tags" class="form-control" formControlName="tags"
+                    [readonly]="vId && !isEdit ? true : false" [maxSelectedItems]=10 [clearSearchOnAdd]="true"
+                    [maxlength]="10"
+                    (search)="dataService.searchMore($event,this.dataService.httpService.getTagsApi,'tags','tagsDropdown')">
+                    <ng-option *ngFor="let item of dataService.tagsDropdown" [value]="item.tag">{{item.tag}}</ng-option>
+                  </ng-select>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.tags?.errors">
+                    This Field is Invalid.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3"><label>Visibility*</label><select type="text" class="form-select"
+                    formControlName="type" [attr.disabled]=" !isEdit?true:null">
+                    <option value="Public">Public</option>
+                    <option value="Private">Private</option>
+                  </select>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.type?.errors">
+                    This Field is Invalid.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button *ngIf="isEdit" [ngStyle]="{'cursor': dataService.httpService.progressBar}"
+            class="btn btn-primary w-50 d-flex justify-content-center align-items-center gap-2 m-auto"
+            (click)="dataService.httpService.progressBar > 0 ? '' : onSubmitForm()"
+            [disabled]="dataService.httpService.progressBar > 0 || dataService.isLoading">
+            <span
+              [ngStyle]="{'width.%': dataService.httpService.progressBar, 'background-color': dataService.httpService.progressBar >= 0 ? '#81C220' : 'transparent'}"
+              class="progress-fill"></span>
+            <div style="z-index: 1;
+              position: relative;">{{ dataService.httpService.progressBar > 0 ? 'Uploading... ('+
+              dataService.httpService.progressBar+'%)' : vId ? 'Update':'Create' }}
+            </div>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Action Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="actionModal" tabindex="-1" aria-labelledby="actionModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closeActionModal" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid"
+            [src]="videoData?.is_active?'../../../../assets/images/deactivate-shop.png':'../../../../assets/images/activate-shop.png'" />
+        </p>
+        <h5 class="modal-title fs-5 mb-2">{{videoData?.is_active?'Block':'Activate'}} Video</h5>
+        Do you really want to <strong
+          [ngClass]="videoData?.is_active?'text-danger':'text-success'">{{videoData?.is_active?'Block':'Activate'}}</strong>
+        this Video <strong>{{videoData?.video_title}}</strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" [ngClass]="videoData?.is_active?'btn-danger':'btn-success'"
+          (click)="action()">{{videoData?.is_active?'Block':'Activate'}} <div class="spinner-border text-light"
+            role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="dModal" tabindex="-1" aria-labelledby="dModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closedModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid" src="../../../../assets/images/deleted.png" /></p>
+        <h5 class="modal-title fs-5 mb-2">Delete Video</h5>
+        <p>Do you really want to <strong class="text-danger">Delete</strong> this
+          Video
+          <strong>{{videoData?.video_title}}</strong>?
+        </p>
+        <div class="assignment-list" *ngIf="assignmentList.length">
+          <p><strong>Please Remove its Attachment with below Exercises.</strong></p>
+          <h6>Attached with Exercises:</h6>
+          <ul class="assignment">
+            <li *ngFor="let item of assignmentList"><a target="_blank"
+                [href]="'/manage-exercises/exercise-detail/'+item.id">
+                {{item.title}}</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button *ngIf="!assignmentList.length" type="submit"
+          class="btn w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" [ngClass]="videoData?.is_active?'btn-danger':'btn-success'"
+          (click)="delete()">Delete <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,123 @@
+.left-sidebar {
+  position: relative;
+}
+
+.sidebar-logo {
+  border-bottom: 1px solid rgba(0, 0, 0, .06);
+  min-width: 230px;
+  text-align: center;
+  padding: 10px;
+  margin-right: 40px;
+  margin-bottom: 0;
+  height: 70px;
+  justify-content: start;
+  align-items: center;
+  display: flex;
+}
+
+.sidebar-nav {
+  height: 100vh;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding: 20px 5px 100px 0;
+}
+
+.sidebar-nav ul li a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 16px;
+  text-align: left;
+  color: #371b34;
+  padding: 10px 5px 10px 25px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.sidebar-nav .dropdown-menu li a {
+  font-size: 12px;
+}
+
+.sidebar-nav ul li a:hover,
+.sidebar-nav ul li a.active {
+  background: url(../../../assets/images/nav-bg.svg) no-repeat left 0px center;
+  background-size: 20px;
+  color: #fc4d1f;
+}
+
+.sidebar-nav ul li a i {
+  display: inline-block;
+  margin-right: 10px;
+  width: 20px;
+}
+
+.dropdown-menu.show,
+.nav-link.dropdown-toggle.active+.dropdown-menu {
+  background: #f8f6f6;
+  display: block;
+  inset: 0 !important;
+  position: inherit !important;
+  transform: none !important;
+  left: 2px !important;
+  border: 0;
+  border-radius: 0;
+}
+
+.dropdown-menu li:not(:last-child) a.dropdown-item {
+  border-bottom: 1px solid #eaeaea;
+}
+
+.sidebar-nav ul li a.dropdown-item.active {
+  background: #e7e7e7;
+}
+
+.version {
+  position: sticky;
+  bottom: 0;
+  background: #f0f0f0;
+  z-index: 9999;
+  padding: 5px;
+}
+
+.cbadge {
+  background: #fc4d1f;
+  color: #fff;
+  font-size: 10px;
+  border-radius: 8px;
+  padding: 0px 5px;
+  position: absolute;
+  top: 0;
+  right: 5px;
+}
+
+.menu-action {
+  display: none;
+  position: absolute;
+  right: -50px;
+  top: 20px;
+}
+
+.menu-action button {
+  background: #fb4d1f;
+  color: #fff;
+  border: 0;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 16px;
+}
+
+@media screen and (max-width:1280px) {
+  .sidebar-nav ul li a {
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-width:1150px) {
+  .menu-action {
+    display: initial;
+  }
+}

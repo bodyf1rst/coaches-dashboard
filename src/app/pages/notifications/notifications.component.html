@@ -1,0 +1,269 @@
+<div class="main-dashboard-area">
+    <div class="dashboard-left">
+        <app-left-sidebar></app-left-sidebar>
+    </div>
+    <div class="dashboard-right">
+        <div class="dashboard-right-head">
+            <div class="dashboard-right-head-left">
+                <h1 class="mb-md-0 ct">Manage Announcements
+                </h1>
+            </div>
+            <div class="dashboard-right-head-right">
+                <div class="search-wrapper">
+                    <button (click)="resetForm()" data-bs-toggle="modal" data-bs-target="#dRModal" type="button"
+                        class="btn btn-primary btn-lg btn-block w-100 box-shadow"><i class="fa-solid fa-plus"></i> New
+                        Notificaiton</button>
+                </div>
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <div class="notification-area">
+                <div class="tabs-listing-tabview sticky">
+                    <ul id="pills-tab" class="nav nav-pills">
+                        <li class="nav-item"><button type="button" class="nav-link"
+                                [class.active]="dataService.pageTabView == 'All Users'"
+                                (click)="getFreshData('All Users')">All Users</button></li>
+                        <li class="nav-item"><button type="button" class="nav-link"
+                                [class.active]="dataService.pageTabView == 'Individual Users'"
+                                (click)="getFreshData('Individual Users')">Individual Users</button>
+                        </li>
+                        <li class="nav-item"><button type="button" class="nav-link"
+                                [class.active]="dataService.pageTabView == 'Organizations'"
+                                (click)="getFreshData('Organizations')">Organizations</button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="d-block spinner-border text-dark m-auto mb-2" role="status"
+                    *ngIf="dataService.isLoading && !getNotifications()?.notifications?.length">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="text-center" *ngIf="!dataService.isLoading && !getNotifications()?.notifications?.length">
+                    Data not
+                    found.</div>
+                <div class="row" *ngIf="getNotifications()?.notifications?.length">
+                    <div class="col-md-6 col-lg-4" *ngFor="let item of getNotifications()?.notifications; index as i">
+                        <div class="user-tab notification-tab">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="user-tab-text">
+                                    <h6 class="fw-bold" [title]="item.title">{{item.title?.length > 30 ?
+                                        item.title.slice(0,30) +
+                                        '...' : item.title}}</h6>
+                                    <span>{{item.message?.length > 30 && !item.isRead ? item.message.slice(0,30) +
+                                        '...' : item.message}} <small (click)="toggleRead(item)"
+                                            *ngIf="item.message?.length > 30" class="read-more">Read
+                                            {{item.message?.length > 30 && !item.isRead ? 'More':
+                                            'Less'}}</small></span>
+                                </div>
+                                <div class="user-tab-action">
+                                    <div class="n-date">
+                                        {{ item.created_at | date : "dd MMM yy hh:mm a" }}
+                                    </div>
+                                    <button class="sbtn" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                        (click)="selectedItem = item">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="userinfoTabs" *ngIf="item?.users?.length">
+                                <div class="userinfoTab">
+                                    <img src="{{
+                                    item?.users[0].profile_image ||
+                                      './../../../../assets/images/default-thumbnail.jpg'
+                                  }}" class="img-fluid" />
+                                    <div class="userinfoTool">
+                                        {{ item?.users[0]?.first_name || "N/A" }}
+                                    </div>
+                                </div>
+                                <div class="users-info" *ngIf="item.users_count > 1">
+                                    + <strong>{{item.users_count - 1}}</strong>
+                                    <div class="full-length">
+                                        <div class="userinfoTab" *ngFor="let auser of item?.users">
+                                            <img src="{{
+                                            auser.profile_image ||
+                                              './../../../../assets/images/default-thumbnail.jpg'
+                                          }}" class="img-fluid" />
+                                            <div class="userinfoTool">
+                                                {{ auser.first_name || "N/A" }}{{ auser.last_name || "N/A" }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="userinfoTabs" *ngIf="item?.organizations?.length">
+                                <div class="userinfoTab">
+                                    <img src="{{
+                                    item?.organizations[0].logo ||
+                                      './../../../../assets/images/default-thumbnail.jpg'
+                                  }}" class="img-fluid" />
+                                    <div class="userinfoTool">
+                                        {{ item?.organizations[0]?.name || "N/A" }}
+                                    </div>
+                                </div>
+                                <div class="users-info" *ngIf="item.organizations_count > 1">
+                                    + <strong>{{item.organizations_count - 1}}</strong>
+                                    <div class="full-length">
+                                        <div class="userinfoTab" *ngFor="let aorg of item?.organizations">
+                                            <img src="{{
+                                                aorg.logo ||
+                                                  './../../../../assets/images/default-thumbnail.jpg'
+                                              }}" class="img-fluid" />
+                                            <div class="userinfoTool">
+                                                {{ aorg.name || "N/A" }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button [disabled]="dataService.isLoading"
+                    *ngIf="getNotifications()?.notifications?.length && getNotifications()?.notifications?.length <  getNotifications().total_records && (getNotifications().page != getNotifications().total_page)"
+                    class="btn btn-primary btn-p d-flex align-items-center gap-2 m-auto"
+                    (click)="loadMoreNotifications(dataService.pageTabView)">
+                    Load More
+                    <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="dRModal" tabindex="-1" aria-labelledby="dRModal"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fs-5">New Notification</h5>
+                <button id="closedRModal" type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="notificaion-form">
+                    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                        <div class="mb-4">
+                            <label class="form-label">Select Users Type</label>
+                            <select class="form-control form-select" formControlName="user_type"
+                                (change)="onchange($event)">
+                                <option [value]="null" hidden selected>Select Option</option>
+                                <option value="All Users">All Users</option>
+                                <option value="Individual Users">Individual User</option>
+                                <option value="Organizations">Organizations</option>
+                            </select>
+                            <div *ngIf="isSubmited && form.get('user_type')?.errors" class="text-start text-danger mt-1"
+                                style="font-size: 14px">
+                                <div *ngIf="form.get('user_type')?.errors?.['required']">Required Field.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4" *ngIf="actionSelect === 'Organizations'">
+                            <label class="form-label">Search Organizations</label>
+                            <ng-select [multiple]="true" [closeOnSelect]="false" placeholder="Search Organizations"
+                                class="form-control" [maxSelectedItems]="10" [clearSearchOnAdd]="true"
+                                formControlName="organizations"
+                                (search)="dataService.searchMore($event, dataService.httpService.getOrganizationDropdown, 'organizations', 'organizationsDropdown')">
+                                <ng-option *ngFor="let org of dataService?.organizationsDropdown" [value]="org.id">
+                                    {{ org.name }}
+                                </ng-option>
+                            </ng-select>
+                            <div *ngIf="isSubmited && form.get('organizations')?.errors"
+                                class="text-start text-danger mt-1" style="font-size: 14px">
+                                <div *ngIf="form.get('organizations')?.errors?.['required']">Required Field.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4" *ngIf="actionSelect === 'Individual Users'">
+                            <label class="form-label">Search Users</label>
+                            <ng-select [multiple]="true" [closeOnSelect]="false" placeholder="Search Users"
+                                class="form-control" [maxSelectedItems]="10" [clearSearchOnAdd]="true"
+                                formControlName="users"
+                                (search)="dataService.searchMore($event, dataService.httpService.getAllUsersDropdownApi, 'users', 'allUsersDropdown')">
+                                <ng-option *ngFor="let item of dataService?.allUsersDropdown" [value]="item.id">
+                                    {{ item.first_name }} {{ item.last_name }} <small
+                                        style="display: block;">{{item.email}}</small>
+                                </ng-option>
+                            </ng-select>
+                            <div *ngIf="isSubmited && form.get('users')?.errors" class="text-start text-danger mt-1"
+                                style="font-size: 14px">
+                                <div *ngIf="form.get('users')?.errors?.['required']">Required Field.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Title</label>
+                            <input type="text" class="form-control" formControlName="title" placeholder="Write Here" />
+                            <div *ngIf="isSubmited && form.get('title')?.errors" class="text-start text-danger mt-1"
+                                style="font-size: 14px">
+                                <div *ngIf="form.get('title')?.errors?.['required']">Required Field.</div>
+                                <div *ngIf="form.get('title')?.errors?.['minlength']">Minimum 3 characters required.
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" formControlName="message"
+                                placeholder="Write description here..."></textarea>
+                            <div *ngIf="isSubmited && form.get('message')?.errors" class="text-start text-danger mt-1"
+                                style="font-size: 14px">
+                                <div *ngIf="form.get('message')?.errors?.['required']">Required Field.
+                                </div>
+                                <div *ngIf="form.get('message')?.errors?.['minlength']">Minimum 25 characters required.
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button [disabled]="dataService.isLoading" (click)="onSubmit()"
+                    class="btn btn-primary justify-content-center btn-p d-flex align-items-center gap-2">Send
+                    Notificaiton
+                    <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="deleteModal" tabindex="-1" aria-labelledby="dModal"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button id="closedModal" type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body short-modal">
+                <p><img class="modal-img img-fluid" src="../../../../assets/images/deleted.png" /></p>
+                <h5 class="modal-title fs-5 mb-2">Delete Notification</h5>
+                Do you really want to <strong class="text-danger">Delete</strong> this
+                Notification
+                <strong>{{selectedItem?.title}}</strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit"
+                    class="btn btn-danger w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+                    [disabled]="dataService.isLoading" (click)="delete()">Delete <div class="spinner-border text-light"
+                        role="status" *ngIf="dataService.isLoading">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

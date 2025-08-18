@@ -1,0 +1,230 @@
+<div class="main-dashboard-area">
+  <div class="dashboard-left">
+    <app-left-sidebar></app-left-sidebar>
+  </div>
+  <div class="dashboard-right">
+    <div class="dashboard-right-head">
+      <div class="dashboard-right-head-left">
+        <div class="backIcon static"><a href="javascript:history.back()"><i class="fa-solid fa-arrow-left"></i></a>
+        </div>
+        <h1 class="mb-md-0 ct">Challenge Details</h1>
+      </div>
+      <div class="dashboard-right-head-right"
+        *ngIf="dataService?.currentUserData?.id == challengeData?.uploaded_by || dataService?.currentUserData?.role == 'Admin'">
+        <button *ngIf="challengeId" type="submit" class="filter-btn" style="background: red;" data-bs-toggle="modal"
+          data-bs-target="#dModal" data-bs-title="Delete User" appTooltip><i class="fa-solid fa-trash-can"
+            style="color: #fff;"></i></button>
+      </div>
+    </div>
+    <div class="dashboard-content">
+      <div class="g-form">
+        <form [formGroup]="cForm">
+          <h6 class="mb-3">General Information</h6>
+          <div class="row flex-md-row-reverse">
+            <div class="col-md-3">
+              <div class="text-center justify-content-md-center">
+                <div class="upload-image-tab tlm">
+                  <label for="uploadPhoto" class="upload-photo-tab">
+                    <input type="file" accept="image/*" id="uploadPhoto" class="form-control"
+                      (change)="onImageSelected($event)">
+                    <div class="preview-img" *ngIf="imageUrl">
+                      <img [src]="imageUrl" class="img-fluid w-100" />
+                    </div>
+                    <div class="upload-img" *ngIf="!imageUrl">
+                      <img src="../../assets/images/upload-icon.svg" class="img-fluid w-auto" />
+                      Upload Challenge Image*
+                    </div>
+                  </label>
+                  <div class="remove-icon" *ngIf="imageUrl" (click)="removeImage()">
+                    <i class="fa-solid fa-xmark"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-9">
+              <div class="row mb-3">
+                <div class="col-md-6 col-12 mb-3"><label>Title*</label><input type="text" placeholder="Enter Here*"
+                    class="form-control" formControlName="title" [readonly]="(challengeId && !isEdit)?true:false">
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.title?.errors">
+                    This Field is Invalid.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3">
+                  <label>Organizations</label>
+                  <ng-select [multiple]="!isEdit" [closeOnSelect]="false" placeholder="Search Here" class="form-control"
+                    formControlName="organizations">
+                    <ng-option *ngFor="let item of dataService.organizationsDropdown" [value]="item.id">{{ item.name
+                      }}</ng-option>
+                  </ng-select>
+                </div>
+                <div class="col-md-6 col-12 mb-3" *ngIf="dataService.currentUserData.role == 'Admin'">
+                  <label>Coaches</label>
+                  <ng-select [readonly]="true" [multiple]="true" [closeOnSelect]="false" placeholder="Search Here"
+                    class="form-control" formControlName="coaches">
+                    <ng-option *ngFor="let item of organizationCoaches" [value]="item.id">{{ item.name }}</ng-option>
+                  </ng-select>
+                </div>
+
+                <div class="col-md-6 col-12 mb-2">
+                  <label>Type*</label>
+                  <div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" formControlName="type" id="flexRadioDefault1"
+                        value="Threshold">
+                      <label class="form-check-label" for="flexRadioDefault1">
+                        Threshold
+                      </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" formControlName="type" id="flexRadioDefault2"
+                        value="Leaderboard">
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        Leaderboard
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="row">
+                <div class="col-md-6 col-12 mb-3"><label>Challenge Type*</label>
+                  <select placeholder="Select Here" class="form-select" formControlName="challenge_type"
+                    [attr.disabled]="(challengeId && !isEdit) ? true : null">
+                    <option value=''>Select Here</option>
+                    <option [value]="item.type" *ngFor="let item of dataService.challengeTypeDropdown">{{item.type}}
+                    </option>
+                  </select>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.challenge_type?.errors">
+                    This Field is Invalid.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3"><label>About Challenge <small>(Only Number)</small></label><input
+                    type="number" placeholder="Enter Here*" class="form-control" formControlName="challenge_description"
+                    [readonly]="(challengeId && !isEdit)?true:false">
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f?.challenge_description?.errors?.['required']">
+                    This field is required.
+                  </div>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f?.challenge_description?.errors?.['min']">
+                    Minimum value should be 1.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3"><label>Start Date*</label><input [min]="dataService.getTodayDate()"
+                    type="date" placeholder="Enter Here*" class="form-control" formControlName="start_date"
+                    [readonly]="(challengeId && !isEdit)?true:false">
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.start_date?.errors">
+                    This Field is Invalid.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3"><label>Duration*</label><input type="number" placeholder="Enter Here*"
+                    class="form-control" formControlName="duration" [readonly]="(challengeId && !isEdit)?true:false">
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.duration?.errors">
+                    This Field is Invalid.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3">
+                  <label>Prize*</label>
+                  <input type="number" placeholder="Enter Here*" class="form-control" formControlName="prize"
+                    [readonly]="challengeId && !isEdit">
+
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f?.prize?.errors?.['required']">
+                    This field is required.
+                  </div>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f?.prize?.errors?.['min']">
+                    Minimum value should be 1.
+                  </div>
+                </div>
+
+                <div class="col-12 mb-3"><label>Description*</label><textarea class="form-control"
+                    formControlName="description"></textarea>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.description?.errors">
+                    This Field is Invalid.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button type="submit"
+            class="btn btn-primary w-50 d-flex justify-content-center align-items-center gap-2 m-auto"
+            [disabled]="dataService.isLoading" (click)="onSubmitForm()">
+            {{isEdit ? 'Update':'Create'}} <div class="spinner-border text-light" role="status"
+              *ngIf="dataService.isLoading">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Action Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="actionModal" tabindex="-1" aria-labelledby="actionModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closeActionModal" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid"
+            [src]="challengeData?.is_active?'../../../../assets/images/deactivate-shop.png':'../../../../assets/images/activate-shop.png'" />
+        </p>
+        <h5 class="modal-title fs-5 mb-2">{{challengeData?.is_active?'Block':'Activate'}} Challenge</h5>
+        Do you really want to <strong
+          [ngClass]="challengeData?.is_active?'text-danger':'text-success'">{{challengeData?.is_active?'Block':'Activate'}}</strong>
+        this
+        Challenge
+        <strong>{{challengeData?.name}}</strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" [ngClass]="challengeData?.is_active?'btn-danger':'btn-success'"
+          (click)="action()">{{challengeData?.is_active?'Block':'Activate'}} <div class="spinner-border text-light"
+            role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="dModal" tabindex="-1" aria-labelledby="dModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closedModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid" src="../../../../assets/images/deleted.png" /></p>
+        <h5 class="modal-title fs-5 mb-2">Delete User</h5>
+        Do you really want to <strong class="text-danger">Delete</strong> this
+        Challenge <strong>{{challengeData?.title}}</strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" [ngClass]="challengeData?.is_active?'btn-danger':'btn-success'"
+          (click)="delete()">Delete <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

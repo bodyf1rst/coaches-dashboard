@@ -1,0 +1,23 @@
+<div class="g-tab" [routerLink]="'./plan-detail/'+item?.id">
+  <!-- <div class="g-tab-img"><img class="img-fluid"
+      [src]="item?.videos[0]?.video_thumbnail?item?.videos[0]?.video_thumbnail:'../../../assets/images/default-thumbnail.jpg'"><i
+      class="fa-solid fa-play"></i></div> -->
+  <div class="g-tab-text">
+    <h6 class="mb-0"> {{item?.title}}<span class="type">{{item.visibility_type}}</span></h6>
+    <span class="text-gray reg">{{item?.created_at | date:'medium'}}</span>
+    <div class="coach-info">
+      <span *ngIf="item?.phase"><strong>Phases: </strong>{{item?.phase}}</span>
+      <span *ngIf="item?.week"><strong>Weeks: </strong>{{item?.total_weeks}}</span>
+    </div>
+    <div class="coach-info">
+      <div class="coach-info-img"><img class="img-fluid"
+          [src]="item?.upload_by?.profile_image ?item?.upload_by?.profile_image:'../../../assets/images/default-thumbnail.jpg'">
+      </div> {{item?.upload_by?.name}} / {{item?.uploader}}
+    </div>
+    <!-- <em *ngIf="!item?.organizations_count && !item?.users_count">Nothing Assigned</em> -->
+  </div>
+  <div class="g-tab-action">
+    <button type="button" class="btn"
+      [ngClass]="item?.is_active?'btn-outline-success':'btn-outline-danger'">{{item?.is_active?'Active':'Blocked'}}</button>
+  </div>
+</div>

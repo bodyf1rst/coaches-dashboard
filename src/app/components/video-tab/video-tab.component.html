@@ -1,0 +1,35 @@
+<div class="g-tab video" [routerLink]="link?link+item?.id:'./video-detail/'+item?.id">
+  <div class="g-tab-img">
+    <img [src]="item?.video_thumbnail || '../../../assets/images/default-thumbnail.jpg'" class="img-fluid" />
+    <i class="fa-solid fa-play"></i>
+  </div>
+  <div class="g-tab-text">
+    <h6 class="mb-0"> {{item?.video_title}}<br /><small>({{item.uploader}} / {{item?.upload_by?.name}})</small></h6>
+    <span class="text-gray reg">{{item?.created_at | date:'medium'}}</span>
+    <span class="text-gray" *ngIf="item.video_duration">Duration:
+      {{dataService.convertSecondsToTime(item.video_duration)}}</span>
+    <span class="text-gray" *ngIf="item.video_url">External</span>
+    <span class="type">{{item.type}}</span>
+    <div class="video-tags" *ngIf="item?.tags?.length">
+      <span *ngFor="let tag of item?.tags?.length > 3 ? item.tags.slice(0, 3) : item.tags">
+        #{{ tag }}
+      </span>
+      <span *ngIf="item?.tags?.length > 3">
+        +{{ item.tags.length - 3 }}
+      </span>
+
+    </div>
+    <!-- <span class="text-gray d-flex">
+      <div class="coach-info" *ngIf="item?.organization?.coach?.name || item?.coach?.name">
+        <div class="coach-info-img">
+          <img [src]="item.video_title|| '../../../assets/images/default-thumbnail.jpg'" class="img-fluid" />
+        </div>
+        {{item.organization_id ? item?.organization?.coach?.name : item?.coach?.name }}
+      </div>
+    </span> -->
+  </div>
+  <div class="g-tab-action">
+    <button type="button" class="btn"
+      [ngClass]="item.is_active?'btn-outline-success':'btn-outline-danger'">{{item.is_active?'Active':'Blocked'}}</button>
+  </div>
+</div>

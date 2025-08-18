@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <g id="vuesax_outline_hospital" data-name="vuesax/outline/hospital" transform="translate(-748 -188)">
+    <g id="hospital">
+      <path id="Vector" d="M0,0H20" transform="translate(750 210)" fill="#371b34"/>
+      <path id="Vector-2" data-name="Vector" d="M20.75,1.5H.75A.755.755,0,0,1,0,.75.755.755,0,0,1,.75,0h20a.755.755,0,0,1,.75.75A.755.755,0,0,1,20.75,1.5Z" transform="translate(749.25 209.25)" fill="#371b34"/>
+      <path id="Vector-3" data-name="Vector" d="M18.75,21.5H.75A.755.755,0,0,1,0,20.75v-16C0,1.73,1.73,0,4.75,0h10c3.02,0,4.75,1.73,4.75,4.75v16A.755.755,0,0,1,18.75,21.5ZM1.5,20H18V4.75c0-2.22-1.03-3.25-3.25-3.25h-10C2.53,1.5,1.5,2.53,1.5,4.75Z" transform="translate(750.25 189.25)" fill="#371b34"/>
+      <path id="Vector-4" data-name="Vector" d="M6.75,8.5h-6A.755.755,0,0,1,0,7.75V1.69A1.694,1.694,0,0,1,1.69,0H5.82A1.694,1.694,0,0,1,7.51,1.69V7.75A.771.771,0,0,1,6.75,8.5ZM1.5,7H6V1.69a.19.19,0,0,0-.19-.19H1.68a.19.19,0,0,0-.19.19V7Z" transform="translate(756.25 202.25)" fill="#371b34"/>
+      <path id="Vector-5" data-name="Vector" d="M.75,6.5A.755.755,0,0,1,0,5.75v-5A.755.755,0,0,1,.75,0,.755.755,0,0,1,1.5.75v5A.755.755,0,0,1,.75,6.5Z" transform="translate(759.25 193.25)" fill="#371b34"/>
+      <path id="Vector-6" data-name="Vector" d="M5.75,1.5h-5A.755.755,0,0,1,0,.75.755.755,0,0,1,.75,0h5A.755.755,0,0,1,6.5.75.755.755,0,0,1,5.75,1.5Z" transform="translate(756.75 195.75)" fill="#371b34"/>
+      <path id="Vector-7" data-name="Vector" d="M0,0H24V24H0Z" transform="translate(748 188)" fill="none" opacity="0"/>
+    </g>
+  </g>
+</svg>

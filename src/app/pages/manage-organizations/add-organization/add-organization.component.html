@@ -1,0 +1,497 @@
+<div class="main-dashboard-area">
+  <div class="dashboard-left">
+    <app-left-sidebar></app-left-sidebar>
+  </div>
+  <div class="dashboard-right">
+    <div class="dashboard-right-head">
+      <div class="dashboard-right-head-left">
+        <div class="backIcon static"><button (click)="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+        <h1 class="mb-md-0">{{(orId && !isEdit) ? "" : (orId && isEdit) ? "Edit": "Add"}} Organizations {{(orId &&
+          !isEdit) ? "Details":""}}</h1>
+      </div>
+      <div class="dashboard-right-head-right" *ngIf="dataService.isAdminUser">
+        <a [href]="orData?.submission?.file" type="submit" class="filter-btn" data-bs-toggle="tooltip"
+          data-bs-title="Downlaod Employees File" *ngIf="orData?.id && orData?.submission?.status == 'Not Uploaded'"
+          appTooltip><i class="fa-solid fa-download"></i></a>
+        <button *ngIf="orData?.id && orData?.submission?.status == 'Not Uploaded'" [disabled]="dataService.isLoading"
+          class="btn btn-p btn-primary" data-bs-title="Click for add employees" appTooltip data-bs-target="#importModal"
+          data-bs-toggle="modal">Import Employees<div class="spinner-border text-light" role="status"
+            *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div></button>
+        <button *ngIf="orData?.id" class="btn btn-p" [ngClass]="orData?.is_active?'btn-success':'btn-danger'"
+          data-bs-toggle="modal" data-bs-target="#actionModal" data-bs-title="Click for change Status"
+          appTooltip>{{orData?.is_active?'Active':'Blocked'}}</button>
+        <button type="submit" class="filter-btn" data-bs-toggle="tooltip" data-bs-title="Edit Organization"
+          *ngIf="orId && !isEdit" (click)="onEdit()"><i class="fa-solid fa-pencil"></i></button>
+        <button type="submit" class="filter-btn w-auto btn-p" data-bs-toggle="tooltip" data-bs-title="Cancel Edit"
+          *ngIf="orId && isEdit" (click)="onEdit()">Cancel Edit</button>
+        <button *ngIf="orId" type="submit" class="filter-btn" style="background: red;" data-bs-toggle="modal"
+          data-bs-target="#dModal" data-bs-title="Delete Organization" appTooltip><i class="fa-solid fa-trash-can"
+            style="color: #fff;"></i></button>
+      </div>
+    </div>
+    <div class="dashboard-content">
+      <div class="tabs-listing-tabview mb-3 sticky" *ngIf="this.orData?.id && !isEdit">
+        <ul id="pills-tab" class="nav nav-pills">
+          <li class="nav-item"><button type="button" class="nav-link" (click)="dataService.pageTabView = 'Org Details'"
+              [class.active]="dataService.pageTabView == 'Org Details'" (click)="getTabData('Org Details')">Organization
+              Details</button></li>
+          <li class="nav-item"><button type="button" class="nav-link"
+              [class.active]="dataService.pageTabView == 'Employees'" (click)="getTabData('Employees')">Employees <span
+                class="in-count">({{orData?.employees?.total_records || 0}})</span></button>
+          </li>
+          <li class="nav-item"><button type="button" class="nav-link"
+              [class.active]="dataService.pageTabView == 'Coaches'" (click)="getTabData('Coaches')">Coaches <span
+                class="in-count">({{orData?.coaches.length || 0}})</span></button>
+          </li>
+          <li class="nav-item"><button type="button" class="nav-link"
+              [class.active]="dataService.pageTabView == 'Org Fitness Plans'"
+              (click)="getTabData('Org Fitness Plans')">Fitness
+              Plans <span class="in-count">({{orData.assign_plans?.length || 0}})</span></button>
+          </li>
+        </ul>
+      </div>
+      <div class="g-form" *ngIf="dataService.pageTabView == 'Org Details'">
+        <form [formGroup]="oForm">
+          <h6 class="mb-3">Organization Information</h6>
+          <div class="row flex-md-row-reverse">
+            <div class="col-md-3">
+              <div class="text-center justify-content-md-center">
+                <div class="upload-image-tab tlm" [class.view]="!isEdit">
+                  <label for="uploadPhoto" class="upload-photo-tab">
+                    <input type="file" accept="image/*" id="uploadPhoto" class="form-control"
+                      (change)="onFileSelected($event)" *ngIf="isEdit">
+                    <div class="preview-img" *ngIf="imageUrl">
+                      <img *ngIf="!isEdit" [src]="imageUrl" class="img-fluid w-100" data-bs-toggle="modal"
+                        data-bs-target="#imageViewModal" (click)="dataService.utils.imagePreview = imageUrl" />
+                      <img *ngIf="isEdit" [src]="imageUrl" class="img-fluid w-100" />
+                    </div>
+                    <div class="preview-img" *ngIf="!isEdit && !imageUrl">
+                      <img src="../../../../assets/images/default-thumbnail.jpg" class="img-fluid w-100" />
+                    </div>
+                    <div class="upload-img" *ngIf="isEdit && !imageUrl">
+                      <img src="../../assets/images/upload-icon.svg" class="img-fluid w-auto" />
+                      Upload Logo
+                    </div>
+                  </label>
+                  <div class="remove-icon" *ngIf="imageUrl && isEdit" (click)="removeImage()">
+                    <i class="fa-solid fa-xmark"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-9">
+              <div class="row mb-3">
+                <div class="col-md-6 col-12 mb-3"><label>Name*</label><input type="text" placeholder="Enter Here*"
+                    class="form-control" formControlName="name" [readonly]=" !isEdit?true:false">
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.name?.errors">
+                    This Field is Invalid.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3"><label>Website</label><input type="text" placeholder="Enter Here"
+                    class="form-control" formControlName="website" [readonly]=" !isEdit?true:false">
+                  <div *ngIf="isSubmitted && f.website?.errors" class="text-start text-danger mt-1"
+                    style="font-size: 14px">
+                    Please enter a valid URL.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3"><label>Address</label>
+                  <textarea type="text" rows="1" placeholder="Enter Complete Address" class="form-control"
+                    formControlName="address" [readonly]=" !isEdit?true:false"></textarea>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.address?.errors">
+                    This Field is Invalid.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3"><label>Departments</label>
+                  <ng-select
+                    (search)="dataService.searchMore($event,this.dataService.httpService.getDepartmentsDropdownApi, 'departments', 'departmentsDropdown')"
+                    [multiple]="true" [closeOnSelect]="false" [clearSearchOnAdd]="true" [addTag]='dataService.addCustom'
+                    addTagText="Add Custom:" placeholder="Search Departments" class="form-control"
+                    formControlName="departments" [readonly]=" !isEdit?true:false">
+                    <ng-option *ngFor="let item of dataService.departmentsDropdown" [value]="item.name">{{
+                      item.name}}</ng-option>
+                  </ng-select>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.departments.errors">
+                    This Field is Invalid.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <h6 class="mb-3">POC Information</h6>
+          <div class="row mb-3">
+            <div class="col-md-6 col-12 mb-3"><label>Name*</label><input type="text" placeholder="Enter Here*"
+                class="form-control" formControlName="poc_name" [readonly]=" !isEdit?true:false">
+              <div class="text-start text-danger mt-1" style="font-size: 14px"
+                *ngIf="isSubmitted && f.poc_name?.errors">
+                This Field is Invalid.
+              </div>
+            </div>
+            <div class="col-md-6 col-12 mb-3"><label>Email*</label><input type="text" placeholder="Enter Here*"
+                class="form-control" formControlName="poc_email" [readonly]=" !isEdit?true:false">
+              <div class="text-start text-danger mt-1" style="font-size: 14px"
+                *ngIf="isSubmitted && f.poc_email?.errors">
+                This Field is Invalid.
+              </div>
+            </div>
+            <div class="col-md-6 col-12 mb-3">
+              <label>Contact</label>
+              <input type="tel" placeholder="Enter Here" class="form-control" maxlength="16" formControlName="poc_phone"
+                [readonly]="!isEdit" (focus)="f.poc_phone.setValue(f.poc_phone.value || '+1')">
+              <div class="text-start text-danger mt-1" style="font-size: 14px"
+                *ngIf="isSubmitted && f.poc_phone?.errors">
+                Please enter a valid US phone number with country code (+1). Accepted formats:
+                (123) 456-7890, 123-456-7890, 123 456 7890, or 1234567890.
+              </div>
+            </div>
+            <div class="col-md-6 col-12 mb-3"><label>Title</label><input type="text" placeholder="Enter Here"
+                class="form-control" formControlName="poc_title" [readonly]=" !isEdit?true:false"></div>
+            <div class="col-md-6 col-12 mb-3"><label>Rewards Program</label>
+              <ng-select [multiple]="true" [closeOnSelect]="false" [addTag]="dataService.addCustom"
+                addTagText="Add Custom:" placeholder="Search Rewards" class="form-control" formControlName="rewards"
+                [readonly]="!isEdit" [clearSearchOnAdd]="true">
+
+                <ng-option *ngFor="let item of dataService.rewardsDropdown" [value]="item.name">
+                  {{ item.name }}
+                </ng-option>
+              </ng-select>
+
+            </div>
+            <div class="col-md-6 col-12 mb-3" *ngIf="isEdit"><label>Assign Coach</label>
+              <ng-select [multiple]="true" [items]="dataService.coachesDropdown" bindLabel="name" bindValue="id"
+                [closeOnSelect]="false" [addTag]='false' addTagText="Add Custom:" placeholder="Search Coache"
+                class="form-control" formControlName="coaches" *ngIf="isEdit">
+              </ng-select>
+            </div>
+            <div class="col-md-6 col-12 mb-3"><label>Contract Start Date*</label><input type="date"
+                placeholder="Enter Here*" class="form-control" formControlName="contract_start_date"
+                [readonly]=" !isEdit?true:false" [min]="dataService.getTodayDate()">
+              <div class="text-start text-danger mt-1" style="font-size: 14px"
+                *ngIf="isSubmitted && f.contract_start_date?.errors">
+                This Field is Required.
+              </div>
+            </div>
+            <div class="col-md-6 col-12 mb-3"><label>Contract End Date*</label><input type="date"
+                placeholder="Enter Here*" class="form-control" formControlName="contract_end_date"
+                [readonly]=" !isEdit?true:false" [min]="dataService.getTodayDate()">
+              <div class="text-start text-danger mt-1" style="font-size: 14px"
+                *ngIf="isSubmitted && f.contract_end_date?.errors">
+                This Field is Required.
+              </div>
+            </div>
+            <div class="col-md-6 col-12 mb-3" *ngIf="isEdit"><label>Add File<span
+                  *ngIf="orData?.submission?.status != 'Not Uploaded'"> <a style="font-size: 12px; color: #fc4d1f;"
+                    href='https://bodyf1rst.codexia.tech/upload/employee_remarks/SampleCSV.xlsx'> Download
+                    Sample File</a></span> <span *ngIf="orData?.submission?.status == 'Not Uploaded'"> <a
+                    style="font-size: 12px; color: #fc4d1f;" [href]='orData.submission.file'> Download Submitted
+                    File</a></span></label><input type="file" placeholder="Add File*" accept=".csv,.xlsx"
+                class="form-control" (change)="onFileSelected($event,'csv')"
+                (click)="dataService.clearSelectField($event)">
+              <div class="text-warning" style="font-size: 12px;">Supported file formats: CSV and XLSX.</div>
+            </div>
+          </div>
+          <button type="submit"
+            class="btn btn-primary w-50 d-flex justify-content-center align-items-center gap-2 m-auto"
+            [disabled]="dataService.isLoading" *ngIf="isEdit" (click)="onSubmitForm(false)">
+            {{orId ? 'Update':'Create'}} <div class="spinner-border text-light" role="status"
+              *ngIf="dataService.isLoading">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </button>
+        </form>
+      </div>
+      <div *ngIf="dataService.pageTabView == 'Org Fitness Plans'">
+        <div class="tabs-listing">
+          <div class="text-center" *ngIf="!orData.assign_plans?.length">Data not found.</div>
+          <div class="row" *ngIf="orData.assign_plans?.length">
+            <div class="col-lg-4 col-md-6 col-12" *ngFor="let plan of orData.assign_plans">
+              <app-plan-tab [item]="plan"></app-plan-tab>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tabs-listing" *ngIf="dataService.pageTabView == 'Coaches'">
+        <div class="text-center" *ngIf="!orData?.coaches.length">Coach not Assigned.</div>
+        <div class="row" *ngIf="orData?.coaches.length">
+          <div class="col-lg-4 col-md-6 col-12" *ngFor="let item of orData?.coaches">
+            <app-coach-tab [item]="item"></app-coach-tab>
+          </div>
+        </div>
+        <button [disabled]="dataService.isLoading"
+          *ngIf="orData?.coach?.length && (orData?.coach?.page != orData?.coach?.total_page)"
+          class="btn btn-primary btn-p d-flex align-items-center gap-2 m-auto">Load More <div
+            class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div></button>
+      </div>
+      <div class="tabs-listing" *ngIf="dataService.pageTabView == 'Employees'">
+        <div class="heading-top" style="margin-bottom: 10px;">
+          <div class="form-check" *ngIf="editEmployees && orData?.employees?.employees?.length">
+            <input class="form-check-input" type="checkbox" [(ngModel)]="selectAllEmployees"
+              [ngModelOptions]="{standalone: true}" (change)="toggleAllCheckboxes()" id="flexCheckDefault">
+          </div>
+          <h6 style="margin-bottom: 0;">Organization Employees <small *ngIf="orData?.employees?.total_records"
+              style="margin-right: 10px;">({{orData?.employees?.total_records}})</small>
+            <span class="action">
+              <button type="submit" class="filter-btn" data-bs-toggle="tooltip" data-bs-title="Edit Employees"
+                *ngIf="!editEmployees && orData?.employees?.employees?.length && dataService.currentUserData.role == 'Admin'"
+                (click)="editEmployees = true"><i class="fa-solid fa-pencil"></i></button>
+              <button type="submit" class="filter-btn" data-bs-toggle="modal" data-bs-target="#"
+                *ngIf="editEmployees && orData?.employees?.employees?.length"
+                (click)="editEmployees = false;resetAllCheckbox()"><i class="fa-solid fa-circle-xmark"></i></button>
+            </span>
+          </h6>
+          <button *ngIf="isAnyItemSelected()" type="submit" class="filter-btn" style="background: red;"
+            data-bs-toggle="modal" data-bs-target="#deleteBulkUsersModal" data-bs-title="Delete Employees" appTooltip><i
+              class="fa-solid fa-trash-can" style="color: #fff;"></i></button>
+        </div>
+        <div class="text-center" *ngIf="!orData?.employees?.employees?.length">Employees not Attached.</div>
+        <div class="row" *ngIf="orData?.employees?.employees?.length">
+          <div class="col-lg-4 col-md-6 col-12 etab" *ngFor="let eitem of orData?.employees?.employees;index as i">
+            <div class="form-check" *ngIf="editEmployees">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="eitem.selected"
+                [ngModelOptions]="{standalone: true}" (change)="updateSelectAllState()" [id]="'flexCheckDefault'+i">
+            </div>
+            <app-client-tab [item]="eitem" [rLink]="'/employees'"></app-client-tab>
+          </div>
+        </div>
+        <button (click)="getSingleorData(orData?.employees?.page)" [disabled]="dataService.isLoading"
+          *ngIf="orData?.employees?.employees?.length && (orData?.employees?.page != orData?.employees?.total_page)"
+          class="btn btn-primary btn-p d-flex align-items-center gap-2 m-auto">Load More <div
+            class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="importModal" tabindex="-1" aria-labelledby="actionModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closeImportModalModal" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid"
+            [src]="orData?.is_active?'../../../../assets/images/list-icon.svg':'../../../../assets/images/activate-shop.png'" />
+        </p>
+        <h5 class="modal-title fs-5 mb-2">Import Employees</h5>
+        Are you sure you want to import these Employees? A total of <strong>{{orData?.submission?.total_users}}</strong>
+        Employees will be
+        imported. Please ensure the uploaded file is accurate before proceeding.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit"
+          class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" (click)="onSubmitForm(true)">Import <div class="spinner-border text-light"
+            role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Imported Employees Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="afterImportedModal" tabindex="-1" aria-labelledby="actionModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="openAfterImportedModal" type="button" class="d-none" data-bs-toggle="modal"
+          data-bs-target="#afterImportedModal"></button>
+        <button id="closeAfterImportedModal" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid" [src]="'../../../../assets/images/tick-icon.svg'" />
+        </p>
+        <h5 class="modal-title fs-5 mb-2">Employees have been successfully imported</h5>
+        Employees have been successfully imported, and credentials have been sent to all users in the list.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Action Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="actionModal" tabindex="-1" aria-labelledby="actionModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closeActionModal" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid"
+            [src]="orData?.is_active?'../../../../assets/images/deactivate-shop.png':'../../../../assets/images/activate-shop.png'" />
+        </p>
+        <h5 class="modal-title fs-5 mb-2">{{orData?.is_active?'Block':'Activate'}} Organization</h5>
+        Do you really want to <strong
+          [ngClass]="orData?.is_active?'text-danger':'text-success'">{{orData?.is_active?'Block':'Activate'}}</strong>
+        this
+        Organization
+        <strong>{{orData?.name}}</strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" [ngClass]="orData?.is_active?'btn-danger':'btn-success'"
+          (click)="action()">{{orData?.is_active?'Block':'Activate'}} <div class="spinner-border text-light"
+            role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="dModal" tabindex="-1" aria-labelledby="dModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closedModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid" src="../../../../assets/images/deleted.png" /></p>
+        <h5 class="modal-title fs-5 mb-2">Delete Organization</h5>
+        Do you really want to <strong class="text-danger">Delete</strong> this
+        Organization
+        <strong>{{orData?.name}}</strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" [ngClass]="orData?.is_active?'btn-danger':'btn-success'"
+          (click)="delete()">Delete <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Departments Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="departmentModal" tabindex="-1" aria-labelledby="departmentModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="openerDepartmentModal" type="button" class="d-none" data-bs-toggle="modal"
+          data-bs-target="#departmentModal"></button>
+        <button id="closedDepartmentModal" type="button" class="d-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <h5 class="modal-title fs-5 mb-2">New Departments</h5>
+        <p>Here is some new Departments report<br /> Do you really want to <strong>Add</strong> these
+          Departments in your bucket?</p>
+        <div class="new-departments"><span *ngFor="let d of newDepartments">{{d}}</span></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+          (click)="redirectOnPage(false)">Close</button>
+        <button type="submit"
+          class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" (click)="addDepartments()">Add in Bucket <div
+            class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Bulk Users Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="deleteBulkUsersModal" tabindex="-1"
+  aria-labelledby="departmentModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closedBulkDeleteModal" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid" src="../../../../assets/images/deleted.png" /></p>
+        <h5 class="modal-title fs-5 mb-2">Delete Users</h5>
+        <p>Do you really want to delete these selected users?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit"
+          class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" (click)="deleteSelectedUsers()">Delete<div
+            class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Organization Created. -->
+<div class="modal fade" data-bs-backdrop="static" id="orgCreatedModal" tabindex="-1" aria-labelledby="departmentModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="openOrgCreatedModal" type="button" class="d-none" data-bs-target="#orgCreatedModal"
+          aria-label="Close" data-bs-toggle="modal"></button>
+        <button id="closedBulkDeleteModal" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid" src="../../../../assets/images/tick-icon.svg" /></p>
+        <h5 class="modal-title fs-5 mb-2">Organization Created Successfully</h5>
+        <p>The organization has been successfully created, and a confirmation email with the relevant details has been
+          sent to the designated point-of-contact (POC) users. The POC users will be responsible for submitting any
+          additional details for the organization.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Email not sent model. -->
+<div class="modal fade" data-bs-backdrop="static" id="emailNModal" tabindex="-1" aria-labelledby="departmentModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="openEmailNModal" type="button" class="d-none" data-bs-target="#emailNModal"
+          data-bs-toggle="modal"></button>
+        <button id="closedEmailNModal" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid" src="../../../../assets/images/bulk-user-tick-import.svg" /></p>
+        <h5 class="modal-title fs-5 mb-2">Import Successfully</h5>
+        <p>Some of employees have been imported successfully, and some of employees have some issues. Kindly
+          check the downloaded file for details.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

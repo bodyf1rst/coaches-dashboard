@@ -1,0 +1,93 @@
+.g-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: left;
+  background: #ffffff;
+  border: 1px solid rgba(55, 27, 52, .04);
+  border-radius: 10px;
+  filter: drop-shadow(0 0 7px rgba(0, 0, 0, .16));
+  margin-bottom: 15px;
+  min-height: 80px;
+}
+
+.g-tab-img i.fa-solid.fa-play {
+  position: absolute;
+  color: #ffffff;
+}
+
+.g-tab-img {
+  flex-shrink: 0;
+  width: 45px;
+  height: 45px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 1px solid #fc4d1f;
+  position: relative;
+  background: #000;
+}
+
+.g-tab-img img {
+  height: 100%;
+  width: 100%;
+  opacity: 0.8;
+}
+
+.g-tab-text {
+  font-size: 10px;
+  margin: 0 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.g-tab-text span.text-gray {
+  word-break: break-word;
+}
+
+.g-tab-action {
+  margin-left: auto;
+}
+
+.g-tab-action button.btn {
+  font-size: 12px;
+  min-height: auto;
+}
+
+.coach-info {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.coach-info-img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid #b5b5b5;
+}
+
+.g-tab-text h6 small {
+  font-size: 10px;
+  font-weight: normal;
+}
+
+.video-tags {
+  display: flex;
+  gap: 5px;
+  color: #fc4d1f;
+  flex-wrap: wrap;
+}
+

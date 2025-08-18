@@ -1,0 +1,190 @@
+<div class="main-dashboard-area">
+    <div class="dashboard-left">
+        <app-left-sidebar></app-left-sidebar>
+    </div>
+    <div class="dashboard-right">
+        <div class="dashboard-right-head">
+            <div class="dashboard-right-head-left">
+                <div class="">
+                    <h1>Messages</h1>
+                </div>
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <div class="content-area">
+                <div class="chat-content-area">
+                    <div class="chat-tabs-area">
+                        <div class="chat-left-tab">
+                            <div class="d-flex justify-content-between align-items-center pb-1">
+                                <h4 class="mb-0">Recent Chats</h4>
+                                <div class="d-flex">
+                                    <button class="sortBtn">All</button>
+                                    <button class="sortBtn">Unread</button>
+                                </div>
+                            </div>
+                            <div class="search-area">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search By User Name">
+                                    <button><img alt="icon" src="../../assets/images/search-icon.svg"></button>
+                                </div>
+                            </div>
+                            <div class="chats-listings mt-1">
+                                <div class="chat-tab">
+                                    <div class="chat-tab-info">
+                                        <div class="chat-tab-av">
+                                            <img alt="shop logo" class="img-fluid"
+                                                src="../../../assets/images/default-thumbnail.jpg">
+                                        </div>
+                                        <div class="chat-tab-name">
+                                            <div class="text1line">
+                                                User Name
+                                            </div>
+                                            <span class="text2line">Last message will gose here</span>
+                                        </div>
+                                    </div>
+                                    <div class="chat-seen-date">
+                                        <div class="my-0 pt-1">
+                                            <div>12:00 PM</div>
+                                        </div>
+
+                                        <img alt="icon" src="../../../assets/images/default-thumbnail.jpg"
+                                            class="img-fluid">
+                                    </div>
+                                </div>
+
+                                <div class="chat-tab">
+                                    <div class="chat-tab-info">
+                                        <div class="chat-tab-av">
+                                            <img alt="shop logo" class="img-fluid"
+                                                src="../../../assets/images/default-thumbnail.jpg">
+                                        </div>
+                                        <div class="chat-tab-name">
+                                            <div class="text1line">
+                                                User Name
+                                            </div>
+                                            <span class="text2line">Last message</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="chat-seen-date">
+                                        <div class="my-0 pt-1">
+                                            <div>12:00 PM</div>
+                                        </div>
+
+                                        <span>1</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-right-tab">
+                            <div class="chat-view-head">
+                                <div class="chat-tab-info">
+                                    <!-- <i class="fa-solid fa-chevron-left" role="button"></i> -->
+                                    <div class="chat-tab-av" role="button">
+                                        <img alt="shop logo" class="img-fluid"
+                                            src="../../../assets/images/default-thumbnail.jpg">
+                                    </div>
+                                    <div class="chat-tab-name" role="button">
+                                        <div class="multi">
+                                            <span>User Name</span>
+                                            <div class="onlineStatus">
+                                                <span class="onlineDiv"></span>
+                                                Online
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-view-messages-area" id="chatBoxId">
+                                <div class="chatview-byday">
+                                    <div class="chat-view-messages-tabs">
+                                        <div class="chat-view-message sender">
+                                            <div class="message-tab">Message Content</div>
+                                            <div class="message-time">
+                                                <span style="font-style: italic;">(Edited)</span>
+                                                <span>12:00 PM</span>
+                                            </div>
+                                        </div>
+                                        <div class="chat-view-message receiver">
+                                            <div class="message-tab">Message Content <div class="dropdown msg-action">
+                                                    <button type="button" data-bs-toggle="dropdown"
+                                                        aria-expanded="false"
+                                                        class="btn btn-secondary dropdown-toggle"><i
+                                                            class="fa-solid fa-chevron-down"></i></button>
+                                                    <ul class="dropdown-menu">
+                                                        <li><a class="dropdown-item"><i
+                                                                    class="fa-solid fa-pen-to-square"></i>
+                                                                Edit</a></li>
+                                                        <li><a data-bs-target="#deletem-popup" data-bs-toggle="modal"
+                                                                class="dropdown-item"><i class="fa-solid fa-trash-can"
+                                                                    style="color: red;"></i> Delete</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div class="message-time">
+                                                <span>12:00 PM</span><i class="fa-solid fa-check-double primary"></i>
+                                            </div>
+                                        </div>
+                                        <div class="add-media-section">
+                                            <div class="media-img"><img alt="video thumbnail" class="img-fluid rounded"
+                                                    src="../../../assets/images/default-thumbnail.jpg"><button
+                                                    type="button" class="close-btn"><i
+                                                        class="fa-solid fa-circle-xmark"></i></button></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="chat-view-foot">
+                                <div class="chat-view-uploads">
+                                    <label for="file-input" class="upload-media">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </label>
+
+                                    <input type="file" accept="image/*, video/*" class="d-none" id="file-input"
+                                        multiple>
+                                </div>
+                                <div class="chat-message-type">
+                                    <input id="msgInputId" class="secondary font-15" type="text"
+                                        placeholder="Write message here..." autofocus>
+                                </div>
+                                <div class="submit-message">
+                                    <!-- <div class="spinner-border text-light"></div> -->
+                                    <i><img alt="icon" src="../../assets/images/chat-icon.svg" class="img-fluid"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="deletem-popup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-white">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body fixed-with text-center">
+                <div class="mb-3">
+                    <div class="modal-img" style="min-height: 120px; margin:auto;">
+                        <img alt="delete icon" src="../assets/images/deactivate-shop.png" class="img-fluid">
+                    </div>
+                    <h2 style="    font-size: 22px;
+    font-weight: bold;">Delete Message!</h2>
+                    <p>Are you sure?<br /> Do you want to delete this message!</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary w-50" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary w-50" data-bs-dismiss="modal">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button data-bs-toggle="modal" data-bs-target="#images-popup" role="button" id="showPreviewMd" class="d-none">

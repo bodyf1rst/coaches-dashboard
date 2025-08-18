@@ -1,0 +1,37 @@
+.login-forms a {
+  text-decoration: none;
+}
+
+.login-forms a:hover,
+.login-forms a:focus {
+  text-decoration: underline;
+}
+
+.logo {
+  position: relative;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo img {
+  width: 150px;
+}
+
+.main-form-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-forms {
+  padding: 20px;
+  width: 400px;
+  text-align: center;
+}
+
+.login-forms form {
+  text-align: left;
+  display: inline-block;
+  width: 100%;
+}

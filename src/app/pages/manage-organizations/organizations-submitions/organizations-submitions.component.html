@@ -1,0 +1,140 @@
+<div class="main-dashboard-area">
+    <div class="dashboard-left">
+        <app-left-sidebar></app-left-sidebar>
+    </div>
+    <div class="dashboard-right">
+        <div class="dashboard-right-head">
+            <div class="dashboard-right-head-left">
+                <h1>Organization Submitions</h1>
+            </div>
+            <div class="dashboard-right-head-right">
+                <div class="search-wrapper">
+                    <div class="search-container">
+                        <input type="text" placeholder="Search here.." name="search" class="form-control"
+                            spellcheck="true" [(ngModel)]="dataService.stats.organizationsList.fieldText"
+                            (keydown.enter)="onSearch()">
+                        <button type="submit">
+                            <div class="d-block spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <i class="fa-solid fa-magnifying-glass"
+                                *ngIf="!dataService.isLoading && !dataService.stats.organizationsList.isSearched"
+                                (click)="onSearch()"></i>
+                            <i class="fa-regular fa-circle-xmark"
+                                *ngIf="!dataService.isLoading && dataService.stats.organizationsList.isSearched"
+                                (click)="clearSearch()"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="filter-btn" data-bs-toggle="offcanvas" data-bs-target="#filterOptions"
+                    aria-controls="filterOptions" data-bs-title="Click for Filter" appTooltip
+                    (click)="getFilterFields()">
+                    <i class="fa-solid fa-filter"></i><span class="active" *ngIf="filterApplied"></span>
+                </button>
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <div class="tabs-listing-area">
+                <div class="d-block spinner-border text-dark m-auto mb-2" role="status"
+                    *ngIf="dataService.isLoading && !dataService?.organizationSubmitionsList.organization_submissions?.length">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="text-center"
+                    *ngIf="!dataService.isLoading && !dataService?.organizationSubmitionsList.organization_submissions?.length">
+                    Data not
+                    found.
+                </div>
+                <div class="page-table"
+                    *ngIf="dataService?.organizationSubmitionsList?.organization_submissions?.length">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        No #
+                                    </th>
+                                    <th>
+                                        Organization
+                                    </th>
+                                    <th>
+                                        File
+                                    </th>
+                                    <th>
+                                        Status
+                                    </th>
+                                    <th>Submition Time</th>
+                                    <th class="text-center">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    *ngFor="let item of dataService.organizationSubmitionsList.organization_submissions; index as i">
+                                    <td>{{i+1}}</td>
+                                    <td>
+                                        <div class="short-profile"
+                                            [routerLink]="item?.organization?.id?'/organization-detail/'+item?.organization?.id:'#'">
+                                            <div class="p-img" *ngIf="item?.organization?.id">
+                                                <img [src]="item?.organization?.logo || '../../../../assets/images/default-thumbnail.jpg'"
+                                                    class="img-fluid" />
+                                            </div>
+                                            <h6 [class.text-danger]="!item?.organization?.id">
+                                                {{item?.organization?.id?item?.organization?.name:'Might be deleted'}}
+                                            </h6>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {{item.file}} <a [href]="item?.fileUrl" type="submit" class="dbtn"
+                                            data-bs-toggle="tooltip" data-bs-title="Downlaod Employees File"
+                                            *ngIf="item?.id && item?.status == 'Not Uploaded'" appTooltip><i
+                                                class="fa-solid fa-download"></i></a>
+                                    </td>
+                                    <td [ngStyle]="{'cursor': item.status == 'Not Uploaded' ? 'pointer' : 'default'}"
+                                        [routerLink]="item.status == 'Not Uploaded'?'/organization-submitions/organization-detail/'+item?.organization?.id:'/organization-submitions'"
+                                        [ngClass]="item.status == 'Not Uploaded' ?'text-danger':'text-success'">
+                                        {{item.status == 'Not Uploaded'?'Admin didn’t import the file':'Process Completed'}}
+                                    </td>
+                                    <td>
+                                        {{item.updated_at | date:'medium'}}
+                                    </td>
+                                    <td>
+                                        <div class="taction">
+                                            <button *ngIf="item?.organization?.id" class="btn btn-primary"
+                                                [routerLink]="'./organization-detail/'+item?.organization?.id"><i
+                                                    class="fa-solid fa-eye"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter -->
+<div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="filterOptions"
+    aria-labelledby="filterOptionsLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="filterOptionsLabel">Filter Options</h5>
+        <button id="closeFilter" type="button" class="btn-close" data-bs-dismiss="offcanvas"
+            aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="filter-area">
+            <div class="mb-3" *ngIf="dataService.isAdminUser">
+                <label>Status</label>
+                <select class="form-select" [(ngModel)]="pageFilter.status">
+                    <option value="">Select Here</option>
+                    <option value="Uploaded">Uploaded</option>
+                    <option value="Not Uploaded">Not Uploaded</option>
+                </select>
+            </div>
+            <button class="btn btn-primary w-100 mb-2" (click)="onSearch()">Filter</button>
+            <button class="btn btn-danger w-100" (click)="clearSearch()" *ngIf="filterApplied">Clear</button>
+        </div>
+    </div>
+</div>

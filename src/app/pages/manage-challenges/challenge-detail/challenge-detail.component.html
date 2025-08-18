@@ -1,0 +1,121 @@
+<div class="main-dashboard-area">
+  <div class="dashboard-left">
+    <app-left-sidebar></app-left-sidebar>
+  </div>
+  <div class="dashboard-right">
+    <div class="dashboard-right-head">
+      <div class="dashboard-right-head-left">
+        <div class="backIcon static"><a routerLink="/manage-challenges"><i class="fa-solid fa-arrow-left"></i></a>
+        </div>
+        <h1>Challenge Details</h1>
+      </div>
+      <div class="dashboard-right-head-right"
+        *ngIf="dataService?.currentUserData?.id == challengeData?.uploaded_by || dataService?.currentUserData?.role == 'Admin'">
+        <button *ngIf="dataService?.currentUserData?.id == challengeData?.uploaded_by" type="submit" class="filter-btn"
+          data-bs-toggle="tooltip" data-bs-title="Edit Challenge"
+          [routerLink]="'/manage-challenges/edit-challenge/'+challengeData?.id"><i
+            class="fa-solid fa-pencil"></i></button>
+        <button type="submit" class="filter-btn" style="background: red;" data-bs-toggle="modal"
+          data-bs-target="#dModal" data-bs-title="Delete User" appTooltip><i class="fa-solid fa-trash-can"
+            style="color: #fff;"></i></button>
+      </div>
+    </div>
+    <div class="dashboard-content">
+      <div class="challenge-details-area">
+        <div class="challenge-detail-top">
+          <div class="challenge-detail-img">
+            <img
+              [src]="challengeData?.cover_image ? challengeData?.cover_image : '../../../../assets/images/default-thumbnail.jpg'"
+              class="img-fluid" data-bs-toggle="modal" data-bs-target="#imageViewModal"
+              (click)="dataService.utils.imagePreview = challengeData?.cover_image ? challengeData?.cover_image : '../../../../assets/images/default-thumbnail.jpg'" />
+          </div>
+          <div class="challenge-detail-info">
+            <h5>{{challengeData?.title}}</h5>
+            <div class="challenge-assign-tabs">
+              <span *ngIf="challengeData?.organization?.id">
+                <div class="img"><img
+                    [src]="challengeData?.organization?.logo ? challengeData?.organization?.logo : '../../../../assets/images/default-thumbnail.jpg'" />
+                </div>
+                {{challengeData?.organization?.name}}
+              </span> /
+              <span *ngFor="let item of challengeData?.coaches">
+                <div class="img"><img
+                    [src]="item?.profile_image ? item?.profile_image : '../../../../assets/images/default-thumbnail.jpg'" />
+                </div>
+                {{item?.name}}
+              </span>
+              <span *ngIf="!challengeData?.coaches.length">Nothing Assign</span>
+            </div>
+            <p>{{challengeData?.description || 'Description not added.'}}</p>
+            <div class="challenge-assign-tabs info">
+              <span><strong>Prize: </strong> {{challengeData?.prize}}</span>
+              <span><strong>Type: </strong>{{challengeData?.challenge_type}}</span>
+              <span><strong>Points: </strong>{{challengeData?.challenge_description}}</span>
+              <span><strong>Start: </strong> {{challengeData?.start_date | date:'d MMMM, y'}}</span>
+              <span><strong>End: </strong>{{challengeData?.end_date | date:'d MMMM, y'}}</span>
+              <span><strong>Duration: </strong>{{challengeData?.duration}} Days</span>
+            </div>
+          </div>
+        </div>
+        <div class="challenge-detail-bottom">
+          <div class="tabs-listing-tabview mb-4">
+            <ul id="pills-tab" class="nav nav-pills">
+              <li class="nav-item"><button type="button" class="nav-link active">{{challengeData?.type}}</button></li>
+            </ul>
+          </div>
+          <div class="tabs-listing-tabs">
+            <div class="tabs-listing-area">
+              <div class="tabs-listing">
+                <div class="d-block spinner-border text-dark m-auto mb-2" role="status"
+                  *ngIf="dataService.isLoading && !challengeData?.users?.length">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="text-center" *ngIf="!dataService.isLoading && !challengeData?.users?.length">
+                  Data not found.</div>
+                <div class="row" *ngIf="challengeData?.users?.length">
+                  <div class="col-lg-4 col-md-6 col-12" *ngFor="let item of challengeData?.users">
+                    <app-client-tab [item]="item" [isRank]="true"></app-client-tab>
+                  </div>
+                </div>
+                <button [disabled]="dataService.isLoading"
+                  *ngIf="challengeData?.users?.length && (challengeData?.page != challengeData?.total_page)"
+                  class="btn btn-primary btn-p d-flex align-items-center gap-2 m-auto"
+                  (click)="dataService.fetchData(challengeData?.page + 1,dataService.httpService.getEmployeesApi, 'employees', 'usersList')">Load
+                  More <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+                    <span class="visually-hidden">Loading...</span>
+                  </div></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="dModal" tabindex="-1" aria-labelledby="dModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closedModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid" src="../../../../assets/images/deleted.png" /></p>
+        <h5 class="modal-title fs-5 mb-2">Delete Challenge</h5>
+        Do you really want to <strong class="text-danger">Delete</strong> this
+        Challenge <strong>{{challengeData?.title}}</strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button (click)="delete()" type="submit"
+          class="btn btn-danger w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading">Delete <div class="spinner-border text-light" role="status"
+            *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

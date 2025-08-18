@@ -1,0 +1,277 @@
+<div class="main-dashboard-area">
+    <div class="dashboard-left">
+        <app-left-sidebar></app-left-sidebar>
+    </div>
+    <div class="dashboard-right">
+        <div class="dashboard-right-head">
+            <div class="dashboard-right-head-left">
+                <h1 class="mb-md-0 ct">Nutrition Dashboard</h1>
+            </div>
+            <div class="dashboard-right-head-right">
+                <button class="btn btn-primary" (click)="syncHealthData()" [disabled]="isSyncing">
+                    <i class="fas fa-sync" [class.fa-spin]="isSyncing"></i>
+                    {{ healthSyncStatus }}
+                </button>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <!-- Loading State -->
+            <div class="row" *ngIf="isLoading">
+                <div class="col-lg-6 col-md-12 mb-4" *ngFor="let item of [1,2]">
+                    <div class="nutrition-card loading">
+                        <div class="loading-shimmer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nutrition Content -->
+            <div class="row" *ngIf="!isLoading">
+                <!-- Total Calories Card -->
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div class="nutrition-card calories-card">
+                        <div class="card-header">
+                            <h3>Total Calories</h3>
+                            <span class="date-badge">{{ currentDate | date:'MMM dd, yyyy' }}</span>
+                        </div>
+                        
+                        <div class="card-content">
+                            <div class="calories-display">
+                                <div class="calories-info">
+                                    <div class="calories-consumed">
+                                        <span class="value">{{ nutritionData.calories.consumed }}</span>
+                                        <span class="label">consumed</span>
+                                    </div>
+                                    <div class="calories-target">
+                                        <span class="value">{{ nutritionData.calories.target }}</span>
+                                        <span class="label">target</span>
+                                    </div>
+                                    <div class="calories-remaining">
+                                        <span class="value">{{ nutritionData.calories.remaining }}</span>
+                                        <span class="label">remaining</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Circular Progress Diagram -->
+                                <div class="calorie-circle">
+                                    <svg width="120" height="120" viewBox="0 0 120 120">
+                                        <circle 
+                                            cx="60" 
+                                            cy="60" 
+                                            r="50" 
+                                            fill="none" 
+                                            stroke="#e0e0e0" 
+                                            stroke-width="8">
+                                        </circle>
+                                        <circle 
+                                            cx="60" 
+                                            cy="60" 
+                                            r="50" 
+                                            fill="none" 
+                                            stroke="#4CAF50" 
+                                            stroke-width="8" 
+                                            stroke-linecap="round"
+                                            [attr.stroke-dasharray]="314.16"
+                                            [attr.stroke-dashoffset]="314.16 - (314.16 * nutritionData.calories.percentage / 100)"
+                                            transform="rotate(-90 60 60)">
+                                        </circle>
+                                    </svg>
+                                    <div class="circle-text">
+                                        <span class="percentage">{{ nutritionData.calories.percentage }}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Macros Card -->
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div class="nutrition-card macros-card">
+                        <div class="card-header">
+                            <h3>Macronutrients</h3>
+                            <div class="body-points">
+                                <span class="points-earned">{{ nutritionData.body_points.earned }}</span>
+                                <span class="points-max">/ {{ nutritionData.body_points.max }}</span>
+                                <span class="points-label">Body Points</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-content">
+                            <div class="macro-item protein">
+                                <div class="macro-header">
+                                    <span class="macro-name">Protein</span>
+                                    <span class="macro-values">
+                                        {{ nutritionData.macros.protein.consumed }}g / {{ nutritionData.macros.protein.target }}g
+                                    </span>
+                                </div>
+                                <div class="macro-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill protein-fill" 
+                                             [style.width.%]="nutritionData.macros.protein.percentage">
+                                        </div>
+                                    </div>
+                                    <span class="percentage">{{ nutritionData.macros.protein.percentage }}%</span>
+                                </div>
+                            </div>
+
+                            <div class="macro-item carbs">
+                                <div class="macro-header">
+                                    <span class="macro-name">Carbs</span>
+                                    <span class="macro-values">
+                                        {{ nutritionData.macros.carbs.consumed }}g / {{ nutritionData.macros.carbs.target }}g
+                                    </span>
+                                </div>
+                                <div class="macro-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill carbs-fill" 
+                                             [style.width.%]="nutritionData.macros.carbs.percentage">
+                                        </div>
+                                    </div>
+                                    <span class="percentage">{{ nutritionData.macros.carbs.percentage }}%</span>
+                                </div>
+                            </div>
+
+                            <div class="macro-item fats">
+                                <div class="macro-header">
+                                    <span class="macro-name">Fats</span>
+                                    <span class="macro-values">
+                                        {{ nutritionData.macros.fats.consumed }}g / {{ nutritionData.macros.fats.target }}g
+                                    </span>
+                                </div>
+                                <div class="macro-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill fats-fill" 
+                                             [style.width.%]="nutritionData.macros.fats.percentage">
+                                        </div>
+                                    </div>
+                                    <span class="percentage">{{ nutritionData.macros.fats.percentage }}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nutrition Goals Card -->
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div class="nutrition-card goals-card">
+                        <div class="card-header">
+                            <h3>Nutrition Goals</h3>
+                            <button class="btn btn-sm btn-outline-primary" (click)="editGoals()">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </div>
+                        
+                        <div class="card-content">
+                            <div class="goal-item">
+                                <span class="goal-label">Daily Calories</span>
+                                <span class="goal-value">{{ nutritionGoals.calories }} kcal</span>
+                            </div>
+                            <div class="goal-item">
+                                <span class="goal-label">Protein</span>
+                                <span class="goal-value">{{ nutritionGoals.protein }}g</span>
+                            </div>
+                            <div class="goal-item">
+                                <span class="goal-label">Carbohydrates</span>
+                                <span class="goal-value">{{ nutritionGoals.carbs }}g</span>
+                            </div>
+                            <div class="goal-item">
+                                <span class="goal-label">Fats</span>
+                                <span class="goal-value">{{ nutritionGoals.fats }}g</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Card -->
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div class="nutrition-card stats-card">
+                        <div class="card-header">
+                            <h3>Quick Stats</h3>
+                            <span class="sync-status" [class]="healthSyncStatus.toLowerCase()">
+                                {{ nutritionData.last_synced ? 'Synced ' + (nutritionData.last_synced | date:'short') : 'Not synced' }}
+                            </span>
+                        </div>
+                        
+                        <div class="card-content">
+                            <div class="stat-row">
+                                <span class="stat-label">Overall Progress</span>
+                                <span class="stat-value">{{ nutritionData.body_points.percentage }}%</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Streak</span>
+                                <span class="stat-value">7 days</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Weekly Average</span>
+                                <span class="stat-value">85%</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Best Day</span>
+                                <span class="stat-value">98%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nutrition History Chart -->
+            <div class="row" *ngIf="!isLoading">
+                <div class="col-12 mb-4">
+                    <div class="nutrition-card chart-card">
+                        <div class="card-header">
+                            <h3>7-Day Nutrition Progress</h3>
+                            <div class="chart-controls">
+                                <button class="btn btn-sm" [class.active]="chartView === 'calories'" (click)="chartView = 'calories'">Calories</button>
+                                <button class="btn btn-sm" [class.active]="chartView === 'macros'" (click)="chartView = 'macros'">Macros</button>
+                            </div>
+                        </div>
+                        
+                        <div class="card-content">
+                            <div class="chart-container">
+                                <!-- Chart will be implemented with Chart.js or similar -->
+                                <canvas id="nutritionChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Goals Edit Modal -->
+<div class="modal fade" id="goalsModal" tabindex="-1" *ngIf="showGoalsModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Nutrition Goals</h5>
+                <button type="button" class="btn-close" (click)="closeGoalsModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="goalsForm">
+                    <div class="mb-3">
+                        <label class="form-label">Daily Calories</label>
+                        <input type="number" class="form-control" formControlName="calories" min="1000" max="5000">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Protein (g)</label>
+                        <input type="number" class="form-control" formControlName="protein" min="50" max="300">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Carbohydrates (g)</label>
+                        <input type="number" class="form-control" formControlName="carbs" min="100" max="500">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fats (g)</label>
+                        <input type="number" class="form-control" formControlName="fats" min="30" max="150">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeGoalsModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" (click)="saveGoals()" [disabled]="goalsForm.invalid">Save Goals</button>
+            </div>
+        </div>
+    </div>
+</div>

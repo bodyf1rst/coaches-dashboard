@@ -1,0 +1,48 @@
+<div class="main-dashboard-area">
+    <div class="dashboard-left">
+        <app-left-sidebar></app-left-sidebar>
+    </div>
+    <div class="dashboard-right">
+        <div class="dashboard-right-head">
+            <div class="dashboard-right-head-left">
+                <div class="">
+                    <h1>Dashboard</h1>
+                </div>
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <div class="row" *ngIf="this.dataService.dashboardStats.status != '200' && !statsList.length">
+                <div class="col-lg-4 col-md-6 col-12" *ngFor="let item of dataService.placeholderItems">
+                    <app-placeholder-tab></app-placeholder-tab>
+                </div>
+            </div>
+            <div class="row" *ngIf="this.dataService.dashboardStats.status == '200' && statsList.length">
+                <div class="col-md-4">
+                    <div class="stat-tab" routerLink="/my-profile">
+                        <div class="stat-tab-left">
+                            <h5>Welcome Back!</h5>
+                            <div class="stats-price"> {{dataService.currentUserData?.name}} </div>
+                        </div>
+                        <div class="stat-tab-right">
+                            <div class="graph-line profile"><img
+                                    [src]="dataService.currentUserData.profile_image || './../../../assets/images/default-thumbnail.jpg'"
+                                    class="img-fluid"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6" *ngFor="let item of statsList">
+                    <div class="stat-tab" [routerLink]="item.link">
+                        <div class="stat-tab-left">
+                            <h5>{{item.title}}</h5>
+                            <div class="stats-price"> {{item.value}} </div>
+                        </div>
+                        <div class="stat-tab-right">
+                            <div class="graph-line"><img [src]="item.icon" class="img-fluid" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

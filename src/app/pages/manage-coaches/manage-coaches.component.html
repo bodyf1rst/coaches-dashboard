@@ -1,0 +1,98 @@
+<div class="main-dashboard-area">
+  <div class="dashboard-left">
+    <app-left-sidebar></app-left-sidebar>
+  </div>
+  <div class="dashboard-right">
+    <div class="dashboard-right-head">
+      <div class="dashboard-right-head-left">
+        <div class="">
+          <h1>All Coaches <small>({{dataService.coachesList.total_records || 0}})</small></h1>
+        </div>
+      </div>
+      <div class="dashboard-right-head-right">
+        <div class="search-wrapper">
+          <div class="search-container">
+            <input type="text" placeholder="Search here.." name="search" class="form-control" spellcheck="true"
+              [(ngModel)]="stats.coachesList.fieldText" (keydown.enter)="onSearch()">
+            <button type="submit">
+              <div class="d-block spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <i class="fa-solid fa-magnifying-glass" *ngIf="!dataService.isLoading && !stats.coachesList.isSearched"
+                (click)="onSearch()"></i>
+              <i class="fa-regular fa-circle-xmark" *ngIf="!dataService.isLoading && stats.coachesList.isSearched"
+                (click)="clearSearch()"></i>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="filter-btn" data-bs-toggle="offcanvas" data-bs-target="#filterOptions"
+          aria-controls="filterOptions" data-bs-title="Click for Filter" appTooltip (click)="getFilterFields()">
+          <i class="fa-solid fa-filter"></i><span class="active" *ngIf="filterApplied"></span>
+        </button>
+      </div>
+    </div>
+    <div class="dashboard-content">
+      <div class="tabs-listing-area">
+        <div class="tabs-listing">
+          <div class="text-center" *ngIf="!dataService.isLoading && !dataService?.coachesList?.coaches?.length">Data not
+            found.</div>
+          <div class="row" *ngIf="dataService.isLoading && !dataService?.coachesList?.coaches?.length">
+            <div class="col-lg-4 col-md-6 col-12" *ngFor="let item of dataService.placeholderItems">
+              <app-placeholder-tab></app-placeholder-tab>
+            </div>
+          </div>
+          <div class="row" *ngIf="dataService?.coachesList?.coaches?.length">
+            <div class="col-lg-4 col-md-6 col-12" *ngFor="let item of dataService.coachesList.coaches">
+              <app-coach-tab [item]="item" [showStats]=true></app-coach-tab>
+            </div>
+          </div>
+          <button [disabled]="dataService.isLoading"
+            *ngIf="dataService?.coachesList?.coaches?.length && (dataService.coachesList.page != dataService.coachesList.total_page)"
+            class="btn btn-primary btn-p d-flex align-items-center gap-2 m-auto"
+            (click)="dataService.fetchData(dataService.coachesList.page + 1,dataService.httpService.getCoachesApi, 'coaches', 'coachesList')">Load
+            More <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+              <span class="visually-hidden">Loading...</span>
+            </div></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Filter -->
+<div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="filterOptions"
+  aria-labelledby="filterOptionsLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="filterOptionsLabel">Filter Options</h5>
+    <button id="closeFilter" type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="filter-area">
+      <div class="mb-3">
+        <label>Active Status</label>
+        <select class="form-select" [(ngModel)]="pageFilter.status">
+          <option value="">Select Here</option>
+          <option value="Active">Active</option>
+          <option value="Blocked">Blocked</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label>Assign Status</label>
+        <select class="form-select" [(ngModel)]="pageFilter.assignment_status">
+          <option value="">Select Here</option>
+          <option value="Assigned">Assigned</option>
+          <option value="Not Assigned">Not Assigned</option>
+        </select>
+      </div>
+      <div class="mb-3"><label>Organization</label>
+        <select class="form-select" [(ngModel)]="pageFilter.organization_id">
+          <option value="">Select Here</option>
+          <option *ngFor="let item of dataService?.organizationsDropdown" [value]="item.id">{{item.name}}</option>
+        </select>
+      </div>
+      <button class="btn btn-primary w-100 mb-2" (click)="onSearch()">Filter</button>
+      <button class="btn btn-danger w-100" (click)="clearSearch()" *ngIf="filterApplied">Clear</button>
+    </div>
+  </div>
+</div>

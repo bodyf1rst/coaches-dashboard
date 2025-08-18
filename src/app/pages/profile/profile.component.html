@@ -1,0 +1,163 @@
+<div class="main-dashboard-area">
+  <div class="dashboard-left">
+    <app-left-sidebar></app-left-sidebar>
+  </div>
+  <div class="dashboard-right">
+    <div class="dashboard-right-head">
+      <div class="dashboard-right-head-left">
+        <h1 class="mb-md-0 ct">My Profile
+        </h1>
+      </div>
+    </div>
+    <div class="dashboard-content">
+      <div class="tabs-listing-tabview mb-3 sticky">
+        <ul id="pills-tab" class="nav nav-pills">
+          <li class="nav-item"><button type="button" class="nav-link" (click)="dataService.pageTabView = 'My Profile'"
+              [class.active]="dataService.pageTabView == 'My Profile'" (click)="getTabData('My Profile')">Update
+              Profile</button></li>
+          <li class="nav-item"><button type="button" class="nav-link"
+              [class.active]="dataService.pageTabView == 'Change Password'"
+              (click)="getTabData('Change Password')">Change
+              Password</button>
+          </li>
+        </ul>
+      </div>
+      <div class="g-form" *ngIf="dataService.pageTabView == 'My Profile'">
+        <form [formGroup]="pForm">
+          <div class="row">
+            <div class="col-md-3">
+              <div class="text-center justify-content-md-center">
+                <div class="upload-image-tab tlm">
+                  <label for="uploadPhoto" class="upload-photo-tab">
+                    <input type="file" accept="image/*" id="uploadPhoto" class="form-control"
+                      (change)="onImageSelected($event)">
+                    <div class="preview-img" *ngIf="imageUrl">
+                      <img [src]="imageUrl" class="img-fluid w-100" />
+                    </div>
+                    <div class="upload-img" *ngIf=" !imageUrl">
+                      <img src="../../assets/images/upload-icon.svg" class="img-fluid w-auto" />
+                      Upload Profile Image
+                    </div>
+                  </label>
+                  <div class="remove-icon" *ngIf="imageUrl" (click)="removeImage()">
+                    <i class="fa-solid fa-xmark"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-9">
+              <div class="row">
+                <div class="col-md-6 col-12 mb-3"><label>First Name*</label><input type="text" placeholder="Enter Here*"
+                    class="form-control" formControlName="first_name">
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.first_name?.errors">
+                    This Field is Required.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3"><label>Last Name*</label><input type="text" placeholder="Enter Here*"
+                    class="form-control" formControlName="last_name">
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.last_name?.errors">
+                    This Field is Required.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3"><label>Phone</label><input type="tel" placeholder="Enter Here"
+                    class="form-control" formControlName="phone" (focus)="f.phone.setValue(f.phone.value || '+1')">
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.phone?.errors">
+                    Please enter a valid US phone number with country code (+1). Accepted formats:
+                    (123) 456-7890, 123-456-7890, 123 456 7890, or 1234567890.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3"><label>Email*</label><input type="email" placeholder="Enter Here*"
+                    class="form-control" formControlName="email" readonly>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.email?.errors">
+                    This Field is Invalid.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-12 offset-md-3">
+              <button type="submit"
+                class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-2 m-auto align-self-end"
+                [disabled]="dataService.isLoading" (click)="onSubmitForm()">
+                Update Profile <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="g-form" *ngIf="dataService.pageTabView == 'Change Password'">
+        <form [formGroup]="passForm">
+          <div class="row">
+            <div class="col-md-4 col-12 mb-3">
+              <label>Old Password*</label>
+              <div class="input-group">
+                <input [type]="oldPasswordVisible ? 'text' : 'password'" placeholder="Enter Here*" class="form-control"
+                  formControlName="old_password">
+                <button type="button" class="input-group-text" (click)="togglePasswordVisibility('old')">
+                  <i [ngClass]="oldPasswordVisible ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                </button>
+              </div>
+              <div class="text-start text-danger mt-1" style="font-size: 14px"
+                *ngIf="isPSubmitted && pf.old_password?.errors">
+                This Field is Required.
+              </div>
+            </div>
+            <div class="col-md-4 col-12 mb-3">
+              <label>New Password*</label>
+              <div class="input-group">
+                <input [type]="newPasswordVisible ? 'text' : 'password'" placeholder="Enter Here*" class="form-control"
+                  formControlName="new_password">
+                <button type="button" class="input-group-text" (click)="togglePasswordVisibility('new')">
+                  <i [ngClass]="newPasswordVisible ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                </button>
+              </div>
+              <div class="text-start text-danger mt-1" style="font-size: 14px"
+                *ngIf="isPSubmitted && pf.new_password?.errors">
+                <span *ngIf="pf.new_password?.errors?.required">This Field is Required.</span>
+                <span *ngIf="pf.new_password?.errors?.minlength">Password must be at least 8 characters long.</span>
+                <span *ngIf="pf.new_password?.errors?.maxLength">Password must be not longer than 25 characters.</span>
+                <span *ngIf="pf.new_password?.errors?.pattern">The password must contain at least one uppercase letter,
+                  one lowercase letter, one numeric digit, and one special character.</span>
+              </div>
+            </div>
+            <div class="col-md-4 col-12 mb-3">
+              <label>Re-enter New Password*</label>
+              <div class="input-group">
+                <input [type]="newPasswordConfirmVisible ? 'text' : 'password'" placeholder="Enter Here*"
+                  class="form-control" formControlName="new_password_confirmation">
+                <button type="button" class="input-group-text" (click)="togglePasswordVisibility('confirm')">
+                  <i [ngClass]="newPasswordConfirmVisible ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                </button>
+              </div>
+              <div class="text-start text-danger mt-1" style="font-size: 14px"
+                *ngIf="isPSubmitted && pf.new_password_confirmation?.errors">
+                <span *ngIf="pf.new_password_confirmation?.errors?.required">This Field is Required.</span>
+                <span *ngIf="pf.new_password_confirmation?.errors?.minlength">Password must be at least 8 characters
+                  long.</span>
+                <span *ngIf="pf.new_password_confirmation?.errors?.maxLength">Password must be not longer than 25
+                  characters.</span>
+                <span *ngIf="pf.new_password_confirmation?.errors?.pattern">The password must contain at least one
+                  uppercase letter, one lowercase letter, one numeric digit, and one special character.</span>
+              </div>
+            </div>
+            <div class="col-md-6 col-12 offset-md-3">
+              <button type="submit"
+                class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-2 m-auto align-self-end"
+                [disabled]="dataService.isLoading" (click)="changePassword()">
+                Change Password
+                <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

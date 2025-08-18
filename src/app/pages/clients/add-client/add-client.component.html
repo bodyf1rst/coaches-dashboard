@@ -1,0 +1,596 @@
+<div class="main-dashboard-area">
+  <div class="dashboard-left">
+    <app-left-sidebar></app-left-sidebar>
+  </div>
+  <div class="dashboard-right">
+    <div class="dashboard-right-head">
+      <div class="dashboard-right-head-left">
+        <div class="backIcon static"><button (click)="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+        <h1 class="mb-md-0 ct">{{ userId ? (userData?.first_name + ' ' + userData?.last_name) : 'User Details' }}
+          <span *ngIf="userId">{{userData?.organization?.name ? userData?.organization?.name
+            :'Client'}}{{(userData?.organization?.name && userData?.department) ?'
+            /'+userData?.department:''}}</span>
+          <span *ngIf="dataService.currentUserData.role =='Admin'">Created At:
+            {{userData?.created_at
+            | date:'medium'}}</span>
+          <span *ngIf="dataService.currentUserData.role =='Admin' && userData?.last_reminded_at">Last Reminded:
+            {{userData?.last_reminded_at
+            | date:'medium'}}</span>
+
+        </h1>
+      </div>
+      <div class="dashboard-right-head-right"
+        *ngIf="dataService.isAdminUser || (dataService?.currentUserData?.id == userData?.uploaded_by && userData?.uploader == 'Coach')">
+        <button *ngIf="userData?.id && userData?.first_login == 1" [disabled]="dataService.isLoading"
+          class="btn btn-primary" data-bs-title="Check Password" appTooltip data-bs-target="#credentialsModal"
+          data-bs-toggle="modal">Not Signed Up</button>
+        <button *ngIf="userData?.id" class="btn btn-p" [ngClass]="userData?.is_active?'btn-success':'btn-danger'"
+          data-bs-toggle="modal" data-bs-target="#actionModal" data-bs-title="Click for change Status"
+          appTooltip>{{userData?.is_active?'Active':'Blocked'}}</button>
+        <button type="submit" class="filter-btn" data-bs-toggle="tooltip" data-bs-title="Edit User"
+          *ngIf="userId && !isEdit" (click)="onEdit()"><i class="fa-solid fa-pencil"></i></button>
+        <button type="submit" class="filter-btn w-auto btn-p" data-bs-toggle="tooltip" data-bs-title="Cancel Edit"
+          *ngIf="userId && isEdit" (click)="onEdit();this.emailEditable = false;">Cancel Edit</button>
+        <button *ngIf="userId" type="submit" class="filter-btn" style="background: red;" data-bs-toggle="modal"
+          data-bs-target="#dModal" data-bs-title="Delete User" appTooltip><i class="fa-solid fa-trash-can"
+            style="color: #fff;"></i></button>
+      </div>
+    </div>
+    <div class="dashboard-content">
+      <div class="tabs-listing-tabview mb-3 sticky" *ngIf="this.userData?.id && !isEdit">
+        <ul id="pills-tab" class="nav nav-pills">
+          <li class="nav-item"><button type="button" class="nav-link" (click)="dataService.pageTabView = 'User Details'"
+              [class.active]="dataService.pageTabView == 'User Details'" (click)="getTabData('User Details')">User
+              Details</button></li>
+          <li class="nav-item"><button type="button" class="nav-link"
+              (click)="dataService.pageTabView = 'Assigned Coaches'"
+              [class.active]="dataService.pageTabView == 'Assigned Coaches'"
+              (click)="getTabData('Assigned Coaches')">Assigned Coaches ({{userData?.organization?.coaches?.length
+              ?userData?.organization?.coaches?.length :
+              userData?.coach?.id ? 1 : 0}})</button></li>
+          <li class="nav-item"><button type="button" class="nav-link"
+              (click)="dataService.pageTabView = 'Assigned Organizations'"
+              [class.active]="dataService.pageTabView == 'Assigned Organizations'"
+              (click)="getTabData('Assigned Organizations')">Assigned Organizations ({{userData?.organization?.id?1:
+              0}})</button></li>
+          <li class="nav-item"><button type="button" class="nav-link"
+              [class.active]="dataService.pageTabView == 'Fitness Plans'" (click)="getTabData('Fitness Plans')">Fitness
+              Plans <span class="in-count">({{userData.fitnessPlans?.length || 0}})</span></button>
+          </li>
+          <li class="nav-item"><button type="button" class="nav-link"
+              [class.active]="dataService.pageTabView == 'Nutrition Plan'"
+              (click)="getTabData('Nutrition Plan')">Nutrition Plan <span class="in-count">({{0}})</span></button>
+          </li>
+          <li class="nav-item"><button type="button" class="nav-link"
+              [class.active]="dataService.pageTabView == 'Documents'" (click)="getTabData('Documents')">Documents <span
+                class="in-count">({{0}})</span></button>
+          </li>
+        </ul>
+      </div>
+      <div *ngIf="dataService.pageTabView == 'User Details'">
+        <div class="g-form">
+          <form [formGroup]="uForm">
+            <h6 class="mb-3">General Information</h6>
+            <div class="row flex-md-row-reverse">
+              <div class="col-md-3">
+                <div class="text-center justify-content-md-center">
+                  <div class="upload-image-tab tlm" [class.view]="!isEdit">
+                    <label for="uploadPhoto" class="upload-photo-tab">
+                      <input type="file" accept="image/*" id="uploadPhoto" class="form-control"
+                        (change)="onImageSelected($event)" *ngIf="isEdit">
+                      <div class="preview-img" *ngIf="imageUrl">
+                        <img *ngIf="!isEdit" [src]="imageUrl" class="img-fluid w-100" data-bs-toggle="modal"
+                          data-bs-target="#imageViewModal" (click)="dataService.utils.imagePreview = imageUrl" />
+                        <img *ngIf="isEdit" [src]="imageUrl" class="img-fluid w-100" />
+                      </div>
+                      <div class="preview-img" *ngIf="!isEdit && !imageUrl">
+                        <img src="..//../../../assets/images/default-thumbnail.jpg" class="img-fluid w-100" />
+                      </div>
+                      <div class="upload-img" *ngIf="isEdit && !imageUrl">
+                        <img src="../../assets/images/upload-icon.svg" class="img-fluid w-auto" />
+                        Upload Profile Image
+                      </div>
+                    </label>
+                    <div class="remove-icon" *ngIf="imageUrl && isEdit" (click)="removeImage()">
+                      <i class="fa-solid fa-xmark"></i>
+                    </div>
+                  </div>
+                  <div class="bodypoints-had" *ngIf="!isEdit">
+                    <div class="value"> {{ userData?.body_points > 0 ? (userData?.body_points | number) : 0 }}
+                    </div> BodyPoints
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-9">
+                <div class="row mb-3">
+                  <div class="col-md-6 col-12 mb-3"><label>First Name*</label><input type="text"
+                      placeholder="Enter Here*" class="form-control" formControlName="first_name"
+                      [readonly]="(userId && !isEdit)?true:false">
+                    <div *ngIf="isSubmitted && f.first_name?.errors?.required" class="text-start text-danger mt-1"
+                      style="font-size: 14px">
+                      Required Field
+                    </div>
+                    <div *ngIf="isSubmitted && f.first_name?.errors?.minlength" class="text-start text-danger mt-1"
+                      style="font-size: 14px">
+                      Must be greater then 1
+                    </div>
+                    <div *ngIf="isSubmitted && f.first_name?.errors?.maxlength" class="text-start text-danger mt-1"
+                      style="font-size: 14px">
+                      Must be less then 25
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-12 mb-3"><label>Last Name*</label><input type="text"
+                      placeholder="Enter Here*" class="form-control" formControlName="last_name"
+                      [readonly]="(userId && !isEdit)?true:false">
+                    <div *ngIf="isSubmitted && f.last_name?.errors?.required" class="text-start text-danger mt-1"
+                      style="font-size: 14px">
+                      Required Field
+                    </div>
+                    <div *ngIf="isSubmitted && f.last_name?.errors?.minlength" class="text-start text-danger mt-1"
+                      style="font-size: 14px">
+                      Should be greater then 1
+                    </div>
+                    <div *ngIf="isSubmitted && f.last_name?.errors?.maxlength" class="text-start text-danger mt-1"
+                      style="font-size: 14px">
+                      Should be less then 25
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-12 mb-3"><label>Email* <span *ngIf="userId && isEdit && f.email.value"
+                        role="button" (click)="emailEditable = !emailEditable" data-bs-toggle="tooltip"
+                        data-bs-title="Click To Change Email" appTooltip><i style="color: #fc4d1f;"
+                          class="fa-solid fa-pen-to-square"></i></span></label><input type="text"
+                      placeholder="Enter Here*" class="form-control" formControlName="email"
+                      [attr.disabled]="userId && !emailEditable ?true:null">
+                    <div *ngIf="isSubmitted && f.email?.errors" class="text-start text-danger mt-1"
+                      style="font-size: 14px">
+                      Please enter a valid URL.
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-12 mb-3"><label>Contact #</label><input type="tel" placeholder="Enter Here"
+                      class="form-control" formControlName="phone" [readonly]="(userId && !isEdit)?true:false"
+                      (focus)="f.phone.setValue(f.phone.value || '+1')" maxlength="16">
+                    <div class="text-start text-danger mt-1" style="font-size: 14px"
+                      *ngIf="isSubmitted && f.phone?.errors">
+                      Please enter a valid US phone number with country code (+1). Accepted formats:
+                      (123) 456-7890, 123-456-7890, 123 456 7890, or 1234567890.
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-12 mb-3"><label>Sex</label><select placeholder="Select Here"
+                      class="form-select" formControlName="gender" [attr.disabled]="(userId && !isEdit)?true:null">
+                      <option value=null>Select Here</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                    </select></div>
+                  <div class="col-md-6 col-12 mb-3">
+                    <label>DOB <span class="text-success" *ngIf="age">(Your age is {{ age
+                        }} Years)</span></label>
+                    <input type="date" formControlName="dob" placeholder="Enter Here" class="form-control"
+                      [readonly]="(userId && !isEdit)?true:false" (change)="calculateAge(uForm?.get('dob')?.value)">
+
+                  </div>
+                  <div class="col-md-6 col-12 mb-3"
+                    *ngIf="((!uForm?.get('coach_id')?.value && isEdit) || userData?.organization_id) && (dataService.currentUserData.id && dataService.currentUserData.role !='Coach')">
+                    <label>Organization</label>
+                    <input class=" form-control" [value]="userData?.organization?.name" readonly
+                      *ngIf="userId && !isEdit" />
+                    <ng-select (change)="onOrganizationSelect($event); checkField('o')" [addTag]="true"
+                      addTagText="Add Custom:" placeholder="Search Here" class="form-control"
+                      formControlName="organization_id" [readonly]="userId && !isEdit ? true : false" *ngIf="isEdit">
+                      <ng-option *ngFor="let oitem of dataService?.organizationsDropdown" [value]="oitem.id">
+                        {{ oitem.name }}
+                      </ng-option>
+                    </ng-select>
+                  </div>
+                  <div class="col-md-6 col-12 mb-3"
+                    *ngIf="uForm?.get('organization_id')?.value && (departmentsDropdown?.length || userData?.department?.length)">
+                    <label>Department</label>
+                    <input class="form-control" [value]="userData?.department" readonly *ngIf="userId && !isEdit">
+                    <ng-select [multiple]="false" [closeOnSelect]="false" [addTag]="true" addTagText="Add Custom:"
+                      placeholder="Search Here" class="form-control" formControlName="department"
+                      [readonly]="(userId && !isEdit)?true:false" *ngIf="isEdit && departmentsDropdown?.length">
+                      <ng-option *ngFor="let ditem of departmentsDropdown" [value]="ditem">
+                        {{ ditem }}
+                      </ng-option>
+                    </ng-select>
+                  </div>
+                  <div class="col-md-6 col-12 mb-3"
+                    *ngIf="!uForm?.get('organization_id')?.value && dataService.currentUserData.id && dataService.currentUserData.role !='Coach'">
+                    <label>Coach</label>
+                    <input class="form-control" [value]="userData?.coach?.name" readonly *ngIf="userId && !isEdit" />
+                    <ng-select (change)="checkField('')" placeholder="Search Here" class="form-control"
+                      formControlName="coach_id" [readonly]="userId && !isEdit ? true : false" *ngIf="isEdit">
+                      <ng-option *ngFor="let citem of dataService?.coachesDropdown" [value]="citem.id">
+                        {{ citem.name }}
+                      </ng-option>
+                    </ng-select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h6 class="mb-3">Body Information</h6>
+            <div class="row mb-3">
+              <div class="col-md-6 col-12 mb-3">
+                <label>Weight</label>
+                <div class="unit-field">
+                  <input type="number" placeholder="Enter Here" class="form-control" formControlName="weight"
+                    [readonly]="(userId && !isEdit)?true:false">
+                  <button *ngIf="isEdit" type="button" class="field-unit" (click)="toggleWeightUnit($event)"
+                    data-bs-toggle="tooltip" data-bs-title="Click to change Unit" appTooltip>{{ wightCurrentUnit
+                    }}</button>
+                  <button *ngIf="!isEdit" type="button" class="field-unit">{{ wightCurrentUnit
+                    }}</button>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-12 mb-3"><label>Height</label>
+                <div class="unit-field"><input type="number" placeholder="Enter Here" class="form-control"
+                    formControlName="height" [readonly]="(userId && !isEdit)?true:false"><button *ngIf="isEdit"
+                    type="button" class="field-unit" (click)="toggleLengthUnit()" data-bs-toggle="tooltip"
+                    data-bs-title="Click to change Unit" appTooltip>{{ lengthCurrentUnit
+                    }}</button><button *ngIf="!isEdit" type="button" class="field-unit">{{ lengthCurrentUnit
+                    }}</button></div>
+              </div>
+            </div>
+            <h6 class="mb-3">User Preferences</h6>
+            <div class="row mb-3">
+              <div class="col-md-6 col-12 mb-3"><label>Current Activity Level?</label>
+                <ng-select placeholder="Select Here" class="form-control" formControlName="activity_level"
+                  [readonly]="(userId && !isEdit)?true:false">
+                  <ng-option value="Not Active">Not Active <small><strong>(0 Days)</strong></small></ng-option>
+                  <ng-option value="Slightly Active">Slightly Active <small><strong>(1-3
+                        Days)</strong></small></ng-option>
+                  <ng-option value="Moderate Active">Moderate Active <small><strong>(4-5
+                        Days)</strong></small></ng-option>
+                  <ng-option value="Very Active">Very Active <small><strong>(6-7
+                        Days)</strong></small></ng-option>
+                </ng-select>
+              </div>
+              <div class="col-md-6 col-12 mb-3"><label>Fitness Goals?</label>
+                <ng-select placeholder="Select Here" class="form-control" formControlName="goal"
+                  [readonly]="(userId && !isEdit)?true:false">
+                  <ng-option value="Weight Loss">Weight Loss</ng-option>
+                  <ng-option value="Tone & Tighten">Tone & Tighten</ng-option>
+                  <ng-option value="Build Muscle">Build Muscle</ng-option>
+                </ng-select>
+              </div>
+              <div class="col-md-6 col-12 mb-3"><label>Enter Your daily Meal Count!</label>
+                <ng-select placeholder="Select Here" class="form-control" formControlName="daily_meal"
+                  [readonly]="(userId && !isEdit)?true:false">
+                  <ng-option value="2">2</ng-option>
+                  <ng-option value="3">3</ng-option>
+                  <ng-option value="4">4</ng-option>
+                  <ng-option value="5">5</ng-option>
+                  <ng-option value="6">6</ng-option>
+                </ng-select>
+              </div>
+              <div class="col-md-6 col-12 mb-3"><label>What’s your accountability level?</label>
+                <ng-select placeholder="Select Here" class="form-control" formControlName="accountability"
+                  [readonly]="(userId && !isEdit)?true:false">
+                  <ng-option value="None">None <small><strong>(No one will follow up on your
+                        progress)</strong></small></ng-option>
+                  <ng-option value="Low">Low <small><strong>(Your coach will check in once a
+                        week)</strong></small></ng-option>
+                  <ng-option value="Medium">Medium <small><strong>(Your coach will check in twice a
+                        week)</strong></small></ng-option>
+                  <ng-option value="High">High <small><strong>(Your coach will check in frequently, as
+                        needed)</strong></small></ng-option>
+                </ng-select>
+              </div>
+              <div class="col-md-6 col-12 mb-3"><label>Dietary Restrictions</label>
+                <ng-select [multiple]="true" [closeOnSelect]="false" placeholder="Search Here" class="form-control"
+                  formControlName="dietary_restrictions" [readonly]="(userId && !isEdit)?true:false"
+                  [clearSearchOnAdd]="true" (change)="dataService.noneCheck($event,uForm,'dietary_restrictions')">
+                  <ng-option *ngFor="let dritem of dataService.dietaryRestrictionsDropdown"
+                    [value]="dritem.name">{{dritem.name}}</ng-option>
+                </ng-select>
+              </div>
+              <div class="col-md-6 col-12 mb-3"><label>What are your training preferences?</label>
+                <ng-select (change)="dataService.noneCheck($event,uForm,'training_preferences')" [multiple]="true"
+                  [closeOnSelect]="false" placeholder="Search Here" class="form-control"
+                  formControlName="training_preferences" [readonly]="(userId && !isEdit)?true:false"
+                  [clearSearchOnAdd]="true">
+                  <ng-option *ngFor="let tpitem of dataService.trainingPreferencesDropdown"
+                    [value]="tpitem.name">{{tpitem.name}}</ng-option>
+                </ng-select>
+              </div>
+              <div class="col-md-6 col-12 mb-3"><label>Select Your Equipment preferences.</label>
+                <ng-select (change)="dataService.noneCheck($event,uForm,'equipment_preferences')" [multiple]="true"
+                  [closeOnSelect]="false" placeholder="Search Here" class="form-control"
+                  formControlName="equipment_preferences" [readonly]="(userId && !isEdit)?true:false"
+                  [clearSearchOnAdd]="true">
+                  <ng-option *ngFor="let epitem of dataService.equipmentPreferencesDropdown"
+                    [value]="epitem.name">{{epitem.name}}</ng-option>
+                </ng-select>
+              </div>
+            </div>
+            <div class="col-md-12 col-12 mb-3"><label>Summary</label>
+              <div class="summary-tabs">
+                <div class="summary-tab">
+                  <strong>{{ summary.weight }} {{ wightCurrentUnit }}</strong>Weight
+                </div>
+                <div class="summary-tab">
+                  <strong>{{ summary.height }} {{ lengthCurrentUnit }}</strong>Height
+                </div>
+                <div class="summary-tab">
+                  <strong>{{ summary.bmr || 0 }}</strong>BMR
+                </div>
+                <div class="summary-tab">
+                  <strong>{{ summary.tdee || 0 }}</strong>TDEE
+                </div>
+                <div class="summary-tab">
+                  <strong>{{ summary.calorie }}</strong>Calories
+                </div>
+                <div class="summary-tab">
+                  <strong>{{ summary.protein }} gm</strong>Proteins
+                </div>
+                <div class="summary-tab">
+                  <strong>{{ summary.fat }} gm</strong>Fats
+                </div>
+                <div class="summary-tab">
+                  <strong>{{ summary.carb }} gm</strong>Carbs
+                </div>
+              </div>
+            </div>
+            <button type="submit"
+              class="btn btn-primary w-50 d-flex justify-content-center align-items-center gap-2 m-auto"
+              [disabled]="dataService.isLoading" *ngIf="isEdit" (click)="onSubmitForm()">
+              {{userId ? 'Update':'Create'}} <div class="spinner-border text-light" role="status"
+                *ngIf="dataService.isLoading">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </button>
+          </form>
+        </div>
+      </div>
+      <div class="tabs-listing" *ngIf="userId && !isEdit && dataService.pageTabView == 'Assigned Coaches'">
+        <div class="text-center mb-3" *ngIf="!userData?.coach?.id && !userData?.organization?.coaches?.length">Coach
+          not
+          Assign.
+        </div>
+        <div class="row" *ngIf="userData?.coach_id || userData?.organization?.coaches?.length">
+          <div class="col-lg-4 col-md-6 col-12" *ngFor="let coach of userData?.organization?.coaches">
+            <app-coach-tab [item]="coach"></app-coach-tab>
+          </div>
+          <div class="col-lg-4 col-md-6 col-12" *ngIf="userData?.coach">
+            <app-coach-tab [item]="userData.coach"></app-coach-tab>
+          </div>
+        </div>
+      </div>
+      <div class="tabs-listing mb-2" *ngIf="userId && !isEdit  && dataService.pageTabView == 'Assigned Organizations'">
+        <div class="text-center" *ngIf="!userData?.organization_id">Organizations not Assigned.</div>
+        <div class="row" *ngIf="userData?.organization_id">
+          <div class="col-lg-4 col-md-6 col-12">
+            <app-organization-tab [item]="userData.organization"></app-organization-tab>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="dataService.pageTabView == 'Fitness Plans'">
+        <div class="tabs-listing">
+          <div class="text-center" *ngIf="!userData.fitnessPlans?.length">Data not found.</div>
+          <div class="row" *ngIf="userData.fitnessPlans?.length">
+            <div class="col-lg-4 col-md-6 col-12" *ngFor="let item of userData.fitnessPlans">
+              <app-plan-tab [item]="item"></app-plan-tab>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="dataService.pageTabView == 'Message'">
+        <div class="chat-tabs-area">
+          <div class="chat-right-tab">
+            <div class="chat-view-head">
+              <div class="chat-tab-info">
+                <div class="chat-tab-av" role="button">
+                  <img alt="shop logo" class="img-fluid" src="../../../assets/images/default-thumbnail.jpg">
+                </div>
+                <div class="chat-tab-name" role="button">
+                  <div class="multi">
+                    <span>User Name</span>
+                    <div class="onlineStatus">
+                      <span class="onlineDiv"></span>
+                      Online
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="chat-view-messages-area" id="chatBoxId">
+              <div class="chatview-byday">
+                <div class="chat-view-messages-tabs">
+                  <div class="chat-view-message sender">
+                    <div class="message-tab">Message Content</div>
+                    <div class="message-time">
+                      <span style="font-style: italic;">(Edited)</span>
+                      <span>12:00 PM</span>
+                    </div>
+                  </div>
+                  <div class="chat-view-message receiver">
+                    <div class="message-tab">Message Content <div class="dropdown msg-action">
+                        <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                          class="btn btn-secondary dropdown-toggle"><i class="fa-solid fa-chevron-down"></i></button>
+                        <ul class="dropdown-menu">
+                          <li><a class="dropdown-item"><i class="fa-solid fa-pen-to-square"></i>
+                              Edit</a></li>
+                          <li><a data-bs-target="#deletem-popup" data-bs-toggle="modal" class="dropdown-item"><i
+                                class="fa-solid fa-trash-can" style="color: red;"></i> Delete</a></li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div class="message-time">
+                      <span>12:00 PM</span><i class="fa-solid fa-check-double primary"></i>
+                    </div>
+                  </div>
+                  <div class="add-media-section">
+                    <div class="media-img"><img alt="video thumbnail" class="img-fluid rounded"
+                        src="../../../assets/images/default-thumbnail.jpg"><button type="button" class="close-btn"><i
+                          class="fa-solid fa-circle-xmark"></i></button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chat-view-foot">
+              <div class="chat-view-uploads">
+                <label for="file-input" class="upload-media">
+                  <i class="fa-solid fa-plus"></i>
+                </label>
+
+                <input type="file" accept="image/*, video/*" class="d-none" id="file-input" multiple>
+              </div>
+              <div class="chat-message-type">
+                <input id="msgInputId" class="secondary font-15" type="text" placeholder="Write message here..."
+                  autofocus>
+              </div>
+              <div class="submit-message">
+                <i><img alt="icon" src="../../assets/images/chat-icon.svg" class="img-fluid"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Action Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="actionModal" tabindex="-1" aria-labelledby="actionModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closeActionModal" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid"
+            [src]="userData?.is_active?'../../../../assets/images/deactivate-shop.png':'../../../../assets/images/activate-shop.png'" />
+        </p>
+        <h5 class="modal-title fs-5 mb-2">{{userData?.is_active?'Block':'Activate'}} User</h5>
+        Do you really want to <strong
+          [ngClass]="userData?.is_active?'text-danger':'text-success'">{{userData?.is_active?'Block':'Activate'}}</strong>
+        this
+        User
+        <strong>{{userData?.first_name}}</strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" [ngClass]="userData?.is_active?'btn-danger':'btn-success'"
+          (click)="action()">{{userData?.is_active?'Block':'Activate'}} <div class="spinner-border text-light"
+            role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="dModal" tabindex="-1" aria-labelledby="dModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closedModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid" src="../../../../assets/images/deleted.png" /></p>
+        <h5 class="modal-title fs-5 mb-2">Delete User</h5>
+        Do you really want to <strong class="text-danger">Delete</strong> this
+        User
+        <strong>{{userData?.name}}</strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" [ngClass]="userData?.is_active?'btn-danger':'btn-success'"
+          (click)="delete()">Delete <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Credentials Check model. -->
+<div class="modal fade" data-bs-backdrop="static" id="credentialsModal" tabindex="-1" aria-labelledby="departmentModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closedCredentialsModal" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid" src="../../../../assets/images/tick-icon.svg" /></p>
+        <h5 class="modal-title fs-5 mb-2">User Credentials</h5>
+        <p>The user has not signed up yet. This could be due to the user not receiving the credential email or facing
+          issues during the sign-up process. To address this, a reminder email containing the credentials is
+          automatically sent daily at 9:00 AM. As an additional step, it is recommended that the admin reach out to the
+          user directly and encourage them to complete the sign-up process.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit"
+          class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" (click)="sendEmail()">Send Email <div class="spinner-border text-light"
+            role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Email not sent model. -->
+<div class="modal fade" data-bs-backdrop="static" id="emailNModal" tabindex="-1" aria-labelledby="departmentModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="openEmailNModal" type="button" class="d-none" data-bs-target="#emailNModal"
+          data-bs-toggle="modal"></button>
+        <button id="closedEmailNModal" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid" src="../../../../assets/images/tick-icon.svg" /></p>
+        <h5 class="modal-title fs-5 mb-2">User Created Successfully But Email Bounded</h5>
+        <p>User has been created, but the email containing the credentials has not been delivered. The credentials have
+          been sent to the admin's email address also. Kindly check inbox to share the credentials with the user
+          manually.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Email sent and successfully model. -->
+<div class="modal fade" data-bs-backdrop="static" id="successfullyModal" tabindex="-1" aria-labelledby="departmentModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="opensuccessfullyModal" type="button" class="d-none" data-bs-target="#successfullyModal"
+          data-bs-toggle="modal"></button>
+        <button id="closedsuccessfullyModal" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid" src="../../../../assets/images/bulk-user-tick.svg" /></p>
+        <h5 class="modal-title fs-5 mb-2">User Created Successfully</h5>
+        <p>User has been created, and the email containing the credentials has been successfully delivered through
+          email.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

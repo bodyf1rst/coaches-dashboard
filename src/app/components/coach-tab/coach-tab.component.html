@@ -1,0 +1,22 @@
+<div class="g-tab" [routerLink]="'/coaches/coach-detail/'+item?.id">
+  <div class="g-tab-img">
+    <img [src]="item?.profile_image ? item?.profile_image:'../../../assets/images/default-thumbnail.jpg'"
+      class="img-fluid" />
+  </div>
+  <div class="g-tab-text">
+    <h6 class="mb-0"> {{item?.first_name && item?.last_name ? item?.first_name + ' ' + item?.last_name : item?.name }}<small
+        *ngIf="item?.gender">({{item?.gender}})</small></h6>
+    <span class="text-gray reg">{{item?.created_at | date:'medium'}}</span>
+    <span class="text-gray" [title]="item?.email">{{item?.email}}</span><span class="text-gray d-flex">
+      <div class="coach-info" *ngIf="showStats">
+        <span *ngIf="item?.organizations_count"><strong>Organizations: {{item?.organizations_count}}</strong></span>
+        <span *ngIf="item?.users_count"><strong>Clients: {{item?.users_count}}</strong></span>
+      </div>
+      <em *ngIf="!item?.organizations_count && !item?.users_count && showStats">Nothing Assigned</em>
+    </span>
+  </div>
+  <div class="g-tab-action">
+    <button type="button" class="btn"
+      [ngClass]="item?.is_active?'btn-outline-success':'btn-outline-danger'">{{item?.is_active?'Active':'Blocked'}}</button>
+  </div>
+</div>

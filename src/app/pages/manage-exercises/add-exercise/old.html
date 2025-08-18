@@ -1,0 +1,320 @@
+<div class="main-dashboard-area">
+  <div class="dashboard-left">
+    <app-left-sidebar></app-left-sidebar>
+  </div>
+  <div class="dashboard-right">
+    <div class="dashboard-right-head">
+      <div class="dashboard-right-head-left">
+        <div class="backIcon static">
+          <button (click)="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+        <h1 class="mb-md-0 ct">{{exId?'Edit':'Add'}} Exercise</h1>
+      </div>
+      <button
+        *ngIf="exData?.id && dataService.currentUserData.role != 'Admin' && (dataService?.currentUserData?.id != exData?.uploaded_by || dataService.currentUserData.role != exData?.uploader)"
+        class="btn btn-primary ml-auto" (click)="cloneItem(exId,'exercise')" [disabled]="dataService.isLoading">Clone
+        Exercise</button>
+      <div class="dashboard-right-head-right"
+        *ngIf="dataService?.currentUserData?.role == 'Admin' || (dataService?.currentUserData?.id == exData?.uploaded_by && dataService?.currentUserData?.role == exData?.uploader)">
+        <button
+          *ngIf="exData?.id && (dataService?.currentUserData?.id != exData?.uploaded_by || dataService.currentUserData.role != exData?.uploader)"
+          class="btn btn-primary" (click)="cloneItem(exId,'exercise')" [disabled]="dataService.isLoading">Clone
+          Exercise</button>
+        <button *ngIf="exData?.id" class="btn btn-p" [ngClass]="exData?.is_active?'btn-success':'btn-danger'"
+          data-bs-toggle="modal" data-bs-target="#actionModal" data-bs-title="Click for change Status"
+          appTooltip>{{exData?.is_active?'Active':'Blocked'}}</button>
+        <button type="submit" class="filter-btn" data-bs-toggle="tooltip" data-bs-title="Edit Exercise"
+          *ngIf="exId && !isEdit && dataService?.currentUserData?.id == exData?.uploaded_by && dataService.currentUserData.role == exData?.uploader"
+          (click)="onEdit()"><i class="fa-solid fa-pencil"></i></button>
+        <button type="submit" class="filter-btn w-auto btn-p" data-bs-toggle="tooltip" data-bs-title="Cancel Edit"
+          *ngIf="exId && isEdit" (click)="onEdit()">Cancel Edit</button>
+        <button (click)="checkDeletion()" *ngIf="exId" type="submit" class="filter-btn" style="background: red;"
+          data-bs-toggle="modal" data-bs-target="#dModal" data-bs-title="Delete Exercise" appTooltip><i
+            class="fa-solid fa-trash-can" style="color: #fff;"></i></button>
+      </div>
+    </div>
+    <div class="dashboard-content">
+      <div class="g-form">
+        <form [formGroup]="exForm">
+          <div class="row flex-md-row-reverse">
+            <div class="col-md-4">
+              <div class="text-center justify-content-md-center" *ngIf="isEdit &&  !patchedVideos?.length">
+                <div class="upload-image-tab tlm">
+                  <label (click)="getVideos()" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom"
+                    aria-controls="offcanvasBottom" for="uploadPhoto" class="upload-photo-tab">
+                    <div class="preview-img" *ngIf="!isEdit && !patchedVideos.length">
+                      <img src="..//../../../assets/images/default-thumbnail.jpg" class="img-fluid w-100" />
+                    </div>
+                    <div class="upload-img" *ngIf="isEdit && !patchedVideos?.length">
+                      <i class="fa-solid fa-plus"></i>
+                      Attach Video
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="main-tab" [ngClass]="patchedVideos[0]?.videoPlaying ? 'videoplaying' : ''"
+                *ngIf="patchedVideos?.length">
+                <img *ngIf="patchedVideos[0]?.video_url" class="img-fluid w-100"
+                  [src]="patchedVideos[0]?.video_thumbnail || '../../../../assets/images/default-thumbnail.jpg'">
+                <div *ngIf="patchedVideos[0]?.video_url" class="main-tab-video-action"><a target="_blank" role="button"
+                    [href]="patchedVideos[0]?.video_url || ''"><i><img src="../../assets/images/video-icon.svg"
+                        class="img-fluid"></i></a></div>
+                <video #videoPlayerRef [controls]="patchedVideos[0].videoPlaying ? true : false" disablepictureinpicture
+                  controlslist="nodownload noplaybackrate" class="video modal-video" width="100%"
+                  [poster]="patchedVideos[0]?.video_thumbnail" (click)="onClickVideo($event)">
+                  <source [src]="patchedVideos[0]?.video_file" type="video/mp4" />
+                </video>
+                <div class="video-play-btn" (click)="toggleVideo(patchedVideos[0], videoPlayerRef, $event)"
+                  *ngIf="patchedVideos[0]?.video_file">
+                  <span *ngIf="!patchedVideos[0].videoPlaying"><i class="fa-solid fa-play"></i></span>
+                  <span *ngIf="patchedVideos[0].videoPlaying"><i class="fa-solid fa-pause"></i></span>
+                </div>
+                <div class="remove-icon" *ngIf="patchedVideos.length && isEdit" (click)="removeVideo()">
+                  <i class="fa-solid fa-xmark"></i>
+                </div>
+                <div class="main-tab-text" *ngIf="!patchedVideos[0].videoPlaying">
+                  {{patchedVideos[0]?.video_title}}<span *ngIf="patchedVideos[0].video_duration">Duration:
+                    {{dataService.convertSecondsToTime(patchedVideos[0].video_duration)}}</span><span class="catName"
+                    *ngIf="patchedVideos[0].tags?.length"><small
+                      *ngFor="let tag of patchedVideos[0].tags.length > 3 ? patchedVideos[0].tags.slice(0, 3) : patchedVideos[0].tags">
+                      #{{ tag }}
+                    </small>
+                    <small *ngIf="patchedVideos[0].tags.length > 3">
+                      +{{ patchedVideos[0].tags.length - 3 }}
+                    </small>
+                  </span></div>
+              </div>
+
+            </div>
+            <div class="col-md-8">
+              <div class="row mb-3">
+                <div class="col-md-6 col-12 mb-3"><label>Title*</label><input type="text" placeholder="Enter Here*"
+                    class="form-control" formControlName="title" [readonly]="(exId && !isEdit)?true:false">
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.title?.errors?.required">
+                    This Field is Required.
+                  </div>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.title?.errors?.minlength">Minimum length should
+                    be greater then 4.</div>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.title?.errors?.maxlength">Maximum length should not
+                    be greater then 100.</div>
+                </div>
+                <div class="col-md-6 col-12 mb-3"><label>Visibility*</label><select type="text" class="form-select"
+                    formControlName="visibility_type" [attr.disabled]=" !isEdit ? true:null">
+                    <option value="Public">Public</option>
+                    <option value="Private">Private</option>
+                  </select>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.visibility_type?.errors">
+                    This Field is Required.
+                  </div>
+                </div>
+                <div class="col-md-12 col-12 mb-3">
+                  <label>Tags</label>
+                  <ng-select [multiple]="true" [closeOnSelect]="false" [addTag]="dataService.addCustomWithTrim"
+                    addTagText="Add Custom:" placeholder="Add Tags" class="form-control" formControlName="tags"
+                    [readonly]="exId && !isEdit ? true : false" [maxSelectedItems]=10 [clearSearchOnAdd]="true"
+                    [maxlength]="10"
+                    (search)="dataService.searchMore($event,this.dataService.httpService.getTagsApi,'tags','tagsDropdown')">
+                    <ng-option *ngFor="let item of dataService.tagsDropdown" [value]="item.tag">{{item.tag}}</ng-option>
+                  </ng-select>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.tags?.errors">
+                    This Field is Required.
+                  </div>
+                </div>
+                <div class="col-12 mb-3"><label>Description</label>
+                  <textarea placeholder="Enter Here" class="form-control" formControlName="description"
+                    [attr.disabled]="(exId && !isEdit)?true:null" rows="4"></textarea>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.description?.errors?.required">
+                    This Field is Required.
+                  </div>
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.description?.errors?.minlength">Minimum length should
+                    be greater then 25.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button type="submit"
+            class="btn btn-primary w-50 d-flex justify-content-center align-items-center gap-2 m-auto"
+            [disabled]="dataService.isLoading" *ngIf="isEdit" (click)="onSubmitForm()">
+            {{exId ? 'Update':'Create'}} <div class="spinner-border text-light" role="status"
+              *ngIf="dataService.isLoading">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Videos Modal -->
+<div class="offcanvas offcanvas-bottom video" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">Videos List <small [class.active]="dataService.isLoading"><i
+          class="fa-solid fa-arrows-rotate refresh" (click)="getFreshVideos()" role="button"></i></small>
+      <!-- <span>Selected Videos ({{selectedVideos?.length}})</span> -->
+    </h5>
+    <div class="vSearchFilter" style="margin-left: auto;margin-right: 20px;">
+      <div class="search-container">
+        <input type="text" placeholder="Search here.." name="search" class="form-control" spellcheck="true"
+          [(ngModel)]="fieldText" (keydown.enter)="onSearch()">
+        <button type="submit">
+          <div class="d-block spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <i class="fa-solid fa-magnifying-glass" *ngIf="!dataService.isLoading && !isSearched"
+            (click)="onSearch()"></i>
+          <i class="fa-regular fa-circle-xmark" *ngIf="!dataService.isLoading && isSearched"
+            (click)="clearSearch()"></i>
+        </button>
+      </div>
+      <div class="">
+        <select class="form-select" [(ngModel)]="pageFilter.uploaded_by" (change)="onSearch()">
+          <option value="">All</option>
+          <option value="Admin">Admin</option>
+          <option value="Coach">Coach</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" (click)="openInNewTab()">
+        Add New Video
+      </button>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body small">
+    <div class="d-block spinner-border text-dark m-auto mb-2" role="status"
+      *ngIf="dataService.isLoading && !dataService?.videosList?.videos?.length">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div class="text-center" *ngIf="!dataService.isLoading && !dataService?.videosList?.videos?.length">Data not
+      found.</div>
+    <div class="vidoes-listing" *ngIf="dataService?.videosList?.videos?.length">
+      <div class="row">
+        <div class="col-md-2" *ngFor="let item of dataService.videosList.videos; index as i">
+          <div class="main-tab small" [ngClass]="item.videoPlaying ? 'videoplaying' : ''"
+            [class.selected]="isSelected(item)" (click)="toggleVideoSelection(item)">
+            <div class="main-tab-top">
+              <div class="add-by" *ngIf="item.upload_by">
+                <div class="add-by-img">
+                  <img [src]="item.upload_by.profile_image || ''" class="img-fluid" />
+                </div>
+                <h6>{{item.upload_by.name}} <span *ngIf="item.uploader">{{item.uploader}} <span
+                      class="type">{{item?.type}}</span></span></h6>
+              </div>
+              <div class="indication">
+                <span *ngIf="!isSelected(item)"><i class="fa-regular fa-circle"></i></span>
+                <span *ngIf="isSelected(item)"><i class="fa-solid fa-circle-check"></i></span>
+              </div>
+            </div>
+            <img *ngIf="!item?.video_file && item?.video_url" class="img-fluid w-100"
+              [src]="item?.video_thumbnail || '..//../../../assets/images/default-thumbnail.jpg'">
+            <video #videoPlayerRef [controls]="item.videoPlaying ? true : false" disablepictureinpicture
+              controlslist="nodownload noplaybackrate" class="video modal-video" width="100%"
+              [poster]="item?.video_thumbnail" id="video-{{item.id}}" (click)="onVideoClick(item, $event)">
+              <source [src]="item?.video_file" type="video/mp4" />
+            </video>
+            <div class="video-play-btn" (click)="toggleVideo(item, videoPlayerRef, $event)">
+              <span *ngIf="!item.videoPlaying"><i class="fa-solid fa-play"></i></span>
+              <span *ngIf="item.videoPlaying"><i class="fa-solid fa-pause"></i></span>
+            </div>
+
+            <div class="main-tab-text" *ngIf="!item.videoPlaying">{{item?.video_title}}
+              <span *ngIf="item.video_duration">Duration:
+                {{dataService.convertSecondsToTime(item.video_duration)}}</span>
+              <span class="catName" *ngIf="item.tags?.length">
+                <small *ngFor="let tag of item.tags.length > 3 ? item.tags.slice(0, 3) : item.tags">
+                  #{{ tag }}
+                </small>
+                <small *ngIf="item.tags.length > 3"> +{{ item.tags.length - 3 }}</small>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="offcanvas-footer p-2">
+    <button class="d-block btn btn-primary w-50 m-auto" (click)="patchedData()" data-bs-dismiss="offcanvas"
+      aria-label="Close" [disabled]="!dataService?.videosList?.videos?.length || !selectedVideos.length">Attach
+      Video</button>
+  </div>
+</div>
+
+<!-- Action Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="actionModal" tabindex="-1" aria-labelledby="actionModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closeActionModal" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid"
+            [src]="exData?.is_active?'../../../../assets/images/deactivate-shop.png':'../../../../assets/images/activate-shop.png'" />
+        </p>
+        <h5 class="modal-title fs-5 mb-2">{{exData?.is_active?'Block':'Activate'}} Exercise</h5>
+        Do you really want to <strong
+          [ngClass]="exData?.is_active?'text-danger':'text-success'">{{exData?.is_active?'Block':'Activate'}}</strong>
+        this
+        Exercise
+        <strong>{{exData?.title}}</strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" [ngClass]="exData?.is_active?'btn-danger':'btn-success'"
+          (click)="action()">{{exData?.is_active?'Block':'Activate'}} <div class="spinner-border text-light"
+            role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="dModal" tabindex="-1" aria-labelledby="dModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closedModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid" src="../../../../assets/images/deleted.png" /></p>
+        <h5 class="modal-title fs-5 mb-2">Delete Exercise</h5>
+        <p>Do you really want to <strong class="text-danger">Delete</strong> this
+          Exercise
+          <strong>{{exData?.title}}</strong>?
+        </p>
+        <div class="assignment-list" *ngIf="assignmentList.length">
+          <p><strong>Please Remove its Attachment with below Workouts.</strong></p>
+          <h6>Attached with Workouts:</h6>
+          <ul class="assignment">
+            <li *ngFor="let item of assignmentList"><a target="_blank"
+                [href]="'/manage-workouts/workout-detail/'+ item.id">
+                {{item.title}}</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button *ngIf="!assignmentList.length" type="submit"
+          class="btn w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" [ngClass]="exData?.is_active?'btn-danger':'btn-success'"
+          (click)="delete()">Delete <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,193 @@
+<div class="main-dashboard-area">
+    <div class="dashboard-right">
+        <div class="dashboard-right-head">
+            <div class="dashboard-right-head-left">
+                <div class="logo-img">
+                    <img src="./../../../../assets/images/logo.svg" class="img-fluid" />
+                </div>
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <div class="rform">
+                <div class="g-form" *ngIf="orStep == 1">
+                    <div class="info-text">
+                        Please complete the organization submission form. Once submitted, Admin will complete the
+                        onboarding process.
+                    </div>
+                    <form [formGroup]="oForm">
+                        <h6 class="mb-3">Organization Information</h6>
+                        <div class="row flex-md-row-reverse">
+                            <div class="col-md-3">
+                                <div class="text-center justify-content-md-center">
+                                    <div class="upload-image-tab tlm" [class.view]="!isEdit">
+                                        <label for="uploadPhoto" class="upload-photo-tab">
+                                            <input type="file" accept="image/*" id="uploadPhoto" class="form-control"
+                                                (change)="onFileSelected($event)" *ngIf="isEdit">
+                                            <div class="preview-img" *ngIf="imageUrl">
+                                                <img *ngIf="!isEdit" [src]="imageUrl" class="img-fluid w-100"
+                                                    data-bs-toggle="modal" data-bs-target="#imageViewModal"
+                                                    (click)="dataService.utils.imagePreview = imageUrl" />
+                                                <img *ngIf="isEdit" [src]="imageUrl" class="img-fluid w-100" />
+                                            </div>
+                                            <div class="preview-img" *ngIf="!isEdit && !imageUrl">
+                                                <img src="../../../../assets/images/default-thumbnail.jpg"
+                                                    class="img-fluid w-100" />
+                                            </div>
+                                            <div class="upload-img" *ngIf="isEdit && !imageUrl">
+                                                <img src="../../assets/images/upload-icon.svg"
+                                                    class="img-fluid w-auto" />
+                                                Upload Logo*
+                                            </div>
+                                        </label>
+                                        <div class="remove-icon" *ngIf="imageUrl && isEdit" (click)="removeImage()">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </div>
+                                    </div>
+                                    <div class="text-start text-danger"
+                                        style="font-size: 14px;justify-content: center; display: flex; margin-top: -10px;"
+                                        *ngIf="isSubmitted && !imageUrl">
+                                        Logo is Required
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="row mb-3">
+                                    <div class="col-md-6 col-12 mb-3"><label>Name*</label><input type="text"
+                                            placeholder="Enter Here*" class="form-control" formControlName="name"
+                                            [readonly]=" !isEdit?true:false">
+                                        <div class="text-start text-danger mt-1" style="font-size: 14px"
+                                            *ngIf="isSubmitted && f.name?.errors">
+                                            This Field is Invalid.
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12 mb-3"><label>Website*</label><input type="text"
+                                            placeholder="Enter Here*" class="form-control" formControlName="website"
+                                            [readonly]=" !isEdit?true:false">
+                                        <div *ngIf="isSubmitted && f.website?.errors"
+                                            class="text-start text-danger mt-1" style="font-size: 14px">
+                                            Please enter a valid URL.
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12 mb-3"><label>Address</label><input type="text"
+                                            placeholder="Enter Complete Address" class="form-control"
+                                            formControlName="address" [readonly]=" !isEdit?true:false">
+                                        <div class="text-start text-danger mt-1" style="font-size: 14px"
+                                            *ngIf="isSubmitted && f.address?.errors">
+                                            This Field is Invalid.
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12 mb-3"><label>Departments</label>
+                                        <ng-select
+                                            (search)="dataService.searchMore($event,this.dataService.httpService.getDepartmentsDropdownApi, 'departments', 'departmentsDropdown')"
+                                            [multiple]="true" [closeOnSelect]="false" [clearSearchOnAdd]="true"
+                                            [addTag]='dataService.addCustom' addTagText="Add Custom:"
+                                            placeholder="Search Departments" class="form-control"
+                                            formControlName="departments" [readonly]=" !isEdit?true:false">
+                                            <ng-option *ngFor="let item of dataService.departmentsDropdown"
+                                                [value]="item.name">{{
+                                                item.name}}</ng-option>
+                                        </ng-select>
+                                        <div class="text-start text-danger mt-1" style="font-size: 14px"
+                                            *ngIf="isSubmitted && f.departments.errors">
+                                            This Field is Invalid.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <h6 class="mb-3">POC Information</h6>
+                        <div class="row mb-3">
+                            <div class="col-md-6 col-12 mb-3"><label>Name*</label><input type="text"
+                                    placeholder="Enter Here*" class="form-control" formControlName="poc_name"
+                                    [readonly]=" !isEdit?true:false">
+                                <div class="text-start text-danger mt-1" style="font-size: 14px"
+                                    *ngIf="isSubmitted && f.poc_name?.errors">
+                                    This Field is Invalid.
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12 mb-3"><label>Email*</label><input type="text"
+                                    placeholder="Enter Here*" class="form-control" formControlName="poc_email"
+                                    [readonly]="true">
+                                <div class="text-start text-danger mt-1" style="font-size: 14px"
+                                    *ngIf="isSubmitted && f.poc_email?.errors">
+                                    This Field is Invalid.
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12 mb-3">
+                                <label>Contact*</label>
+                                <input type="tel" placeholder="Enter Here" class="form-control" maxlength="16"
+                                    formControlName="poc_phone" [readonly]="!isEdit"
+                                    (focus)="f.poc_phone.setValue(f.poc_phone.value || '+1')">
+                                <div class="text-start text-danger mt-1" style="font-size: 14px"
+                                    *ngIf="isSubmitted && f.poc_phone?.errors">
+                                    Please enter a valid US phone number with country code (+1). Accepted formats:
+                                    (123) 456-7890, 123-456-7890, 123 456 7890, or 1234567890.
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12 mb-3"><label>Title*</label><input type="text"
+                                    placeholder="Enter Here" class="form-control" formControlName="poc_title"
+                                    [readonly]=" !isEdit?true:false">
+                                <div class="text-start text-danger mt-1" style="font-size: 14px"
+                                    *ngIf="isSubmitted && f.poc_title?.errors">
+                                    This Field is Invalid.
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12 mb-3" *ngIf="isEdit"><label>Add File* <a
+                                        style="font-size: 12px; color: #fc4d1f;"
+                                        href='https://bodyf1rst.codexia.tech/upload/employee_remarks/SampleCSV.xlsx'>Download
+                                        Sample File</a></label><input type="file" placeholder="Add File*"
+                                    accept=".csv,.xlsx" class="form-control" (change)="onFileSelected($event,'csv')"
+                                    (click)="dataService.clearSelectField($event)">
+                                <div class="text-warning" style="font-size: 12px;">Supported file formats: CSV and XLSX.
+                                </div>
+                                <div class="text-start text-danger mt-1" style="font-size: 14px"
+                                    *ngIf="isSubmitted && !csvFileObj.name">
+                                    File is Required
+                                </div>
+                            </div>
+                            <div class="col-12" *ngIf="errorFileObj?.message?.length">
+                                <p class="cvalidation bg-danger text-light p-1" [innerHTML]="errorFileObj?.message"></p>
+                            </div>
+                            <div class="col-12" *ngIf="errorFileObj?.file">
+                                <div class="info-text">
+                                    <p><strong>Warning:</strong> If the file does not download automatically, you can
+                                        manually download
+                                        it by clicking the button below.</p><a class="btn btn-primary"
+                                        [href]="errorFileObj?.file">Download
+                                        Reported CSV</a>
+                                </div>
+                            </div>
+
+                        </div>
+                        <button type="submit"
+                            class="btn btn-primary w-50 d-flex justify-content-center align-items-center gap-2 m-auto"
+                            [disabled]="dataService.isLoading" *ngIf="isEdit" (click)="onSubmitForm()">
+                            Submit <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </button>
+                    </form>
+                </div>
+                <div class="thankyou-message-area" *ngIf="orStep == 2">
+                    <div class="thankyou-message">
+                        <h3>Thank You for Your Submission!</h3>
+                        <p>Thank you for providing your organization information. We’ve received your submission and
+                            will
+                            begin processing it shortly. If we need anything further, we’ll reach out.</p>
+                        <p><strong>Feel free to contact us with any questions!</strong></p>
+                        <a href="mailto:contact@bodyf1rst.com"><i>contact&#64;bodyf1rst.com</i></a>
+                    </div>
+                </div>
+                <div class="thankyou-message-area" *ngIf="orStep == 3">
+                    <div class="thankyou-message expired">
+                        <h3>URL Expired</h3>
+                        <p>Your submission form has expired, and therefore you couldn't add the organization details. If
+                            you encounter any issues, please contact support.</p>
+                        <p><strong>Feel free to contact us with any questions!</strong></p>
+                        <a href="mailto:contact@bodyf1rst.com"><i>contact&#64;bodyf1rst.com</i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

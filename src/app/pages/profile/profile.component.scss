@@ -1,0 +1,30 @@
+label.v-none {
+  margin-bottom: 21px !important;
+}
+
+.or-sep {
+  position: relative;
+  margin: 30px 0;
+  text-align: center;
+  font-size: 15px;
+  font-weight: bold;
+  font-style: italic;
+  color: #d7d1d6;
+}
+
+.or-sep:after {
+  position: absolute;
+  content: "";
+  bottom: 16px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #d7d1d6;
+  z-index: -1;
+}
+
+.or-sep span {
+  display: inline-block;
+  background: #fff;
+  padding: 5px 10px;
+}

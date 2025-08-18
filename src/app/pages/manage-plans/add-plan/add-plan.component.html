@@ -1,0 +1,612 @@
+<div class="main-dashboard-area">
+  <div class="dashboard-left">
+    <app-left-sidebar></app-left-sidebar>
+  </div>
+  <div class="dashboard-right">
+    <div class="dashboard-right-head">
+      <div class="dashboard-right-head-left">
+        <div class="backIcon static">
+          <button (click)="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+        <h1 class="mb-md-0 ct">{{planId?'Plan Details':'Create Plan'}}</h1>
+      </div>
+      <button
+        *ngIf="
+        planData?.id && dataService.currentUserData.role != 'Admin' && (dataService?.currentUserData?.id != planData?.uploaded_by || dataService.currentUserData.role != planData?.uploader)"
+        class="btn btn-primary ml-auto" (click)="cloneItem(planId,'plan')" [disabled]="dataService.isLoading">Assign
+        Plan</button>
+      <div class="dashboard-right-head-right"
+        *ngIf="dataService?.currentUserData?.role == 'Admin' || (dataService?.currentUserData?.id == planData?.uploaded_by && dataService?.currentUserData?.role == planData?.uploader)">
+        <button
+          *ngIf="planData?.id && (dataService?.currentUserData?.id != planData?.uploaded_by || dataService.currentUserData.role != planData?.uploader)"
+          class="btn btn-primary ml-auto" (click)="cloneItem(planId,'plan')" [disabled]="dataService.isLoading">Assign
+          Plan</button>
+        <button *ngIf="planData?.id" class="btn btn-p" [ngClass]="planData?.is_active?'btn-success':'btn-danger'"
+          data-bs-toggle="modal" data-bs-target="#actionModal" data-bs-title="Click for change Status"
+          appTooltip>{{planData?.is_active?'Active':'Blocked'}}</button>
+        <button *ngIf="planId" type="submit" class="filter-btn" style="background: red;" data-bs-toggle="modal"
+          data-bs-target="#dModal" data-bs-title="Delete Plan" appTooltip><i class="fa-solid fa-trash-can"
+            style="color: #fff;"></i></button>
+        <button type="submit" class="filter-btn" data-bs-toggle="tooltip" data-bs-title="Edit Plan"
+          *ngIf="planId && !isEdit && dataService?.currentUserData?.id == planData?.uploaded_by && dataService.currentUserData.role == planData?.uploader"
+          (click)="onEdit()"><i class="fa-solid fa-pencil"></i></button>
+        <button type="submit" class="filter-btn w-auto btn-p" data-bs-toggle="tooltip" data-bs-title="Cancel Edit"
+          *ngIf="planId && isEdit" (click)="onEdit()">Cancel Edit</button>
+      </div>
+    </div>
+    <div class="dashboard-content">
+      <div class="ssw">
+        We recommend to viewing this screen in tablet or web view for the best experience
+      </div>
+      <div class="workout-bild-left-top-fields">
+        <form [formGroup]="pForm">
+          <div class="row">
+            <div class="col-md-4 col-12 mb-3"><label>Title</label><input formControlName="title" type="text"
+                placeholder="Enter Title Here*" class="form-control" [readonly]="(planId && !isEdit)?true:false">
+              <div class="text-start text-danger mt-1" style="font-size: 14px"
+                *ngIf="isSubmitted && f.title?.errors?.required">
+                Required Field.
+              </div>
+              <div class="text-start text-danger mt-1" style="font-size: 14px"
+                *ngIf="isSubmitted && f.title?.errors?.minlength">Minimum length should
+                be greater then 4.</div>
+              <div class="text-start text-danger mt-1" style="font-size: 14px"
+                *ngIf="isSubmitted && f.title?.errors?.maxlength">Maximum length should not
+                be greater then 100.</div>
+            </div>
+            <div class="col-md-4 col-12 mb-3"><label>Type</label>
+              <select formControlName="type" class="form-select" [attr.disabled]="(planId && !isEdit) ? true : null"
+                (change)="getFormData()">
+                <option value="On Demand">On Demand</option>
+                <option value="Program">Program</option>
+              </select>
+              <div class="text-start text-danger mt-1" style="font-size: 14px" *ngIf="isSubmitted && f.type?.errors">
+                This Field is Invalid.
+              </div>
+            </div>
+            <div class="col-md-4 col-12 mb-3"><label>Visibility*</label><select type="text" class="form-select"
+                formControlName="visibility_type" [attr.disabled]=" !isEdit?true:null">
+                <option value="Public">Public</option>
+                <option value="Private">Private</option>
+              </select>
+              <div class="text-start text-danger mt-1" style="font-size: 14px"
+                *ngIf="isSubmitted && f.visibility_type?.errors">
+                This Field is Invalid.
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="workout-build-area">
+        <div #scrollContainer class="workout-bild-left">
+          <div class="workout-bild-left-top"
+            *ngIf="(isEdit && this.pForm.value.type == 'Program') || isAnyItemSelected()">
+            <button type="button" *ngIf="isAnySelected() && this.pForm.value.type == 'Program'" class="btn btn-light"
+              (click)="repeatSelected()">Repeat</button>
+            <button *ngIf="isEdit && pForm.value.type == 'Program'" type="button" class="btn btn-light"
+              (click)="addRest()"><i class="fa-solid fa-plus"></i> Rest
+              Day</button>
+
+            <button *ngIf="isAnyItemSelected() && pForm.value.type == 'Program'" type="button" class="btn btn-light"
+              (click)="makeSet()"><i class="fa-solid fa-plus"></i>
+              Make Set</button>
+            <button *ngIf="isAnyItemSelected()" type="button" class="btn btn-danger del"
+              (click)="deleteSelectedWorkouts()"><i class="fa-solid fa-trash-can"></i></button>
+          </div>
+
+          <div class="plan-phases" *ngIf="planData.type == 'Program'">
+            <div class="text-center mt-2" *ngIf="!planData?.workouts?.length">Plans Loading...</div>
+            <div class="plan-phase" *ngFor="let phase of planData?.workouts; let phaseIndex = index">
+              <!-- Phase Section -->
+              <div class="phase-tab-area-top" [class.active]="selectedPhase === phaseIndex"
+                (click)="toggleTabs(phaseIndex, 'phase')">
+                <div class="form-check" *ngIf="isEdit && planData?.workouts.length > 1">
+                  <input class="form-check-input" type="checkbox" [id]="'phaseCheck' + phaseIndex"
+                    [(ngModel)]="phase.selected" (change)="onPhaseCheckChange(phaseIndex)"
+                    (click)="$event.stopPropagation()">
+                </div>
+                Phase {{ phaseIndex + 1 }} <div class="right-side"> <button class="ml-auto btn btn-success"
+                    *ngIf="isEdit && (phaseIndex == (planData?.workouts.length - 1))"
+                    (click)="$event.stopPropagation();addPhaseToForm()"><i class="fa-solid fa-plus"></i> Add
+                    Phase</button> <i class="fa-solid fa-chevron-down"></i></div>
+              </div>
+
+              <!-- Week Section within the Phase -->
+              <div class="phase-tab-area-bottom" *ngIf="selectedPhase === phaseIndex">
+                <div #weekElement class="plan-phases week"
+                  *ngFor="let week of planData?.workouts[phaseIndex]?.weeks; let weekIndex = index">
+                  <div class="phase-tab-area-top"
+                    [class.active]="selectedPhase === phaseIndex && selectedPhaseWeek === weekIndex && isEdit"
+                    [class.open]="week?.isOpen" (click)="toggleTabs(phaseIndex, 'week', weekIndex)">
+                    <div class="form-check" *ngIf="isEdit && planData?.workouts[phaseIndex]?.weeks.length > 1">
+                      <input class="form-check-input" type="checkbox" [id]="'weekCheck' + weekIndex"
+                        [(ngModel)]="week.selected" (change)="onWeekCheckChange(phaseIndex, weekIndex)"
+                        (click)="$event.stopPropagation()">
+                    </div>
+                    Week {{ weekIndex + 1 }}
+                    <div class="right-side"> <button class="ml-auto btn btn-success"
+                        *ngIf="isEdit && (weekIndex == (planData?.workouts[phaseIndex]?.weeks.length - 1))"
+                        (click)="$event.stopPropagation(); addWeekToForm()"><i class="fa-solid fa-plus"></i> Add
+                        Week</button> <i style="position:relative;cursor: pointer;" class="fa-solid fa-chevron-down"
+                        (click)="$event.stopPropagation();week.isOpen = !week?.isOpen"></i></div>
+                  </div>
+
+                  <!-- Day Section within the Week -->
+                  <div class="phase-tab-area-bottom" *ngIf="week?.isOpen">
+                    <div class="text-center" *ngIf="!planData?.workouts[phaseIndex]?.weeks[weekIndex]?.days?.length">
+                      Workouts not Selected!
+                    </div>
+
+                    <div *ngIf="isEdit; else nonEditable">
+                      <!-- Dragula enabled when isEdit is true -->
+                      <div [dragula]="'mainGroup'"
+                        [dragulaModel]="planData?.workouts[phaseIndex]?.weeks[weekIndex]?.days"
+                        (dragulaModelChange)="listSorted($event, phaseIndex, weekIndex)">
+                        <div class="sortable-list-item"
+                          *ngFor="let item of planData?.workouts[phaseIndex]?.weeks[weekIndex]?.days; index as dayIndex">
+                          <div class="superset-tab" *ngIf="item?.length">
+                            <h6 style="display: flex; align-items: center;">
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" [(ngModel)]="item.selected"
+                                  [id]="'dayCheck'+ phaseIndex + weekIndex + dayIndex">
+                              </div>
+                              Day {{ dayIndex + 1 }} <span class="handle">&#8942;&#8942;</span>
+                            </h6>
+                            <div [dragula]="'subGroup_'+dayIndex" [dragulaModel]="item">
+                              <div class="workout-list-tab-area" *ngFor="let set of item" [class.rest]="!set.title">
+                                <div class="workout-list-tab" [class.disabled]="set.disabled">
+                                  <div class="workout-list-tab-img">
+                                    <img
+                                      [src]="set?.exercise?.video?.video_thumbnail || '../../../../assets/images/default-thumbnail.jpg'"
+                                      class="img-fluid" *ngIf="set.title" />
+                                    <span *ngIf="!set.title">R</span>
+                                  </div>
+                                  <h6>{{ set?.title || 'Rest Day' }}</h6><span class="handle2">&#8942;&#8942;</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="sortable-list-item" *ngIf="!item?.length">
+                            <h6>Day {{ dayIndex + 1 }}</h6>
+                            <div class="workout-list-tab-area" [class.rest]="!item.title">
+                              <div class="form-check" *ngIf="isEdit">
+                                <input class="form-check-input" type="checkbox" [(ngModel)]="item.selected"
+                                  [id]="'dayCheck'+ phaseIndex + weekIndex + dayIndex">
+                              </div>
+                              <div class="workout-list-tab" [class.disabled]="item.disabled">
+                                <div class="workout-list-tab-img">
+                                  <img
+                                    [src]="item?.exercise?.video?.video_thumbnail || '../../../../assets/images/default-thumbnail.jpg'"
+                                    class="img-fluid" *ngIf="item?.title" />
+                                  <span *ngIf="!item?.title">R</span>
+                                </div>
+                                <h6>{{ item?.title || 'Rest Day' }}</h6><span class="handle">&#8942;&#8942;</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Fallback for when isEdit is false -->
+                    <ng-template #nonEditable>
+                      <div>
+                        <div class="sortable-list-item"
+                          *ngFor="let item of planData?.workouts[phaseIndex]?.weeks[weekIndex]?.days; index as dayIndex">
+
+                          <div class="superset-tab" *ngIf="item?.length">
+                            <h6 style="display: flex; align-items: center;">
+                              Day {{ dayIndex + 1 }}
+                            </h6>
+                            <div>
+                              <div class="workout-list-tab-area" *ngFor="let set of item" [class.rest]="!set.title">
+                                <div class="workout-list-tab" [class.disabled]="set.disabled"
+                                  [routerLink]="set.title ? '/manage-workouts/workout-detail/'+set.id : '/'">
+                                  <div class="workout-list-tab-img">
+                                    <img
+                                      [src]="set?.exercise?.video?.video_thumbnail || '../../../../assets/images/default-thumbnail.jpg'"
+                                      class="img-fluid" *ngIf="set.title" />
+                                    <span *ngIf="!set.title">R</span>
+                                  </div>
+                                  <h6>{{ set?.title || 'Rest Day' }}</h6>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="sortable-list-item" *ngIf="!item?.length">
+                            <h6>Day {{ dayIndex + 1 }}</h6>
+                            <div class="workout-list-tab-area" [class.rest]="!item?.title">
+                              <div class="form-check" *ngIf="isEdit">
+                                <input class="form-check-input" type="checkbox" [(ngModel)]="item.selected"
+                                  [id]="'dayCheck'+ phaseIndex + weekIndex + dayIndex">
+                              </div>
+                              <div class="workout-list-tab" [class.disabled]="item.disabled"
+                                [routerLink]="item?.title ? '/manage-workouts/workout-detail/'+item.id: '/1'">
+                                <div class="workout-list-tab-img">
+                                  <img
+                                    [src]="item?.exercise?.video?.video_thumbnail || '../../../../assets/images/default-thumbnail.jpg'"
+                                    class="img-fluid" *ngIf="item?.title" />
+                                  <span *ngIf="!item?.title">R</span>
+                                </div>
+                                <h6>{{ item?.title || 'Rest Day' }}</h6>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="plan-phases week" *ngIf="planData.type != 'Program'">
+            <div *ngIf="isEdit; else nonEditable">
+              <div class="text-center mt-2" *ngIf="!planData?.workouts?.length">
+                Workouts not Selected!
+              </div>
+              <div class="phase-tab-area-bottom" *ngIf="planData?.workouts?.length">
+                <div class="sortable-list-item" *ngFor="let item of planData?.workouts; index as dayIndex">
+                  <div class="workout-list-tab-area" [class.rest]="!item?.title">
+                    <div class="form-check" *ngIf="isEdit">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="item.selected"
+                        [id]="'day'+ dayIndex">
+                    </div>
+                    <div class="workout-list-tab" [class.disabled]="item.disabled">
+                      <div class="workout-list-tab-img">
+                        <img
+                          [src]="item?.exercise?.video?.video_thumbnail || '../../../../assets/images/default-thumbnail.jpg'"
+                          class="img-fluid" *ngIf="item?.title" />
+                        <span *ngIf="!item?.title">R</span>
+                      </div>
+                      <h6>{{ item?.title || 'Rest Day' }}</h6>
+                      <!-- <span class="handle">&#8942;&#8942;</span> -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fallback for when isEdit is false -->
+            <ng-template #nonEditable>
+              <div class="plan-phases week">
+                <div class="text-center mt-2" *ngIf="!planData?.workouts?.length">
+                  Workouts not Available!
+                </div>
+                <div class="phase-tab-area-bottom" *ngIf="planData?.workouts?.length">
+                  <div class="sortable-list-item" *ngFor="let item of planData?.workouts; index as dayIndex">
+                    <div class="workout-list-tab-area" [class.rest]="!item?.title">
+                      <div class="workout-list-tab" [class.disabled]="item.disabled"
+                        [routerLink]="'/manage-workouts/workout-detail/'+item.id">
+                        <div class="workout-list-tab-img">
+                          <img
+                            [src]="item?.exercise?.video?.video_thumbnail || '../../../../assets/images/default-thumbnail.jpg'"
+                            class="img-fluid" *ngIf="item?.title" />
+                          <span *ngIf="!item?.title">R</span>
+                        </div>
+                        <h6>{{ item?.title || 'Rest Day' }}</h6>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+          <div class="workout-build-bottom" *ngIf="isEdit">
+            <button type="submit"
+              class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+              [disabled]="dataService.isLoading" (click)="onSubmitForm()">
+              {{planId?"Update":"Create"}} Plan <div class="spinner-border text-light" role="status"
+                *ngIf="dataService.isLoading">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </button>
+          </div>
+        </div>
+        <div class="workout-bild-right">
+          <div class="workout-bild-right-top" *ngIf="!planId  || isEdit">
+            <div class="search-filter">
+              <div class="search-container">
+                <input type="text" placeholder="Search here.." name="search" class="form-control" spellcheck="true"
+                  [(ngModel)]="fieldText" (keydown.enter)="onSearch()">
+                <button type="submit">
+                  <div class="d-block spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                  <i class="fa-solid fa-magnifying-glass" *ngIf="!dataService.isLoading && !isSearched"
+                    (click)="onSearch()"></i>
+                  <i class="fa-regular fa-circle-xmark" *ngIf="!dataService.isLoading && isSearched"
+                    (click)="clearSearch()"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="workout-videos" *ngIf="isEdit">
+            <div class="d-block spinner-border text-dark m-auto mb-2" role="status"
+              *ngIf="dataService.isLoading && !dataService?.workoutsList.workouts?.length">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="text-center" *ngIf="!dataService.isLoading && !dataService?.workoutsList.workouts?.length">
+              Data not
+              found.</div>
+            <div class="vidoes-listing" *ngIf="dataService?.workoutsList.workouts?.length">
+              <div class="row">
+                <div class="col-xl-4 col-sm-6" *ngFor="let item of dataService.workoutsList?.workouts; index as i">
+                  <div class="main-tab small" [ngClass]="item.videoPlaying ? 'videoplaying' : ''"
+                    [class.selected]="selectedItem.id == item.id">
+                    <div class="main-tab-top">
+                      <div class="indication">
+                        <span><i class="fa-solid fa-plus" (click)="addWorkout(item)"></i></span>
+                      </div>
+                    </div>
+                    <img *ngIf="!item.exercise?.video?.video_file && item?.exercise?.video?.video_url"
+                      class="img-fluid w-100"
+                      [src]="item?.exercise?.video?.video_thumbnail ? item?.exercise?.video?.video_thumbnail : '..//../../../assets/images/default-thumbnail.jpg'">
+                    <video #videoPlayerRef [controls]="item.videoPlaying ? true : false" disablepictureinpicture
+                      controlslist="nodownload noplaybackrate" class="video modal-video" width="100%" [poster]="item?.exercise?.video
+?.video_thumbnail ? item?.exercise?.video
+?.video_thumbnail : '../../../../assets/images/default-thumbnail.jpg'" id="video-{{item?.exercise?.video?.id}}"
+                      (click)="onVideoClick(item, $event)">
+                      <source [src]="item?.exercise?.video?.video_file" type="video/mp4" />
+                    </video>
+                    <div class="video-play-btn" (click)="toggleVideo(item, videoPlayerRef, $event)">
+                      <span *ngIf="!item.videoPlaying"><i class="fa-solid fa-play"></i></span>
+                      <span *ngIf="item.videoPlaying"><i class="fa-solid fa-pause"></i></span>
+                    </div>
+                    <div class="main-tab-text" *ngIf="!item.videoPlaying">{{item?.title}}
+                      <span class="catName" *ngIf="item.tags?.length">
+                        <small *ngFor="let tag of item.tags.length > 3 ? item.tags.slice(0, 3) : item.tags">
+                          #{{ tag }}
+                        </small>
+                        <small *ngIf="item.tags.length > 3"> +{{ item.tags.length - 3 }}</small>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button [disabled]="dataService.isLoading"
+                *ngIf="dataService?.workoutsList?.workouts?.length && (dataService.workoutsList.page != dataService.workoutsList.total_page)"
+                class="btn btn-primary btn-p d-flex align-items-center gap-2 m-auto"
+                (click)="dataService.fetchData(dataService.workoutsList.page + 1,dataService.httpService.getWorkoutsApi, 'workouts', 'workoutsList')">Load
+                More <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+                  <span class="visually-hidden">Loading...</span>
+                </div></button>
+            </div>
+          </div>
+
+          <div class="assignment-area mt-3"
+            *ngIf="!isEdit && planData?.id  && (dataService?.currentUserData?.role == 'Admin' || (dataService?.currentUserData?.id == planData?.uploaded_by && dataService?.currentUserData?.role == planData?.uploader))">
+            <div class="assignment-area-top">
+              <h6>Assigned Organizations</h6>
+              <button (click)="getOrgDropdown()" *ngIf="dataService?.currentUserData?.id == planData?.uploaded_by"
+                class="btn btn-primary add" data-bs-target="#assignModal" data-bs-toggle="modal"><i
+                  class="fa-solid fa-plus"></i></button>
+            </div>
+            <div class="assignment-area-listing">
+              <i *ngIf="!planData?.organizations?.length">Not Assign Yet!</i>
+              <div class="row mt-2" *ngIf="planData?.organizations?.length">
+                <div class="col-md-6 tab" *ngFor="let item of planData.organizations">
+                  <button *ngIf="dataService?.currentUserData?.id == planData?.uploaded_by"
+                    (click)="selectedAssignment = item; assignmentType = 'Org'" type="submit" data-bs-toggle="modal"
+                    data-bs-target="#daModal" class="filter-btn" style="background: red;"><i
+                      class="fa-solid fa-trash-can" style="color: #fff;"></i></button>
+                  <app-organization-tab [item]="item" [showAssign]="false"></app-organization-tab>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assignment-area"
+            *ngIf="!isEdit && planData?.id && (dataService?.currentUserData?.role == 'Admin' || (dataService?.currentUserData?.id == planData?.uploaded_by && dataService?.currentUserData?.role == planData?.uploader))">
+            <div class="assignment-area-top">
+              <h6>Assigned Users <small>(Individual Clients)</small></h6>
+              <button *ngIf="dataService?.currentUserData?.id == planData?.uploaded_by" class="btn btn-primary add"
+                (click)="getClientsDropdown()" data-bs-target="#assignModal" data-bs-toggle="modal"><i
+                  class="fa-solid fa-plus"></i></button>
+            </div>
+            <div class="assignment-area-listing">
+              <i *ngIf="!planData?.users?.length">Not Assign Yet!</i>
+              <div class="row mt-2" *ngIf="planData?.users?.length">
+                <div class="col-md-6 tab" *ngFor="let item of planData.users">
+                  <button *ngIf="dataService?.currentUserData?.id == planData?.uploaded_by"
+                    (click)="selectedAssignment = item; assignmentType = 'Client'" type="submit" data-bs-toggle="modal"
+                    data-bs-target="#daModal" class="filter-btn" style="background: red;"><i
+                      class="fa-solid fa-trash-can" style="color: #fff;"></i></button>
+                  <app-client-tab [item]="item" [rLink]="'/clients'" [showAssign]="false"></app-client-tab>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Organization Assignment Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="assignModal" tabindex="-1" aria-labelledby="assignModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closeassignModal" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h5 class="modal-title text-center fs-5 mb-2">Plan Assignment</h5>
+        <from [formGroup]="aForm">
+          <div class="mb-3" *ngIf="assignmentType == 'Org'">
+            <label>Select Organization*</label>
+            <ng-select
+              (search)="dataService.searchMore($event,this.dataService.httpService.getOrganizationDropdown, 'organizations', 'organizationsDropdown')"
+              formControlName="organizations" [multiple]="true" [closeOnSelect]="true" [clearSearchOnAdd]="true"
+              placeholder="Search Here" class="form-control" [maxSelectedItems]="1">
+              <ng-option *ngFor="let or of dataService?.organizationsDropdown" [value]="or.id">
+                {{ or.name }}
+              </ng-option>
+            </ng-select>
+            <div class="text-start text-danger mt-1" style="font-size: 14px"
+              *ngIf="isSubmitted && af.organizations?.errors">
+              This Field is Required.
+            </div>
+          </div>
+          <div class="mb-3" *ngIf="assignmentType != 'Org'">
+            <label>Select User*</label>
+            <ng-select
+              (search)="dataService.searchMore($event,this.dataService.httpService.getUsersDropdownApi, 'users', 'usersDropdown')"
+              formControlName="users" [multiple]="true" [maxSelectedItems]="1" [closeOnSelect]=" true"
+              [clearSearchOnAdd]="true" placeholder="Search Here" class="form-control">
+              <ng-option *ngFor="let client of dataService?.usersDropdown" [value]="client.id">
+                {{client.first_name}} {{client.last_name}} <small style="display: block;">{{client.email}}</small>
+              </ng-option>
+            </ng-select>
+            <div class="text-start text-danger mt-1" style="font-size: 14px" *ngIf="isSubmitted && af.users?.errors">
+              This Field is Required.
+            </div>
+          </div>
+          <div class="mb-3"><label>Start Date*</label><input type="date" placeholder="Enter Here*" class="form-control"
+              formControlName="start_date" [min]="dataService.getTodayDate()" (change)="calculateEndDate($event)">
+            <div class="text-start text-danger mt-1" style="font-size: 14px"
+              *ngIf="isSubmitted && af.start_date?.errors">
+              This Field is Required.
+            </div>
+          </div>
+          <div class="mb-3"><label>End Date* <span class="users-info f-info" *ngIf="planData.type == 'Program'"><i
+                  class="fa-solid fa-circle-info"></i>
+                <div class="full-length f-info-text">The end date for the plan will be automatically calculated based on
+                  the number of days specified in the plan. Simply select the start date, and the system will determine
+                  the corresponding end date.
+                </div>
+              </span></label><input [readonly]="planData.type == 'Program'" type="date" placeholder="Enter Here*"
+              class="form-control" formControlName="end_date" [min]="dataService.getTodayDate()">
+            <div class="text-start text-danger mt-1" style="font-size: 14px" *ngIf="isSubmitted && af.end_date?.errors">
+              This Field is Required.
+            </div>
+          </div>
+        </from>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit"
+          class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" (click)="assignOrgClients()">Assign <div class="spinner-border text-light"
+            role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Action Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="actionModal" tabindex="-1" aria-labelledby="actionModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closeActionModal" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid"
+            [src]="planData?.is_active?'../../../../assets/images/deactivate-shop.png':'../../../../assets/images/activate-shop.png'" />
+        </p>
+        <h5 class="modal-title fs-5 mb-2">{{planData?.is_active?'Block':'Activate'}} Plan</h5>
+        Do you really want to <strong
+          [ngClass]="planData?.is_active?'text-danger':'text-success'">{{planData?.is_active?'Block':'Activate'}}</strong>
+        this
+        Plan
+        <strong>{{planData?.title}}</strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" [ngClass]="planData?.is_active?'btn-danger':'btn-success'"
+          (click)="action()">{{planData?.is_active?'Block':'Activate'}} <div class="spinner-border text-light"
+            role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="dModal" tabindex="-1" aria-labelledby="dModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closedModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid" src="../../../../assets/images/deleted.png" /></p>
+        <h5 class="modal-title fs-5 mb-2">Delete Plan</h5>
+        <p>Do you really want to <strong class="text-danger">Delete</strong> this
+          Plan
+          <strong>{{planData?.title}}</strong>?
+        </p>
+        <div class="assignment-list" *ngIf="planData?.organizations?.length || planData?.users?.length">
+          <p><strong>Please Remove its Assignment First.</strong></p>
+          <div *ngIf="planData?.organizations?.length">
+            <h6>Assigned Organizations:</h6>
+            <ul class="assignment">
+              <li *ngFor="let u of planData?.organizations">{{u.name}}</li>
+            </ul>
+          </div>
+          <div *ngIf="planData?.users?.length">
+            <h6>Assigned Users:</h6>
+            <ul class="assignment">
+              <li *ngFor="let u of planData?.users">{{u.first_name}} {{u.last_name}}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button *ngIf="!planData?.organizations?.length && !planData?.users?.length" type="submit"
+          class="btn w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" [ngClass]="planData?.is_active?'btn-danger':'btn-success'"
+          (click)="delete()">Delete <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Assignment Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="daModal" tabindex="-1" aria-labelledby="dModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closeddaModalModal" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid" src="../../../../assets/images/deleted.png" /></p>
+        <h5 class="modal-title fs-5 mb-2">Remove {{assignmentType == 'Org'?'Organization':'Client'}}</h5>
+        Do you really want to <strong class="text-danger">Remove</strong> this
+        {{assignmentType == 'Org'?'Organization':'Client'}}
+        <strong>{{assignmentType == 'Org'? selectedAssignment.name
+          : selectedAssignment.first_name + ' ' + selectedAssignment.last_name}}</strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit"
+          class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" (click)="removeAssignment()">Remove <div class="spinner-border text-light"
+            role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

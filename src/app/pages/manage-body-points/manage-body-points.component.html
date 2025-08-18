@@ -1,0 +1,175 @@
+<div class="main-dashboard-area">
+    <div class="dashboard-left">
+        <app-left-sidebar></app-left-sidebar>
+    </div>
+    <div class="dashboard-right">
+        <div class="dashboard-right-head">
+            <div class="dashboard-right-head-left">
+                <h1 class="mb-md-0 ct">Manage Body Points
+                </h1>
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <div class="g-form" [formGroup]="bpForm">
+                <div class="form-row mb-4">
+                    <h6 class="mb-3">Signup Completion</h6>
+                    <div class="row">
+                        <div class="col-sm-6 col-md-4 mb-3">
+                            <label>Profile Complete</label>
+                            <div class="unit-field">
+                                <input formControlName="profileComplete" type="number" placeholder="Enter Points"
+                                    class="form-control" maxlength="5" (input)="dataService.digitLimit($event,5)">
+                                <div *ngIf="isSubmitted && bpForm.get('profileComplete')?.errors"
+                                    class="text-start text-danger mt-1" style="font-size: 14px">
+                                    <div *ngIf="bpForm.get('profileComplete')?.errors?.['required']">Value is required.
+                                    </div>
+                                    <div *ngIf="bpForm.get('profileComplete')?.errors?.['min']">Value must be greater
+                                        than 0.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row mb-4">
+                    <h6 class="mb-3">Workout and Exercise Completion</h6>
+                    <div class="row">
+                        <div class="col-sm-6 col-md-3 mb-3">
+                            <label>Accountability Level (None)</label>
+                            <div class="unit-field">
+                                <input formControlName="accountabilityNone1" type="number" placeholder="Enter Points"
+                                    class="form-control" maxlength="5" (input)="dataService.digitLimit($event,5)">
+                                <div *ngIf="isSubmitted && bpForm.get('accountabilityNone1')?.errors"
+                                    class="text-start text-danger mt-1" style="font-size: 14px">
+                                    <div *ngIf="bpForm.get('accountabilityNone1')?.errors?.['required']">Required Field
+                                    </div>
+                                    <div *ngIf="bpForm.get('accountabilityNone1')?.errors?.['min']">Value must be
+                                        greater than 0.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 col-md-3 mb-3">
+                            <label>Accountability Level (Low)</label>
+                            <div class="unit-field">
+                                <input formControlName="accountabilityLow1" type="number" placeholder="Enter Points"
+                                    class="form-control" maxlength="5" (input)="dataService.digitLimit($event,5)">
+                                <div *ngIf="isSubmitted && bpForm.get('accountabilityLow1')?.errors"
+                                    class="text-start text-danger mt-1" style="font-size: 14px">
+                                    <div *ngIf="bpForm.get('accountabilityLow1')?.errors?.['required']">Required Field
+                                    </div>
+                                    <div *ngIf="bpForm.get('accountabilityLow1')?.errors?.['min']">Value must be greater
+                                        than 0.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 col-md-3 mb-3">
+                            <label>Accountability Level (Medium)</label>
+                            <div class="unit-field">
+                                <input formControlName="accountabilityMedium1" type="number" placeholder="Enter Points"
+                                    class="form-control" (input)="dataService.digitLimit($event,5)">
+                                <div *ngIf="isSubmitted && bpForm.get('accountabilityMedium1')?.errors"
+                                    class="text-start text-danger mt-1" style="font-size: 14px">
+                                    <div *ngIf="bpForm.get('accountabilityMedium1')?.errors?.['required']">Required
+                                        Field</div>
+                                    <div *ngIf="bpForm.get('accountabilityMedium1')?.errors?.['min']">
+                                        Value must be
+                                        greater than 0.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 col-md-3 mb-3">
+                            <label>Accountability Level (High)</label>
+                            <div class="unit-field">
+                                <input formControlName="accountabilityHigh1" type="number" placeholder="Enter Points"
+                                    class="form-control" (input)="dataService.digitLimit($event,5)">
+                                <div *ngIf="isSubmitted && bpForm.get('accountabilityHigh1')?.errors"
+                                    class="text-start text-danger mt-1" style="font-size: 14px">
+                                    <div *ngIf="bpForm.get('accountabilityHigh1')?.errors?.['required']">Required Field
+                                    </div>
+                                    <div *ngIf="bpForm.get('accountabilityHigh1')?.errors?.['min']" maxlength="5">Value
+                                        must be
+                                        greater than 0.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row mb-4">
+                    <h6 class="mb-3">Daily Meal Log</h6>
+                    <div class="row">
+                        <div class="col-sm-6 col-md-3 mb-3">
+                            <label>Accountability Level (None)</label>
+                            <div class="unit-field">
+                                <input formControlName="accountabilityNone2" type="number" placeholder="Enter Points"
+                                    class="form-control" maxlength="5" (input)="dataService.digitLimit($event,5)">
+                                <div *ngIf="isSubmitted && bpForm.get('accountabilityNone2')?.errors"
+                                    class="text-start text-danger mt-1" style="font-size: 14px">
+                                    <div *ngIf="bpForm.get('accountabilityNone2')?.errors?.['required']">Required Field
+                                    </div>
+                                    <div *ngIf="bpForm.get('accountabilityNone2')?.errors?.['min']">Value must be
+                                        greater than 0.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 col-md-3 mb-3">
+                            <label>Accountability Level (Low)</label>
+                            <div class="unit-field">
+                                <input formControlName="accountabilityLow2" type="number" placeholder="Enter Points"
+                                    class="form-control" maxlength="5" (input)="dataService.digitLimit($event,5)">
+                                <div *ngIf="isSubmitted && bpForm.get('accountabilityLow2')?.errors"
+                                    class="text-start text-danger mt-1" style="font-size: 14px">
+                                    <div *ngIf="bpForm.get('accountabilityLow2')?.errors?.['required']">Required Field
+                                    </div>
+                                    <div *ngIf="bpForm.get('accountabilityLow2')?.errors?.['min']">Value must be greater
+                                        than 0.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 col-md-3 mb-3">
+                            <label>Accountability Level (Medium)</label>
+                            <div class="unit-field">
+                                <input formControlName="accountabilityMedium2" type="number" placeholder="Enter Points"
+                                    class="form-control" maxlength="5" (input)="dataService.digitLimit($event,5)">
+                                <div *ngIf="isSubmitted && bpForm.get('accountabilityMedium2')?.errors"
+                                    class="text-start text-danger mt-1" style="font-size: 14px">
+                                    <div *ngIf="bpForm.get('accountabilityMedium2')?.errors?.['required']">Required
+                                        Field</div>
+                                    <div *ngIf="bpForm.get('accountabilityMedium2')?.errors?.['min']">Value must be
+                                        greater than 0.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 col-md-3 mb-3">
+                            <label>Accountability Level (High)</label>
+                            <div class="unit-field">
+                                <input formControlName="accountabilityHigh2" type="number" placeholder="Enter Points"
+                                    class="form-control" maxlength="5" (input)="dataService.digitLimit($event,5)">
+                                <div *ngIf="isSubmitted && bpForm.get('accountabilityHigh2')?.errors"
+                                    class="text-start text-danger mt-1" style="font-size: 14px">
+                                    <div *ngIf="bpForm.get('accountabilityHigh2')?.errors?.['required']">Required Field
+                                    </div>
+                                    <div *ngIf="bpForm.get('accountabilityHigh2')?.errors?.['min']">Value must be
+                                        greater than 0.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-submitions">
+                    <button class="btn btn-primary" (click)="onSubmit()"
+                        [disabled]="dataService.isLoading &&  isSubmitted">Update<div class="spinner-border text-light"
+                            role="status" *ngIf="dataService.isLoading &&  isSubmitted">
+                            <span class="visually-hidden">Loading...</span>
+                        </div></button>
+                </div>
+            </div>
+
+        </div>
+    </div>

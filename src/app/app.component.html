@@ -1,0 +1,29 @@
+<router-outlet (activate)="pageActive()"></router-outlet>
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
+  <div id="liveToast" class="toast align-items-center border-0"
+    [ngClass]="utils?.toast?.type?'text-bg-'+ utils.toast.type:''" role="alert" aria-live="assertive"
+    aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        {{utils?.toast?.message}}
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+        aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Image Viewer -->
+<div class="modal fade imageViewModal" data-bs-backdrop="static" id="imageViewModal" tabindex="-1"
+  aria-labelledby="dModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closedModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <img [src]="utils.imagePreview || ''" class="img-fluid" />
+      </div>
+    </div>
+  </div>
+</div>

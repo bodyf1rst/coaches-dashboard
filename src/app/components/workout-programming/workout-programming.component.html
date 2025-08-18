@@ -1,0 +1,174 @@
+<div class="workout-programming-container">
+  <div class="header-section">
+    <h1>Weekly Workout Programming</h1>
+    <p class="subtitle">Program workouts for your clients</p>
+  </div>
+
+  <!-- Client Selection -->
+  <div class="client-selection-section">
+    <div class="form-group">
+      <label for="clientSelect">Select Client</label>
+      <select 
+        id="clientSelect" 
+        class="form-control"
+        (change)="onClientSelect($event.target.value ? clients.find(c => c.id == $event.target.value) : null)">
+        <option value="">Choose a client...</option>
+        <option *ngFor="let client of clients" [value]="client.id">
+          {{ client.name }} ({{ client.email }})
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Week Navigation -->
+  <div class="week-navigation" *ngIf="selectedClient">
+    <button class="btn btn-outline" (click)="previousWeek()">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <h3 class="week-title">{{ getWeekDisplay() }}</h3>
+    <button class="btn btn-outline" (click)="nextWeek()">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+
+  <!-- Programming Form -->
+  <form [formGroup]="programmingForm" (ngSubmit)="saveWeeklyProgram()" *ngIf="selectedClient">
+    
+    <!-- Week Overview -->
+    <div class="week-overview">
+      <div class="day-column" *ngFor="let day of weekDays">
+        <div class="day-header">
+          <h4>{{ day.name }}</h4>
+          <button 
+            type="button" 
+            class="btn btn-sm btn-primary add-workout-btn"
+            (click)="addWorkoutToDay(day.key)">
+            <i class="fas fa-plus"></i> Add Workout
+          </button>
+        </div>
+
+        <div class="day-workouts">
+          <div 
+            class="workout-item" 
+            *ngFor="let workout of getWorkoutsForDay(day.key); let i = index"
+            [formGroup]="workout">
+            
+            <div class="workout-form">
+              <div class="form-group">
+                <label>Workout</label>
+                <select formControlName="workout_id" class="form-control">
+                  <option value="">Select workout...</option>
+                  <option *ngFor="let w of workouts" [value]="w.id">
+                    {{ w.name }} ({{ w.estimated_duration }}min)
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Time</label>
+                <input 
+                  type="time" 
+                  formControlName="scheduled_time" 
+                  class="form-control">
+              </div>
+
+              <div class="form-group">
+                <label>Notes</label>
+                <textarea 
+                  formControlName="notes" 
+                  class="form-control" 
+                  rows="2"
+                  placeholder="Optional notes for this workout..."></textarea>
+              </div>
+
+              <button 
+                type="button" 
+                class="btn btn-sm btn-danger remove-btn"
+                (click)="removeWorkout(workoutsArray.controls.indexOf(workout))">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+
+            <!-- Workout Preview -->
+            <div class="workout-preview" *ngIf="workout.get('workout_id')?.value">
+              <div class="workout-info">
+                <h5>{{ getWorkoutName(workout.get('workout_id')?.value) }}</h5>
+                <div class="workout-details">
+                  <span class="duration">
+                    <i class="fas fa-clock"></i>
+                    {{ workouts.find(w => w.id == workout.get('workout_id')?.value)?.estimated_duration }}min
+                  </span>
+                  <span class="intensity">
+                    <i class="fas fa-fire"></i>
+                    {{ workouts.find(w => w.id == workout.get('workout_id')?.value)?.intensity_level }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-day" *ngIf="getWorkoutsForDay(day.key).length === 0">
+            <p>No workouts scheduled</p>
+            <button 
+              type="button" 
+              class="btn btn-outline btn-sm"
+              (click)="addWorkoutToDay(day.key)">
+              Add First Workout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Program Notes -->
+    <div class="program-notes">
+      <div class="form-group">
+        <label for="programNotes">Program Notes</label>
+        <textarea 
+          id="programNotes"
+          formControlName="notes" 
+          class="form-control" 
+          rows="4"
+          placeholder="Add any general notes about this week's program..."></textarea>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button 
+        type="button" 
+        class="btn btn-outline"
+        (click)="initializeEmptyWeek()">
+        Clear All
+      </button>
+      
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        [disabled]="programmingForm.invalid || isSaving">
+        <span *ngIf="isSaving">
+          <i class="fas fa-spinner fa-spin"></i> Saving...
+        </span>
+        <span *ngIf="!isSaving">
+          <i class="fas fa-save"></i> Save Program
+        </span>
+      </button>
+    </div>
+  </form>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
+
+  <!-- No Client Selected State -->
+  <div class="empty-state" *ngIf="!selectedClient && !isLoading">
+    <div class="empty-icon">
+      <i class="fas fa-calendar-alt"></i>
+    </div>
+    <h3>Select a Client to Start Programming</h3>
+    <p>Choose a client from the dropdown above to begin creating their weekly workout program.</p>
+  </div>
+</div>

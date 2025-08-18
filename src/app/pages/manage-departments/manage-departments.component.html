@@ -1,0 +1,150 @@
+<div class="main-dashboard-area">
+  <div class="dashboard-left">
+    <app-left-sidebar></app-left-sidebar>
+  </div>
+  <div class="dashboard-right">
+    <div class="dashboard-right-head">
+      <div class="dashboard-right-head-left">
+        <div class="">
+          <h1>Preferences</h1>
+        </div>
+      </div>
+      <div class="dashboard-right-head-right">
+        <div class="search-wrapper">
+          <div class="search-container">
+            <input type="text" placeholder="Search here.." name="search" class="form-control" spellcheck="true"
+              [(ngModel)]="stats[this.pageTabMapping[dataService.pageTabView].storage].fieldText"
+              (keydown.enter)="onSearch()">
+            <button type="submit">
+              <div class="d-block spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <i class="fa-solid fa-magnifying-glass"
+                *ngIf="!dataService.isLoading && !stats[this.pageTabMapping[dataService.pageTabView].storage].isSearched"
+                (click)="onSearch()"></i>
+              <i class="fa-regular fa-circle-xmark"
+                *ngIf="!dataService.isLoading && stats[this.pageTabMapping[dataService.pageTabView].storage].isSearched"
+                (click)="clearSearch()"></i>
+            </button>
+          </div>
+
+          <button data-bs-toggle="modal" data-bs-target="#dRModal" type="button"
+            class="btn btn-primary btn-lg btn-block w-100 box-shadow" (click)="addItem()"><i
+              class="fa-solid fa-plus"></i> Add
+            {{dataService.pageTabView}}</button>
+        </div>
+      </div>
+    </div>
+    <div class="dashboard-content">
+      <div class="tabs-listing-tabview mb-3">
+        <ul id="pills-tab" class="nav nav-pills">
+          <li class="nav-item"><button type="button" class="nav-link" (click)="dataService.pageTabView = 'Departments'"
+              [class.active]="dataService.pageTabView == 'Departments'"
+              (click)="getTabData('Departments')">Departments</button></li>
+          <li class="nav-item"><button type="button" class="nav-link"
+              [class.active]="dataService.pageTabView == 'Rewards'" (click)="getTabData('Rewards')">Rewards</button>
+          </li>
+        </ul>
+      </div>
+      <div class="tabs-listing-area">
+        <div class="tabs-listing" *ngIf="dataService.pageTabView == 'Departments'">
+          <div class="d-block spinner-border text-dark m-auto mb-2" role="status"
+            *ngIf="dataService.isLoading && !dataService?.departmentsList?.departments?.length">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div class="text-center" *ngIf="!dataService.isLoading && !dataService?.departmentsList?.departments?.length">
+            Data not
+            found.</div>
+          <div class="row" *ngIf="dataService?.departmentsList?.departments?.length">
+            <div class="col-lg-4 col-md-6 col-12"
+              *ngFor="let item of dataService.departmentsList.departments;index as i">
+              <app-string-tab [item]="item" (click)="getValues(item);"></app-string-tab>
+            </div>
+          </div>
+          <button [disabled]="dataService.isLoading"
+            *ngIf="dataService?.departmentsList?.departments?.length && (dataService?.departmentsList?.page != dataService.departmentsList?.total_page)"
+            class="btn btn-primary btn-p d-flex align-items-center gap-2 m-auto"
+            (click)="dataService.fetchData(dataService?.departmentsList?.page + 1, dataService.httpService.getDepartmentApi, 'departments', 'departmentsList',stats.departmentsList.fieldText || '')">Load
+            More <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+              <span class="visually-hidden">Loading...</span>
+            </div></button>
+        </div>
+        <div class="tabs-listing" *ngIf="dataService.pageTabView == 'Rewards'">
+          <div class="d-block spinner-border text-dark m-auto mb-2" role="status"
+            *ngIf="dataService.isLoading && !dataService?.rewardsList?.rewards?.length">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div class="text-center" *ngIf="!dataService.isLoading && !dataService?.rewardsList?.rewards?.length">Data not
+            found.</div>
+          <div class="row" *ngIf="dataService?.rewardsList?.rewards?.length">
+            <div class="col-lg-4 col-md-6 col-12" *ngFor="let item of dataService.rewardsList.rewards;index as i">
+              <app-string-tab [item]="item" (click)="getValues(item)"></app-string-tab>
+            </div>
+          </div>
+          <button [disabled]="dataService.isLoading"
+            *ngIf="dataService?.rewardsList?.rewards?.length && (dataService?.rewardsList?.page != dataService.rewardsList?.total_page)"
+            class="btn btn-primary btn-p d-flex align-items-center gap-2 m-auto"
+            (click)="dataService.fetchData(dataService?.rewardsList?.page + 1, dataService.httpService.getRewardsApi, 'rewards', 'rewardsList',stats.rewardsList.fieldText || '')">Load
+            More <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+              <span class="visually-hidden">Loading...</span>
+            </div></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="dRModal" tabindex="-1" aria-labelledby="dRModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fs-5">{{isEdit?'Edit':'Add'}} {{dataService.pageTabView}}</h5>
+        <button id="closedRModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <input placeholder="Write Name Here" class="form-control" [(ngModel)]="formValue" name="name"
+            (keydown.enter)="isEdit?update():create()">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button [disabled]="dataService.isFormSubmit || !formValue"
+          class="btn btn-primary justify-content-center btn-p d-flex align-items-center gap-2"
+          (click)="isEdit?update():create()">{{isEdit?'Update':'Create'}}
+          <div class="spinner-border text-light" role="status" *ngIf="dataService.isFormSubmit">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="dModal" tabindex="-1" aria-labelledby="dModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fs-5">Delete {{dataService.pageTabView}}</h5>
+        <button id="closedModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid" src="../../../assets/images/deleted.png" /></p>
+        Do you really want to delete this {{dataService.pageTabView}}
+        <strong>{{selectedItem?.name}}</strong>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button [disabled]="dataService.isFormSubmit"
+          class="btn btn-danger justify-content-center btn-p d-flex align-items-center gap-2" (click)="delete()">Delete
+          <div class="spinner-border text-light" role="status" *ngIf="dataService.isFormSubmit">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

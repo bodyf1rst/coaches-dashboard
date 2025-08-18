@@ -1,0 +1,191 @@
+<div class="main-dashboard-area">
+    <div class="dashboard-left">
+        <app-left-sidebar></app-left-sidebar>
+    </div>
+    <div class="dashboard-right">
+        <div class="dashboard-right-head">
+            <div class="dashboard-right-head-left">
+                <h1 class="mb-md-0 ct">Manage Content
+                </h1>
+            </div>
+            <div class="dashboard-right-head-right" *ngIf="dataService.currentUserData.role == 'Admin'">
+                <button *ngIf="dataService.pageTabView == 'FAQ'" (click)="addNewFaq()" type="button"
+                    class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+                    <i class="fa-solid fa-plus"></i> Add New FAQ
+                </button>
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <div class="tabs-listing-tabview mb-3">
+                <ul id="pills-tab" class="nav nav-pills">
+                    <li (click)="dataService.pageTabView = 'Terms Privacy'" class="nav-item"><button type="button"
+                            class="nav-link" [class.active]="dataService.pageTabView == 'Terms Privacy'">Terms &
+                            Privacy</button>
+                    </li>
+                    <li (click)="dataService.pageTabView = 'FAQ'" class="nav-item"><button type="button"
+                            class="nav-link" [class.active]="dataService.pageTabView == 'FAQ'">FAQ</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="s-content-area" *ngIf="dataService.pageTabView == 'Terms Privacy'">
+                <div class="d-block spinner-border text-dark m-auto mb-2" role="status" *ngIf="dataService.isLoading">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="row justify-content-start" *ngIf="!dataService.isLoading">
+                    <div class="col-md-6 mb-3">
+                        <h6>Privacy Policy</h6>
+                        <div class="text-box text-format" *ngIf="dataService.currentUserData.role != 'Admin'"
+                            [innerHtml]="dataService.staticContent.site_info.privacy_policy"></div>
+                        <quill-editor class="text-format" *ngIf="dataService.currentUserData.role == 'Admin'"
+                            [(ngModel)]="dataService.staticContent.site_info.privacy_policy" theme="snow"
+                            placeholder="Write Here...">
+                        </quill-editor>
+
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h6>Terms & Conditions</h6>
+                        <div class="text-box text-format" *ngIf="dataService.currentUserData.role != 'Admin'"
+                            [innerHtml]="dataService.staticContent.site_info.tnc"></div>
+                        <quill-editor class="text-format" *ngIf="dataService.currentUserData.role == 'Admin'"
+                            [(ngModel)]="dataService.staticContent.site_info.tnc" theme="snow"
+                            placeholder="Write Here...">
+                        </quill-editor>
+                    </div>
+                </div>
+                <button *ngIf="dataService.currentUserData.role == 'Admin' && !dataService.isLoading"
+                    [disabled]="dataService.isFormSubmit"
+                    class="btn btn-primary justify-content-center btn-p d-flex align-items-center gap-2 m-auto"
+                    (click)="submitStaticContent()" style="width: 200px;">Update
+                    <div class="spinner-border text-light" role="status" *ngIf="dataService.isFormSubmit">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </button>
+            </div>
+            <div class="faqs-area" *ngIf="dataService.pageTabView == 'FAQ'">
+                <div class="d-block spinner-border text-dark m-auto mb-2" role="status"
+                    *ngIf="dataService.isLoading && !dataService.allFaqs.faqs?.length">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="text-center" *ngIf="!dataService.isLoading && !dataService.allFaqs.faqs?.length">
+                    Data not
+                    found.</div>
+                <div class="row" *ngIf="dataService.allFaqs.faqs.length">
+                    <div class="col-md-10 offset-md-1">
+                        <div class="accordion" id="accordionExample">
+                            <div class="accordion-item" *ngFor="let item of dataService.allFaqs.faqs; index as i">
+                                <h2 class="accordion-header" [id]="'heading' + i">
+                                    <button class="accordion-button" [ngClass]="i != 0 ? 'collapsed' : ''" type="button"
+                                        data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse' + i"
+                                        aria-expanded="false" [attr.aria-controls]="'collapse' + i">
+                                        {{ item.question }}
+                                    </button>
+                                    <div class="faq-acion" *ngIf="dataService.currentUserData.role == 'Admin'">
+                                        <button (click)="editFaq(item)" class="btn btn-success" type="button"
+                                            data-bs-toggle="modal" data-bs-target="#addModal">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                        <button (click)="selectedFaq = item" class="btn btn-danger" type="button"
+                                            data-bs-toggle="modal" data-bs-target="#dModal">
+                                            <i class="fa-solid fa-trash-can" style="color: #fff;"></i>
+                                        </button>
+                                    </div>
+                                </h2>
+                                <div [id]="'collapse' + i" class="accordion-collapse collapse"
+                                    [ngClass]="i == 0 ? 'show' : ''" [attr.aria-labelledby]="'heading' + i"
+                                    data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <div class="text-format" [innerHTML]="item.answer"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete  Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="dModal" tabindex="-1" aria-labelledby="dModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fs-5">Delete {{dataService.pageTabView}}</h5>
+                <button id="closedModal" type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body short-modal">
+                <p><img class="modal-img img-fluid" src="../../../assets/images/deleted.png" /></p>
+                Do you really want to delete this FAQ?<br /><strong>{{selectedFaq.question}}</strong>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button [disabled]="dataService.isFormSubmit"
+                    class="btn btn-danger justify-content-center btn-p d-flex align-items-center gap-2"
+                    (click)="deleteFaq()">Delete
+                    <div class="spinner-border text-light" role="status" *ngIf="dataService.isFormSubmit">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" data-bs-backdrop="static" id="addModal" tabindex="-1" aria-labelledby="dRModal"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fs-5">{{ isEdit ? "Edit" : "Add New"}} FAQ</h5>
+                <button id="closedRModal" type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="adverts-form" [formGroup]="faqForm" (ngSubmit)="onSubmit()">
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <label class="form-label">Title*</label>
+                            <input class="form-control" type="text" placeholder="Enter Title"
+                                formControlName="question" />
+                            <div class="text-start text-danger mt-1" style="font-size: 14px"
+                                *ngIf="faqFormSubmitted && faqForm.get('question').invalid">
+                                <div *ngIf="faqForm.get('question').errors?.required">Title is required.</div>
+                                <div *ngIf="faqForm.get('question').errors?.minlength">Title must be at least 3
+                                    characters long.</div>
+                                <div *ngIf="faqForm.get('question').errors?.maxlength">Title cannot exceed 100
+                                    characters.</div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-4">
+                            <label class="form-label">Description*</label>
+                            <quill-editor class="text-format" theme="snow" placeholder="Enter Description Here..."
+                                formControlName="answer">
+                            </quill-editor>
+                            <div class="text-start text-danger mt-1" style="font-size: 14px"
+                                *ngIf="faqFormSubmitted && faqForm.get('answer').invalid">
+                                <div *ngIf="faqForm.get('answer').errors?.required">Description is
+                                    required.</div>
+                                <div *ngIf="faqForm.get('answer').errors?.minlength">Description must be at least
+                                    10 characters long.</div>
+                                <div *ngIf="faqForm.get('answer').errors?.maxlength">Description cannot exceed
+                                    500 characters.</div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button [disabled]="dataService.isFormSubmit"
+                    class="btn btn-primary justify-content-center btn-p d-flex align-items-center gap-2"
+                    (click)="onSubmit()">{{isEdit?'Update':'Submit'}}
+                    <div class=" spinner-border text-light" role="status" *ngIf="dataService.isFormSubmit">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

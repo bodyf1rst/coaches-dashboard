@@ -1,0 +1,228 @@
+<div class="main-dashboard-area">
+  <div class="dashboard-left">
+    <app-left-sidebar></app-left-sidebar>
+  </div>
+  <div class="dashboard-right">
+    <div class="dashboard-right-head">
+      <div class="dashboard-right-head-left">
+        <div class="backIcon static"><button (click)="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+        <h1 class="mb-md-0 ct">Coach Details</h1>
+      </div>
+      <div class="dashboard-right-head-right">
+        <button *ngIf="coachData?.id" class="btn btn-p" [ngClass]="coachData?.is_active?'btn-success':'btn-danger'"
+          data-bs-toggle="modal" data-bs-target="#actionModal" data-bs-title="Click for change Status"
+          appTooltip>{{coachData?.is_active?'Active':'Blocked'}}</button>
+        <button type="submit" class="filter-btn" data-bs-toggle="tooltip" data-bs-title="Edit User"
+          *ngIf="coachId && !isEdit" (click)="onEdit()"><i class="fa-solid fa-pencil"></i></button>
+        <button type="submit" class="filter-btn w-auto btn-p" data-bs-toggle="tooltip" data-bs-title="Cancel Edit"
+          *ngIf="coachId && isEdit" (click)="onEdit()">Cancel Edit</button>
+        <button *ngIf="coachId" type="submit" class="filter-btn" style="background: red;" data-bs-toggle="modal"
+          data-bs-target="#dModal" data-bs-title="Delete User" appTooltip><i class="fa-solid fa-trash-can"
+            style="color: #fff;"></i></button>
+      </div>
+    </div>
+    <div class="dashboard-content">
+      <div class="tabs-listing-tabview mb-3 sticky" *ngIf="this.coachData?.id && !isEdit">
+        <ul id="pills-tab" class="nav nav-pills">
+          <li class="nav-item"><button type="button" class="nav-link"
+              (click)="dataService.pageTabView = 'Coach Details'"
+              [class.active]="dataService.pageTabView == 'Coach Details'" (click)="getTabData('Coach Details')">Coach
+              Details</button></li>
+          <li class="nav-item"><button type="button" class="nav-link"
+              [class.active]="dataService.pageTabView == 'Assigned Organizations'"
+              (click)="getTabData('Assigned Organizations')">Assigned Organizations <span
+                class="in-count">({{coachData.organizations?.length || 0}})</span></button>
+          </li>
+          <li class="nav-item"><button type="button" class="nav-link"
+              [class.active]="dataService.pageTabView == 'Assigned Clients'"
+              (click)="getTabData('Assigned Clients')">Assigned Clients <span
+                class="in-count">({{coachData.users?.length || 0}})</span></button>
+          </li>
+        </ul>
+      </div>
+      <div class="g-form" *ngIf="dataService.pageTabView == 'Coach Details'">
+        <form [formGroup]="cForm">
+          <h6 class="mb-3">General Information</h6>
+          <div class="row flex-md-row-reverse">
+            <div class="col-md-3">
+              <div class="text-center justify-content-md-center">
+                <div class="upload-image-tab tlm" [class.view]="!isEdit">
+                  <label for="uploadPhoto" class="upload-photo-tab">
+                    <input type="file" accept="image/*" id="uploadPhoto" class="form-control"
+                      (change)="onImageSelected($event)" *ngIf="isEdit">
+                    <div class="preview-img" *ngIf="imageUrl">
+                      <img *ngIf="!isEdit" [src]="imageUrl" class="img-fluid w-100" data-bs-toggle="modal"
+                        data-bs-target="#imageViewModal" (click)="dataService.utils.imagePreview = imageUrl" />
+                      <img *ngIf="isEdit" [src]="imageUrl" class="img-fluid w-100" />
+                    </div>
+                    <div class="preview-img" *ngIf="!isEdit && !imageUrl">
+                      <img src="..//../../../assets/images/default-thumbnail.jpg" class="img-fluid w-100" />
+                    </div>
+                    <div class="upload-img" *ngIf="isEdit && !imageUrl">
+                      <img src="../../assets/images/upload-icon.svg" class="img-fluid w-auto" />
+                      Upload Profile Image
+                    </div>
+                  </label>
+                  <div class="remove-icon" *ngIf="imageUrl && isEdit" (click)="removeImage()">
+                    <i class="fa-solid fa-xmark"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-9">
+              <div class="row mb-3">
+                <div class="col-md-6 col-12 mb-3"><label>First Name*</label><input type="text" placeholder="Enter Here*"
+                    class="form-control" formControlName="first_name" [readonly]="(coachId && !isEdit)?true:false">
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.first_name?.errors">
+                    This Field is Required.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3"><label>Last Name*</label><input type="text" placeholder="Enter Here*"
+                    class="form-control" formControlName="last_name" [readonly]="(coachId && !isEdit)?true:false">
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.last_name?.errors">
+                    This Field is Required.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3"><label>Contact #</label><input type="tel" placeholder="Enter Here"
+                    class="form-control" formControlName="phone" [readonly]="(coachId && !isEdit)?true:false"
+                    (focus)="f.phone.setValue(f.phone.value || '+1')" maxlength="16">
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.phone?.errors">
+                    Please enter a valid US phone number with country code (+1). Accepted formats:
+                    (123) 456-7890, 123-456-7890, 123 456 7890, or 1234567890.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3"><label>Email*</label><input type="text" placeholder="Enter Here*"
+                    class="form-control" formControlName="email" [attr.disabled]="coachId?true:null">
+                  <div class="text-start text-danger mt-1" style="font-size: 14px"
+                    *ngIf="isSubmitted && f.email?.errors">
+                    This Field is Invalid.
+                  </div>
+                </div>
+                <div class="col-md-6 col-12 mb-3"><label>Sex</label>
+                  <select placeholder="Select Here" class="form-select" formControlName="gender"
+                    [attr.disabled]="(coachId && !isEdit) ? true : null">
+                    <option value=null>Select Here</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+
+                </div>
+                <div class="col-md-6 col-12 mb-3" *ngIf="isEdit"><label>Organizations</label>
+                  <ng-select [multiple]="true" [closeOnSelect]="false" placeholder="Search Here" class="form-control"
+                    formControlName="organizations" [clearSearchOnAdd]="true">
+                    <ng-option *ngFor="let item of dataService?.organizationsDropdown" [value]="item.id">{{
+                      item.name}} <span class="assigned" *ngIf="item.coaches_count">Coach Assigned
+                        ({{item.coaches_count}})</span></ng-option>
+                  </ng-select>
+                </div>
+                <div class="col-md-6 col-12 mb-3" *ngIf="isEdit"><label>Users <small>(Individual
+                      Clients)</small></label>
+                  <ng-select [multiple]="true" [closeOnSelect]="false" placeholder="Search Here" class="form-control"
+                    formControlName="users" [clearSearchOnAdd]="true">
+                    <ng-option *ngFor="let item of dataService?.usersDropdown" [value]="item.id">{{
+                      item.first_name}} {{item.last_name}} <small style="display: block;">{{item.email}}</small> <span
+                        class="assigned" *ngIf="item.coach_count">Coach Assigned
+                        ({{item.coach_count}})</span></ng-option>
+                  </ng-select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button type="submit"
+            class="btn btn-primary w-50 d-flex justify-content-center align-items-center gap-2 m-auto"
+            [disabled]="dataService.isLoading" *ngIf="isEdit" (click)="onSubmitForm()">
+            {{coachId ? 'Update':'Create'}} <div class="spinner-border text-light" role="status"
+              *ngIf="dataService.isLoading">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </button>
+        </form>
+      </div>
+      <div class="tabs-listing mb-2" *ngIf="dataService.pageTabView == 'Assigned Organizations'">
+        <div class="text-start" *ngIf="!coachData?.organizations?.length">Organizations not Assigned.</div>
+        <div class="row" *ngIf="coachData?.organizations?.length">
+          <div class="col-lg-4 col-md-6 col-12" *ngFor="let item of coachData?.organizations;index as i">
+            <app-organization-tab [item]="item"></app-organization-tab>
+          </div>
+        </div>
+      </div>
+      <div class="tabs-listing" *ngIf="dataService.pageTabView == 'Assigned Clients'">
+        <div class="text-start" *ngIf="!coachData?.users?.length">Clients not Assigned.</div>
+        <div class="row" *ngIf="coachData?.users?.length">
+          <div class="col-lg-4 col-md-6 col-12" *ngFor="let item of coachData?.users">
+            <app-client-tab [item]="item" [rLink]="'/clients'"></app-client-tab>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Action Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="actionModal" tabindex="-1" aria-labelledby="actionModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closeActionModal" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid"
+            [src]="coachData?.is_active?'../../../../assets/images/deactivate-shop.png':'../../../../assets/images/activate-shop.png'" />
+        </p>
+        <h5 class="modal-title fs-5 mb-2">{{coachData?.is_active?'Block':'Activate'}} User</h5>
+        Do you really want to <strong
+          [ngClass]="coachData?.is_active?'text-danger':'text-success'">{{coachData?.is_active?'Block':'Activate'}}</strong>
+        this
+        Coach
+        <strong>{{coachData?.name}}</strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" [ngClass]="coachData?.is_active?'btn-danger':'btn-success'"
+          (click)="action()">{{coachData?.is_active?'Block':'Activate'}} <div class="spinner-border text-light"
+            role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="dModal" tabindex="-1" aria-labelledby="dModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="closedModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body short-modal">
+        <p><img class="modal-img img-fluid" src="../../../../assets/images/deleted.png" /></p>
+        <h5 class="modal-title fs-5 mb-2">Delete User</h5>
+        Do you really want to <strong class="text-danger">Delete</strong> this
+        Coach
+        <strong>{{coachData?.name}}</strong>?<br />
+        <p *ngIf="coachData?.organizations?.length || coachData?.users?.length">This coach will remove from all
+          associated organizations and users. This may cause issues with ongoing tasks
+          and assignments. Are you sure you want to continue?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn w-100 d-flex justify-content-center align-items-center gap-2 m-auto"
+          [disabled]="dataService.isLoading" [ngClass]="coachData?.is_active?'btn-danger':'btn-success'"
+          (click)="delete()">Delete <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

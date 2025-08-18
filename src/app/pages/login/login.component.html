@@ -1,0 +1,82 @@
+<div class="main-form-area">
+  <div class="login-forms">
+    <div class="logo">
+      <img src="../../assets/images/logo.svg" class="img-fluid" />
+    </div>
+    <h5 class="text-center mb-4">{{!checkOtp?'Login':'Verify OTP'}}</h5>
+    <form class="row g-3" [formGroup]="loginForm">
+      <div class="log-form" *ngIf="!checkOtp">
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <div class="icon-field">
+            <input type="email" class="form-control" formControlName="email" placeholder="Enter Email" />
+            <div class="field-icon">
+              <img src="../../assets/images/message-icon.svg" />
+            </div>
+          </div>
+          <div class="text-start text-danger mt-1" style="font-size: 14px" *ngIf="errorInvalid && f.email?.errors">
+            This Field is Invalid.
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <div class="icon-field input-group">
+            <input [type]="showPassword ? 'text' : 'password'" class="form-control" formControlName="password"
+              placeholder="Enter Password" />
+            <div class="field-icon">
+              <img src="../../assets/images/lock-icon.svg" />
+            </div>
+            <button type="button" class="input-group-text" (click)="showPassword = !showPassword">
+              <i [ngClass]="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+            </button>
+          </div>
+          <div class="text-start text-danger mt-1" style="font-size: 14px" *ngIf="errorInvalid && f.password?.errors">
+            This Field is Invalid.
+          </div>
+        </div>
+        <div class="col-12 text-center">
+          <button type="submit" class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-2"
+            [disabled]="dataService.isLoading" (click)="submitForm()">
+            Login <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </button>
+        </div>
+        <div class="col-12 mb-3 mt-1">
+          <div class="text-center">
+            <a class=" text-primary" routerLink="/forgot-password">Forgot
+              password? <i class="fa-solid fa-chevron-right"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="verify-otp" *ngIf="checkOtp">
+        <div class="backIcon"><button (click)="goBack()" type="button"><i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Enter OTP*</label>
+          <input type="number" class="form-control" placeholder="Enter Here" [(ngModel)]="otpNumber"
+            [ngModelOptions]="{standalone: true}" maxlength="6" />
+          <div class="text-start text-danger mt-1" style="font-size: 14px" *ngIf="errorInvalid && !otpNumber.length">
+            This Field is Required.
+          </div>
+          <div class="col-12 mb-3 mt-1">
+            <div class="text-center">
+              <a *ngIf="!isCountdownActive" class=" text-primary" role="button" (click)="submitForm('Resend')">Resend
+                OTP</a>
+              <div *ngIf="isCountdownActive">Resend in {{
+                countdownDisplay }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 text-center">
+          <button type="submit" class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-2"
+            [disabled]="dataService.isLoading || !otpNumber" (click)="submitForm()">
+            Submit <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

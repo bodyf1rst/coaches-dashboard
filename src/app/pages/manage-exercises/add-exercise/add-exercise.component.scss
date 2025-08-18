@@ -1,0 +1,37 @@
+.offcanvas.offcanvas-bottom.video {
+  height: 90%;
+  z-index: 9999;
+}
+
+.vSearchFilter {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.vSearchFilter .form-select {
+  width: 150px;
+}
+
+.main-tab-text {
+  left: 10px;
+  right: 0px;
+}
+
+i.fa-solid.fa-arrows-rotate.refresh {
+  color: #fc4d1f;
+}
+
+small.active i.fa-solid.fa-arrows-rotate.refresh {
+  animation: loader 1s infinite;
+}
+
+@keyframes loader {
+  0% {
+    rotate: 0deg;
+  }
+
+  100% {
+    rotate: 360deg;
+  }
+}

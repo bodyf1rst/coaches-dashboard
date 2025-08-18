@@ -1,0 +1,10 @@
+::ng-deep {
+    .video-area.static {
+
+        .g-tab.video span.type,
+        .g-tab.video .video-tags,
+        .g-tab.video small {
+            display: none;
+        }
+    }
+}

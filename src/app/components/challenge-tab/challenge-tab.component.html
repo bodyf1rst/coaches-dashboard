@@ -1,0 +1,41 @@
+<div class="g-tab" [routerLink]="'./challenge-detail/' + item?.id">
+  <div class="g-tab-img">
+    <img [src]="item.cover_image ? item.cover_image:'../../../assets/images/default-thumbnail.jpg'" class="img-fluid" />
+  </div>
+  <div class="g-tab-text">
+    <h6 class="mb-0">{{item.title}}</h6>
+    <span class="text-gray reg">{{item?.created_at | date:'medium'}}</span>
+    <span class="d-block mt-1"><strong>Start:</strong> {{item.start_date | date:'d MMMM, y'}} / <strong>End:</strong>
+      {{item.end_date | date:'d MMMM, y'}}</span>
+    <div class="d-flex align-items-center gap-2">
+      <span class="text-gray d-flex"
+        *ngIf="item?.organization_id || item?.coach_id || item?.organization?.id || item?.coach?.id">
+        <div class="coach-info">
+          <div class="coach-info-img" *ngIf="item?.organization_id || item?.organization?.id">
+            <img
+              [src]="(item?.organization_logo || item?.organization?.logo) ? (item?.organization_logo || item?.organization?.logo) : '../../../assets/images/default-thumbnail.jpg'"
+              class="img-fluid" />
+          </div>
+          {{item?.organization_name || item?.organization?.name || 'Organization not assign'}}
+        </div>
+      </span>
+      <span class="text-gray d-flex" *ngIf="item?.organization_id || item?.coach_id || item?.coach?.id">
+        <div class="coach-info">
+          <div class="coach-info-img" *ngIf="item?.coaches.length">
+            <img
+              [src]="(item?.coaches[0]?.profile_image || item?.coach?.profile_image) ? (item?.coaches[0]?.profile_image || item?.coach?.profile_image):'../../../assets/images/default-thumbnail.jpg'"
+              class="img-fluid" />
+          </div>
+          {{ item?.coaches[0]?.name || '/ Coach not assigned' }} {{ item?.coaches.length > 1 ? '+' +
+          (item.coaches.length - 1) : '' }}
+        </div>
+      </span>
+      <span *ngIf="!item?.organization_id && !item?.coach_id && !item?.organization?.id && !item?.coach?.id">Nothing
+        Assign</span>
+    </div>
+  </div>
+  <!-- <div class="g-tab-action">
+    <button type="button" class="btn"
+      [ngClass]="item.is_active?'btn-outline-success':'btn-outline-danger'">{{item.is_active?'Active':'Blocked'}}</button>
+  </div> -->
+</div>

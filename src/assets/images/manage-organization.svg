@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <g id="Group_7" data-name="Group 7" transform="translate(2269 3509)">
+    <g id="vuesax_linear_buildings" data-name="vuesax/linear/buildings" transform="translate(-2633 -3697)">
+      <g id="buildings">
+        <path id="Vector" d="M11,14H3a2.652,2.652,0,0,1-3-3V3A2.652,2.652,0,0,1,3,0H8V11A2.652,2.652,0,0,0,11,14Z" transform="translate(366 196)" fill="none" stroke="#371b34" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+        <path id="Vector-2" data-name="Vector" d="M5.11,0A3.879,3.879,0,0,0,5,1V4H0V2A2.006,2.006,0,0,1,2,0Z" transform="translate(369 192)" fill="none" stroke="#371b34" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+        <path id="Vector-3" data-name="Vector" d="M0,0V5" transform="translate(378 196)" fill="none" stroke="#371b34" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+        <path id="Vector-4" data-name="Vector" d="M0,0V5" transform="translate(382 196)" fill="none" stroke="#371b34" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+        <path id="Vector-5" data-name="Vector" d="M3,0H1A1,1,0,0,0,0,1V5H4V1A1,1,0,0,0,3,0Z" transform="translate(378 205)" fill="none" stroke="#371b34" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+        <path id="Vector-6" data-name="Vector" d="M0,0V4" transform="translate(370 201)" fill="none" stroke="#371b34" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+        <path id="Vector-7" data-name="Vector" d="M0,17V3A2.652,2.652,0,0,1,3,0H9a2.652,2.652,0,0,1,3,3V17a2.652,2.652,0,0,1-3,3H3A2.652,2.652,0,0,1,0,17Z" transform="translate(374 190)" fill="none" stroke="#371b34" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+        <path id="Vector-8" data-name="Vector" d="M0,0H24V24H0Z" transform="translate(364 188)" fill="none" opacity="0"/>
+      </g>
+    </g>
+  </g>
+</svg>

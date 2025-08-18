@@ -1,0 +1,53 @@
+<div class="main-dashboard-area">
+    <div class="dashboard-left">
+        <app-left-sidebar></app-left-sidebar>
+    </div>
+    <div class="dashboard-right">
+        <div class="dashboard-right-head">
+            <div class="dashboard-right-head-left">
+                <h1 class="mb-md-0 ct">Nutrition Videos
+                    <small>({{this.dataService.introVideos?.nutritionVideos?.total_records ||
+                        0}})</small>
+                </h1>
+            </div>
+            <div class="dashboard-right-head-right">
+                <div class="search-wrapper">
+                    <button routerLink="/add-nutrition-video" type="button"
+                        class="btn btn-primary btn-lg btn-block w-100 box-shadow"><i class="fa-solid fa-plus"></i> Add
+                        New
+                        Video</button>
+                </div>
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <div class="video-area static">
+                <div class="text-center"
+                    *ngIf="!dataService.isLoading && !this.dataService.introVideos?.nutritionVideos?.videos?.length">
+                    Data not
+                    found.</div>
+                <div class="row"
+                    *ngIf="dataService.isLoading && !this.dataService.introVideos?.nutritionVideos?.videos?.length">
+                    <div class="col-lg-4 col-md-6 col-12" *ngFor="let item of dataService.placeholderItems">
+                        <app-placeholder-tab></app-placeholder-tab>
+                    </div>
+                </div>
+                <div class="row" *ngIf="this.dataService.introVideos?.nutritionVideos?.videos?.length">
+                    <div class="col-lg-4 col-md-6 col-12"
+                        *ngFor="let item of this.dataService.introVideos?.nutritionVideos?.videos; index as i">
+                        <app-video-tab [item]="item" [link]="'./nutrition-video-detail/'"></app-video-tab>
+                    </div>
+                </div>
+                <button [disabled]="dataService.isLoading"
+                    *ngIf="this.dataService.introVideos?.nutritionVideos?.videos?.length && (this.dataService.introVideos?.nutritionVideos.page != this.dataService.introVideos?.nutritionVideos.total_page)"
+                    class="btn btn-primary btn-p d-flex align-items-center gap-2 m-auto"
+                    (click)="loadMoreVideos(dataService.pageTabView)">
+                    Load More
+                    <div class="spinner-border text-light" role="status" *ngIf="dataService.isLoading">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,459 @@
+<div class="main-dashboard-area">
+    <div class="dashboard-left">
+        <app-left-sidebar></app-left-sidebar>
+    </div>
+    <div class="dashboard-right">
+        <div class="dashboard-right-head">
+            <div class="dashboard-right-head-left">
+                <h1 class="mb-md-0 ct">Manage Nutritions
+                </h1>
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <div class="g-form" [formGroup]="bmr_form">
+                <h6 class="mb-3">Body Metabolic Ratio (BMR)</h6>
+                <div class="form-row">
+                    <div class="row mb-4 align-items-start">
+                        <div class="col-md-12 col-lg-1 mb-3">
+                            <label class="clabel">Male</label>
+                        </div>
+                        <div class="col-md-12 col-lg">
+                            <div class="row">
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Weight</label>
+                                    <div class="unit-field">
+                                        <input type="number" placeholder="Enter Here" class="form-control"
+                                            formControlName="male_weight">
+                                    </div>
+                                    <div *ngIf="isSubmitted && bf.male_weight?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="bf.male_weight?.errors?.['required']">Weight is required.</div>
+                                        <div *ngIf="bf.male_weight?.errors?.['min']">Weight must be greater than 0.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Height</label>
+                                    <div class="unit-field">
+                                        <input type="number" placeholder="Enter Here" class="form-control"
+                                            formControlName="male_height">
+                                    </div>
+                                    <div *ngIf="isSubmitted && bf.male_height?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="bf.male_height?.errors?.['required']">Height is required.</div>
+                                        <div *ngIf="bf.male_height?.errors?.['min']">Height must be greater than 0.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Age</label>
+                                    <input type="number" placeholder="Enter Here" class="form-control"
+                                        formControlName="male_age">
+                                    <div *ngIf="isSubmitted && bf.male_age?.errors" class="text-start text-danger mt-1"
+                                        style="font-size: 14px">
+                                        <div *ngIf="bf.male_age?.errors?.['required']">Age is required.</div>
+                                        <div *ngIf="bf.male_age?.errors?.['min']">Age must be greater than 0.</div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Additional Value (+)</label>
+                                    <input type="number" placeholder="Enter Here" class="form-control"
+                                        formControlName="male_additional_value">
+                                    <div *ngIf="isSubmitted && bf.male_additional_value?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="bf.male_additional_value?.errors?.['required']">Value is required.
+                                        </div>
+                                        <div *ngIf="bf.male_additional_value?.errors?.['min']">Value must be greater
+                                            than 0.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="row mb-4 align-items-start">
+                        <div class="col-md-12 col-lg-1 mb-3">
+                            <label class="clabel">Female</label>
+                        </div>
+                        <div class="col-md-12 col-lg">
+                            <div class="row">
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Weight</label>
+                                    <div class="unit-field">
+                                        <input type="number" placeholder="Enter Here" class="form-control"
+                                            formControlName="female_weight">
+                                    </div>
+                                    <div *ngIf="isSubmitted && bf.female_weight?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="bf.female_weight?.errors?.['required']">Weight is required.</div>
+                                        <div *ngIf="bf.female_weight?.errors?.['min']">Weight must be greater than 0.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Height</label>
+                                    <div class="unit-field">
+                                        <input type="number" placeholder="Enter Here" class="form-control"
+                                            formControlName="female_height">
+                                    </div>
+                                    <div *ngIf="isSubmitted && bf.female_height?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="bf.female_height?.errors?.['required']">Height is required.</div>
+                                        <div *ngIf="bf.female_height?.errors?.['min']">Height must be greater than 0.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Age</label>
+                                    <input type="number" placeholder="Enter Here" class="form-control"
+                                        formControlName="female_age">
+                                    <div *ngIf="isSubmitted && bf.female_age?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="bf.female_age?.errors?.['required']">Age is required.</div>
+                                        <div *ngIf="bf.female_age?.errors?.['min']">Age must be greater than 0.</div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Additional Value (-)</label>
+                                    <input type="number" placeholder="Enter Here" class="form-control"
+                                        formControlName="female_additional_value">
+                                    <div *ngIf="isSubmitted && bf.female_additional_value?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="bf.female_additional_value?.errors?.['required']">Value is required.
+                                        </div>
+                                        <div *ngIf="bf.female_additional_value?.errors?.['min']">Value must be greater
+                                            than 0.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-submitions">
+                    <button class="btn btn-bdr-primary" (click)="on_restore_defaults('bmr')"
+                        [disabled]="dataService.isLoading && isSubmitted">Restore
+                        Defaults <div class="spinner-border text-light" role="status"
+                            *ngIf="dataService.isLoading && isSubmitted">
+                            <span class="visually-hidden">Loading...</span>
+                        </div></button>
+                    <button class="btn btn-primary" (click)="on_apply_bmr()"
+                        [disabled]="dataService.isLoading && isSubmitted">Apply
+                        <div class="spinner-border text-light" role="status"
+                            *ngIf="dataService.isLoading && isSubmitted">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            <div class="g-form" [formGroup]="tdee_form">
+                <h6 class="mb-3">Total Daily Energy Expenditure (TDEE)</h6>
+                <div class="form-row">
+                    <div class="row mb-4 align-items-start">
+                        <div class="col-6 col-md-3 col-lg mb-3">
+                            <label>Not Active</label>
+                            <div class="unit-field">
+                                <input type="number" placeholder="Enter Here" class="form-control"
+                                    formControlName="not_active" />
+                            </div>
+                            <div *ngIf="isTSubmitted && tf.not_active?.errors" class="text-start text-danger mt-1"
+                                style="font-size: 14px">
+                                <div *ngIf="tf.not_active?.errors?.['required']">This field is required.</div>
+                                <div *ngIf="tf.not_active?.errors?.['min']">Value must be greater than 0.</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-3 col-lg mb-3">
+                            <label>Slightly Active</label>
+                            <div class="unit-field">
+                                <input type="number" placeholder="Enter Here" class="form-control"
+                                    formControlName="slightly_active" />
+                            </div>
+                            <div *ngIf="isTSubmitted && tf.slightly_active?.errors" class="text-start text-danger mt-1"
+                                style="font-size: 14px">
+                                <div *ngIf="tf.slightly_active?.errors?.['required']">This field is required.</div>
+                                <div *ngIf="tf.slightly_active?.errors?.['min']">Value must be greater than 0.</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-3 col-lg mb-3">
+                            <label>Moderately Active</label>
+                            <div class="unit-field">
+                                <input type="number" placeholder="Enter Here" class="form-control"
+                                    formControlName="moderately_active" />
+                            </div>
+                            <div *ngIf="isTSubmitted && tf.moderately_active?.errors"
+                                class="text-start text-danger mt-1" style="font-size: 14px">
+                                <div *ngIf="tf.moderately_active?.errors?.['required']">This field is required.</div>
+                                <div *ngIf="tf.moderately_active?.errors?.['min']">Value must be greater than 0.</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-3 col-lg mb-3">
+                            <label>Very Active</label>
+                            <div class="unit-field">
+                                <input type="number" placeholder="Enter Here" class="form-control"
+                                    formControlName="very_active" />
+                            </div>
+                            <div *ngIf="isTSubmitted && tf.very_active?.errors" class="text-start text-danger mt-1"
+                                style="font-size: 14px">
+                                <div *ngIf="tf.very_active?.errors?.['required']">This field is required.</div>
+                                <div *ngIf="tf.very_active?.errors?.['min']">Value must be greater than 0.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-submitions">
+                    <button class="btn btn-bdr-primary" (click)="on_restore_defaults('tdee')"
+                        [disabled]="dataService.isLoading && isTSubmitted">Restore
+                        Defaults<div class="spinner-border text-light" role="status"
+                            *ngIf="dataService.isLoading && isTSubmitted">
+                            <span class="visually-hidden">Loading...</span>
+                        </div></button>
+                    <button class="btn btn-primary" (click)="on_apply_tdee()"
+                        [disabled]="dataService.isLoading && isTSubmitted">Apply
+                        <div class="spinner-border text-light" role="status"
+                            *ngIf="dataService.isLoading && isTSubmitted">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            <div class="g-form" [formGroup]="macronutrients_form">
+                <h6 class="mb-3">Macronutrients</h6>
+                <div class="form-row">
+                    <div class="row mb-4 align-items-start">
+                        <div class="col-md-12 col-lg-2 mb-3">
+                            <label class="clabel">Weight Loss</label>
+                        </div>
+                        <div class="col-md-12 col-lg">
+                            <div class="row">
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Carbs</label>
+                                    <div class="unit-field">
+                                        <input type="number" placeholder="Enter Here" class="form-control"
+                                            formControlName="loss_carbs" />
+                                        <button type="button" class="field-unit">%</button>
+                                    </div>
+                                    <div *ngIf="isMSubmitted && mf.loss_carbs?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="mf.loss_carbs?.errors?.['required']">Carbs is required.</div>
+                                        <div *ngIf="mf.loss_carbs?.errors?.['min']">Carbs must be at least 0.</div>
+                                        <div *ngIf="mf.loss_carbs?.errors?.['max']">Carbs cannot exceed 100.</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Fats</label>
+                                    <div class="unit-field">
+                                        <input type="number" placeholder="Enter Here" class="form-control"
+                                            formControlName="loss_fats" />
+                                        <button type="button" class="field-unit">%</button>
+                                    </div>
+                                    <div *ngIf="isMSubmitted && mf.loss_fats?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="mf.loss_fats?.errors?.['required']">Fats is required.</div>
+                                        <div *ngIf="mf.loss_fats?.errors?.['min']">Fats must be at least 0.</div>
+                                        <div *ngIf="mf.loss_fats?.errors?.['max']">Fats cannot exceed 100.</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Proteins</label>
+                                    <div class="unit-field">
+                                        <input type="number" placeholder="Enter Here" class="form-control"
+                                            formControlName="loss_proteins" />
+                                        <button type="button" class="field-unit">%</button>
+                                    </div>
+                                    <div *ngIf="isMSubmitted && mf.loss_proteins?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="mf.loss_proteins?.errors?.['required']">Proteins is required.</div>
+                                        <div *ngIf="mf.loss_proteins?.errors?.['min']">Proteins must be at least 0.
+                                        </div>
+                                        <div *ngIf="mf.loss_proteins?.errors?.['max']">Proteins cannot exceed 100.</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Calories (-)</label>
+                                    <div class="unit-field">
+                                        <input type="number" placeholder="Enter Here" class="form-control"
+                                            formControlName="loss_proteins_per_lb" />
+                                        <button type="button" class="field-unit">cal</button>
+                                    </div>
+                                    <div *ngIf="isMSubmitted && mf.loss_proteins_per_lb?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="mf.loss_proteins_per_lb?.errors?.['required']">Calories is
+                                            required.</div>
+                                        <div *ngIf="mf.loss_proteins_per_lb?.errors?.['min']">Calories must be at
+                                            least 0.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="row mb-4 align-items-start">
+                        <div class="col-md-12 col-lg-2 mb-3">
+                            <label class="clabel">Tone & Tightness</label>
+                        </div>
+                        <div class="col-md-12 col-lg">
+                            <div class="row">
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Carbs</label>
+                                    <div class="unit-field">
+                                        <input type="number" placeholder="Enter Here" class="form-control"
+                                            formControlName="tone_carbs" />
+                                        <button type="button" class="field-unit">%</button>
+                                    </div>
+                                    <div *ngIf="isMSubmitted && mf.tone_carbs?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="mf.tone_carbs?.errors?.['required']">Carbs is required.</div>
+                                        <div *ngIf="mf.tone_carbs?.errors?.['min']">Carbs must be at least 0.</div>
+                                        <div *ngIf="mf.tone_carbs?.errors?.['max']">Carbs cannot exceed 100.</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Fats</label>
+                                    <div class="unit-field">
+                                        <input type="number" placeholder="Enter Here" class="form-control"
+                                            formControlName="tone_fats" />
+                                        <button type="button" class="field-unit">%</button>
+                                    </div>
+                                    <div *ngIf="isMSubmitted && mf.tone_fats?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="mf.tone_fats?.errors?.['required']">Fats is required.</div>
+                                        <div *ngIf="mf.tone_fats?.errors?.['min']">Fats must be at least 0.</div>
+                                        <div *ngIf="mf.tone_fats?.errors?.['max']">Fats cannot exceed 100.</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Proteins</label>
+                                    <div class="unit-field">
+                                        <input type="number" placeholder="Enter Here" class="form-control"
+                                            formControlName="tone_proteins" />
+                                        <button type="button" class="field-unit">%</button>
+                                    </div>
+                                    <div *ngIf="isMSubmitted && mf.tone_proteins?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="mf.tone_proteins?.errors?.['required']">Proteins is required.</div>
+                                        <div *ngIf="mf.tone_proteins?.errors?.['min']">Proteins must be at least 0.
+                                        </div>
+                                        <div *ngIf="mf.tone_proteins?.errors?.['max']">Proteins cannot exceed 100.</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Calories (-)</label>
+                                    <div class="unit-field">
+                                        <input type="number" placeholder="Enter Here" class="form-control"
+                                            formControlName="tone_proteins_per_lb" />
+                                        <button type="button" class="field-unit">cal</button>
+                                    </div>
+                                    <div *ngIf="isMSubmitted && mf.tone_proteins_per_lb?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="mf.tone_proteins_per_lb?.errors?.['required']">Calories is
+                                            required.</div>
+                                        <div *ngIf="mf.tone_proteins_per_lb?.errors?.['min']">Calories must be at
+                                            least 0.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="row mb-4 align-items-start">
+                        <div class=" col-md-12 col-lg-2 mb-3">
+                            <label class="clabel">Build Muscle</label>
+                        </div>
+                        <div class="col-md-12 col-lg">
+                            <div class="row">
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Carbs</label>
+                                    <div class="unit-field">
+                                        <input type="number" placeholder="Enter Here" class="form-control"
+                                            formControlName="build_carbs" />
+                                        <button type="button" class="field-unit">%</button>
+                                    </div>
+                                    <div *ngIf="isMSubmitted && mf.build_carbs?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="mf.build_carbs?.errors?.['required']">Carbs is required.</div>
+                                        <div *ngIf="mf.build_carbs?.errors?.['min']">Carbs must be at least 0.</div>
+                                        <div *ngIf="mf.build_carbs?.errors?.['max']">Carbs cannot exceed 100.</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Fats</label>
+                                    <div class="unit-field">
+                                        <input type="number" placeholder="Enter Here" class="form-control"
+                                            formControlName="build_fats" />
+                                        <button type="button" class="field-unit">%</button>
+                                    </div>
+                                    <div *ngIf="isMSubmitted && mf.build_fats?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="mf.build_fats?.errors?.['required']">Fats is required.</div>
+                                        <div *ngIf="mf.build_fats?.errors?.['min']">Fats must be at least 0.</div>
+                                        <div *ngIf="mf.build_fats?.errors?.['max']">Fats cannot exceed 100.</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Proteins</label>
+                                    <div class="unit-field">
+                                        <input type="number" placeholder="Enter Here" class="form-control"
+                                            formControlName="build_proteins" />
+                                        <button type="button" class="field-unit">%</button>
+                                    </div>
+                                    <div *ngIf="isMSubmitted && mf.build_proteins?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="mf.build_proteins?.errors?.['required']">Proteins is required.</div>
+                                        <div *ngIf="mf.build_proteins?.errors?.['min']">Proteins must be at least 0.
+                                        </div>
+                                        <div *ngIf="mf.build_proteins?.errors?.['max']">Proteins cannot exceed 100.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-md-3 col-lg mb-3">
+                                    <label>Calories (-)</label>
+                                    <div class="unit-field">
+                                        <input type="number" placeholder="Enter Here" class="form-control"
+                                            formControlName="build_proteins_per_lb" />
+                                        <button type="button" class="field-unit">cal</button>
+                                    </div>
+                                    <div *ngIf="isMSubmitted && mf.build_proteins_per_lb?.errors"
+                                        class="text-start text-danger mt-1" style="font-size: 14px">
+                                        <div *ngIf="mf.build_proteins_per_lb?.errors?.['required']">Calories is
+                                            required.</div>
+                                        <div *ngIf="mf.build_proteins_per_lb?.errors?.['min']">Calories must be at
+                                            least 0.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-submitions">
+                    <button class="btn btn-bdr-primary" (click)="on_restore_defaults('macronutrients')"
+                        [disabled]="dataService.isLoading && isMSubmitted">Restore
+                        Defaults<div class="spinner-border text-light" role="status"
+                            *ngIf="dataService.isLoading &&  isMSubmitted">
+                            <span class="visually-hidden">Loading...</span>
+                        </div></button>
+                    <button class="btn btn-primary" (click)="on_apply_macronutrients()"
+                        [disabled]="dataService.isLoading &&  isMSubmitted">Apply<div class="spinner-border text-light"
+                            role="status" *ngIf="dataService.isLoading &&  isMSubmitted">
+                            <span class="visually-hidden">Loading...</span>
+                        </div></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

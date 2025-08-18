@@ -1,0 +1,15 @@
+<div class="user-main-tab">
+  <div class="user-main-img"><img *ngIf="dataService?.currentUserData?.profile_image"
+      [src]="dataService?.currentUserData?.profile_image" class="img-fluid" />
+    <span
+      *ngIf="!dataService?.currentUserData?.profile_image">{{dataService?.currentUserData?.name?.slice(0,1)}}</span><i></i>
+  </div>
+  <div class="user-main-text">
+    <div class="logo-img">
+      <img src="../../assets/images/logo.svg" class="img-fluid" />
+    </div>
+    <h1 class="mb-0"><span>{{dataService.currentUserData.first_name && dataService.currentUserData.last_name ?
+        dataService.currentUserData.first_name + ' '+
+        dataService.currentUserData.last_name : dataService.currentUserData.name}}</span></h1>
+  </div>
+</div>
