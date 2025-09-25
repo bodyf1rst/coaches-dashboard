@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://127.0.0.1:8001/api'
+  apiUrl: 'http://awseb-e-y-AWSEBLoa-1Q1RHBK0D3Q0K-327736023.us-east-1.elb.amazonaws.com/api'
 };
