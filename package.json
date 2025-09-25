@@ -1,6 +1,6 @@
 {
-  "name": "BodyF1rst-Web-1.0",
-  "version": "0.0.0",
+  "name": "coaches-dashboard",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -11,7 +11,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^14.0.0",
-    "@angular/cdk": "^20.2.5",
+    "@angular/cdk": "^14.0.0",
     "@angular/common": "^14.0.0",
     "@angular/compiler": "^14.0.0",
     "@angular/core": "^14.0.0",
