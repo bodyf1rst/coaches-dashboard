@@ -3,9 +3,43 @@
     <div class="logo">
       <img src="../../assets/images/logo.svg" class="img-fluid" />
     </div>
-    <h5 class="text-center mb-4">{{!checkOtp?'Login':'Verify OTP'}}</h5>
+    <h5 class="text-center mb-4">
+      <span *ngIf="loginMode === 'superman'">🦸‍♂️ Super Admin Access</span>
+      <span *ngIf="loginMode === 'coach'">👨‍🏫 Coach Access</span>
+      <span *ngIf="loginMode === 'default'">{{!checkOtp?'Login':'Verify OTP'}}</span>
+    </h5>
+    
+    <!-- Enhanced Access Buttons -->
+    <div class="access-buttons mb-4" *ngIf="showAccessButtons">
+      <div class="row g-2">
+        <div class="col-6">
+          <button type="button" class="btn btn-danger w-100 d-flex align-items-center justify-content-center gap-2"
+            (click)="setSupermanAccess()">
+            <span style="font-size: 24px;">🦸‍♂️</span>
+            <span>Superman Access</span>
+          </button>
+        </div>
+        <div class="col-6">
+          <button type="button" class="btn btn-info w-100 d-flex align-items-center justify-content-center gap-2"
+            (click)="setCoachAccess()">
+            <span style="font-size: 24px;">👨‍🏫</span>
+            <span>Coach Access</span>
+          </button>
+        </div>
+      </div>
+      <div class="text-center mt-3 text-muted">
+        <small>Choose your access level to continue</small>
+      </div>
+    </div>
+
     <form class="row g-3" [formGroup]="loginForm">
       <div class="log-form" *ngIf="!checkOtp">
+        <!-- Back Button for Access Modes -->
+        <button type="button" class="btn btn-link p-0 mb-2" *ngIf="loginMode !== 'default'"
+          (click)="resetAccess()">
+          ← Back to Access Selection
+        </button>
+        
         <div class="mb-3">
           <label class="form-label">Email</label>
           <div class="icon-field">
@@ -14,7 +48,7 @@
               <img src="../../assets/images/message-icon.svg" />
             </div>
           </div>
-          <div class="text-start text-danger mt-1" style="font-size: 14px" *ngIf="errorInvalid && f.email?.errors">
+          <div class="text-start text-danger mt-1" style="font-size: 14px" *ngIf="errorInvalid && f['email']?.errors">
             This Field is Invalid.
           </div>
         </div>
@@ -30,7 +64,7 @@
               <i [ngClass]="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
             </button>
           </div>
-          <div class="text-start text-danger mt-1" style="font-size: 14px" *ngIf="errorInvalid && f.password?.errors">
+          <div class="text-start text-danger mt-1" style="font-size: 14px" *ngIf="errorInvalid && f['password']?.errors">
             This Field is Invalid.
           </div>
         </div>
@@ -56,7 +90,7 @@
           <label class="form-label">Enter OTP*</label>
           <input type="number" class="form-control" placeholder="Enter Here" [(ngModel)]="otpNumber"
             [ngModelOptions]="{standalone: true}" maxlength="6" />
-          <div class="text-start text-danger mt-1" style="font-size: 14px" *ngIf="errorInvalid && !otpNumber.length">
+          <div class="text-start text-danger mt-1" style="font-size: 14px" *ngIf="errorInvalid && !otpNumber">
             This Field is Required.
           </div>
           <div class="col-12 mb-3 mt-1">

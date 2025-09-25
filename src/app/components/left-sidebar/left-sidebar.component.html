@@ -1,6 +1,5 @@
 <div class="left-sidebar" [ngClass]="dataService.isMenuOpen ? 'menu-open': ''">
   <div class="menu-action">
-    <button *ngIf="!dataService.isMenuOpen" (click)="menuClick(true)"><i class="fa-solid fa-bars"></i></button>
     <button *ngIf="dataService.isMenuOpen" (click)="menuClick(false)"><i class="fa-solid fa-xmark"></i></button>
   </div>
   <div class="sidebar-logo">
@@ -9,36 +8,16 @@
   <div class="sidebar-nav">
     <ul>
       <li>
-        <a [routerLink]="'/dashboard'" routerLinkActive="active"><i><img src="../../../assets/images/dashboard.svg"
-              class="img-fluid" /></i>
-          Dashboard</a>
-      </li>
-      <li *ngIf="dataService.currentUserData.role == 'Coach'" class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-          [ngClass]="{'active': isDropdownActive(cdrop)}" aria-expanded="isDropdownActive()">
-          <i><img src="../../../assets/images/coach.svg" class="img-fluid" /></i>
-          Assigned
+        <a [routerLink]="'/dashboard'" routerLinkActive="active">
+          <i><span style="font-style: normal;">🏠</span></i>
+          Dashboard
         </a>
-        <ul class="dropdown-menu" routerLinkActive="show" #cdrop="routerLinkActive">
-          <li><a class="dropdown-item" [routerLink]="'/add-user'" routerLinkActive="active"><i><img
-                  src="../../../assets/images/user-icon.svg" class="img-fluid" /></i> Add User</a>
-          </li>
-          <li><a class="dropdown-item" [routerLink]="'/employees'" routerLinkActive="active"><i><img
-                  src="../../../assets/images/user-icon.svg" class="img-fluid" /></i> All
-              Employees</a></li>
-          <li><a class="dropdown-item" [routerLink]="'/clients'" routerLinkActive="active"><i><img
-                  src="../../../assets/images/user-icon.svg" class="img-fluid" /></i> All
-              Clients</a></li>
-          <li><a class="dropdown-item" [routerLink]="'/manage-organizations'" routerLinkActive="active"><i><img
-                  src="../../assets/images/manage-organization.svg" class="img-fluid" /></i> All
-              Organizations</a></li>
-        </ul>
       </li>
 
       <li *ngIf="dataService.currentUserData.role == 'Admin'" class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
           [ngClass]="{'active': isDropdownActive(cdrop)}" aria-expanded="isDropdownActive()">
-          <i><img src="../../../assets/images/manage-coach.svg" class="img-fluid" /></i>
+          <i><span style="font-style: normal;">👨‍🏫</span></i>
           Manage Coaches
         </a>
         <ul class="dropdown-menu" routerLinkActive="show" #cdrop="routerLinkActive">
@@ -54,7 +33,7 @@
       <li class="nav-item dropdown" *ngIf="dataService.currentUserData.role == 'Admin'">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
           [ngClass]="{'active': isDropdownActive(udrop)}" aria-expanded="isDropdownActive()">
-          <i><img src="../../../assets/images/user-icon.svg" class="img-fluid" /></i>
+          <i><span style="font-style: normal;">👥</span></i>
           Manage Users <span class="cbadge" *ngIf="dataService?.dashboardStats?.new_signup_users">
             {{dataService?.dashboardStats?.new_signup_users}}
           </span>
@@ -79,7 +58,7 @@
       <li class="nav-item dropdown" *ngIf="dataService.currentUserData.role == 'Admin'">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
           [ngClass]="{'active': isDropdownActive(org)}" aria-expanded="isDropdownActive()">
-          <i><img src="../../assets/images/manage-organization.svg" class="img-fluid" /></i>
+          <i><span style="font-style: normal;">🏢</span></i>
           Manage Organizations <span class="cbadge" *ngIf="dataService?.dashboardStats?.new_submissions">
             {{dataService?.dashboardStats?.new_submissions}}
           </span>
@@ -119,27 +98,49 @@
           </li>
         </ul>
       </li> -->
+      
+      <!-- Video Libraries Section with All Categories -->
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+          [ngClass]="{'active': isDropdownActive(vidlib)}" aria-expanded="isDropdownActive()">
+          <i><span style="font-style: normal;">📹</span></i>
+          Video Libraries
+        </a>
+        <ul class="dropdown-menu" routerLinkActive="show" #vidlib="routerLinkActive">
+          <li><a class="dropdown-item" [routerLink]="'/workout-videos'" routerLinkActive="active">
+            <i><span style="font-style: normal;">💪</span></i> Workout Videos</a></li>
+          <li><a class="dropdown-item" [routerLink]="'/nutrition-videos'" routerLinkActive="active">
+            <i><span style="font-style: normal;">🥗</span></i> Nutrition Videos</a></li>
+          <li><a class="dropdown-item" [routerLink]="'/mindset-videos'" routerLinkActive="active">
+            <i><span style="font-style: normal;">🧘</span></i> Spirit & Mindset</a></li>
+          <li><a class="dropdown-item" [routerLink]="'/notification-videos'" routerLinkActive="active">
+            <i><span style="font-style: normal;">🔔</span></i> Push Notifications (≤30s)</a></li>
+        </ul>
+      </li>
+      
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
           [ngClass]="{'active': isDropdownActive(fid)}" aria-expanded="isDropdownActive()">
-          <i><img src="../../assets/images/gym-icon.svg" class="img-fluid" /></i>
+          <i><span style="font-style: normal;">🏋️</span></i>
           Manage Fitness
         </a>
         <ul class="dropdown-menu" routerLinkActive="show" #fid="routerLinkActive">
           <li><a class="dropdown-item" [routerLink]="'/manage-exercises'" routerLinkActive="active"><i><img
                   src="../../assets/images/exercise.svg" class="img-fluid" /></i> Exercises</a></li>
           <li><a class="dropdown-item" [routerLink]="'/manage-workouts'" routerLinkActive="active"><i><img
-                  src="../../assets/images/workout.svg" class="img-fluid" /></i>Workout</a>
+                  src="../../assets/images/workout.svg" class="img-fluid" /></i>Workout Builder</a>
           </li>
+          <li><a class="dropdown-item" [routerLink]="'/workout-videos'" routerLinkActive="active">
+            <i><span style="font-style: normal;">🎥</span></i> Workout Videos</a></li>
           <li><a class="dropdown-item" [routerLink]="'/plans'" routerLinkActive="active"><i><img
-                  src="../../assets/images/plan.svg" class="img-fluid" /></i>Plans</a>
+                  src="../../assets/images/plan.svg" class="img-fluid" /></i>Fitness Plans</a>
           </li>
         </ul>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
           [ngClass]="{'active': isDropdownActive(cid)}" aria-expanded="isDropdownActive()">
-          <i><img src="../../assets/images/goal-icon.svg" class="img-fluid" /></i>
+          <i><span style="font-style: normal;">🏆</span></i>
           Manage Challenges
         </a>
         <ul class="dropdown-menu" routerLinkActive="show" #cid="routerLinkActive">
@@ -157,24 +158,47 @@
       <li class="nav-item dropdown" *ngIf="dataService.currentUserData.role == 'Admin'">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
           [ngClass]="{'active': isDropdownActive(nv)}" aria-expanded="isDropdownActive()">
-          <i><img src="../../assets/images/nutrition-1.svg" class="img-fluid" /></i>
+          <i><span style="font-style: normal;">🍎</span></i>
           Manage Nutrition
         </a>
         <ul class="dropdown-menu" routerLinkActive="show" #nv="routerLinkActive">
-          <li><a class="dropdown-item" [routerLink]="'/nutrition-videos'" routerLinkActive="active"><i><img
-                  src="../../assets/images/play-icon.svg" class="img-fluid" /></i> Nutritions Videos</a></li>
+          <li><a class="dropdown-item" [routerLink]="'/meal-plans'" routerLinkActive="active">
+            <i><span style="font-style: normal;">🍽️</span></i> Meal Plans</a></li>
+          <li><a class="dropdown-item" [routerLink]="'/nutrition-videos'" routerLinkActive="active">
+            <i><span style="font-style: normal;">🎬</span></i> Nutrition Videos</a></li>
           <li><a class="dropdown-item" [routerLink]="'/nutrition-formula'" routerLinkActive="active"><i><img
-                  src="../../assets/images/nutrition-1.svg" class="img-fluid" /></i> Nutritions Formula</a></li>
+                  src="../../assets/images/nutrition-1.svg" class="img-fluid" /></i> Nutrition Formula</a></li>
         </ul>
       </li>
+      <!-- Client Dashboard Section -->
+      <li *ngIf="dataService.currentUserData.role == 'Admin'">
+        <a [routerLink]="'/client-dashboard'" routerLinkActive="active">
+          <i><span style="font-style: normal;">📊</span></i>
+          Client Dashboard</a>
+      </li>
+      
+      <!-- Analytics & Insights Section -->
+      <li *ngIf="dataService.currentUserData.role == 'Admin'">
+        <a [routerLink]="'/analytics'" routerLinkActive="active">
+          <i><span style="font-style: normal;">📈</span></i>
+          Analytics & Insights</a>
+      </li>
+      
+      <!-- Coach Workflow Section -->
+      <li>
+        <a [routerLink]="'/coach-workflow'" routerLinkActive="active">
+          <i><span style="font-style: normal;">🚀</span></i>
+          Coach Workflow</a>
+      </li>
+      
       <li>
         <a *ngIf="dataService.currentUserData.role == 'Admin'" [routerLink]="'/manage-body-points'"
-          routerLinkActive="active"><i><img src="../../assets/images/body-points.svg" class="img-fluid" /></i>
+          routerLinkActive="active"><i><span style="font-style: normal;">🎖️</span></i>
           Manage BodyPoints</a>
       </li>
       <li *ngIf="dataService.currentUserData.role == 'Admin'">
-        <a [routerLink]="'/manage-notifications'" routerLinkActive="active"><i><img
-              src="../../assets/images/announcement.svg" class="img-fluid" /></i>
+        <a [routerLink]="'/manage-notifications'" routerLinkActive="active">
+          <i><span style="font-style: normal;">📣</span></i>
           Manage Announcements</a>
       </li>
       <li *ngIf="dataService.currentUserData.role != 'Admin'">
@@ -185,7 +209,7 @@
       <li class="nav-item dropdown" *ngIf="dataService.currentUserData.role == 'Admin'">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
           [ngClass]="{'active': isDropdownActive(sc)}" aria-expanded="isDropdownActive()">
-          <i><img src="../../assets/images/manage-content.svg" class="img-fluid" /></i>
+          <i><span style="font-style: normal;">📝</span></i>
           Manage Content
         </a>
         <ul class="dropdown-menu" routerLinkActive="show" #sc="routerLinkActive">
@@ -196,12 +220,13 @@
         </ul>
       </li>
       <li>
-        <a [routerLink]="'/my-profile'" routerLinkActive="active"><i><img src="../../assets/images/profile-icon.svg"
-              class="img-fluid" /></i>
+        <a [routerLink]="'/my-profile'" routerLinkActive="active">
+          <i><span style="font-style: normal;">👤</span></i>
           My Profile</a>
       </li>
       <li>
-        <a (click)="dataService.logout()"><i><img src="../../assets/images/logout-icon.svg" class="img-fluid" /></i>
+        <a (click)="dataService.logout()">
+          <i><span style="font-style: normal;">🚪</span></i>
           Logout</a>
       </li>
     </ul>
