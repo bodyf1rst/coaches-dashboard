@@ -43,7 +43,7 @@ import { LeaderboardComponent } from './pages/leaderboard/leaderboard.component'
 const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [StopNavigateGuard] },
   { path: 'forgot-password', component: ForgotPasswordComponent, canActivate: [StopNavigateGuard] },
-  { path: 'dashboard', component: DashboardComponent },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   {
     path: 'manage-organizations',
     canActivate: [AuthGuard],
@@ -271,8 +271,8 @@ const routes: Routes = [
     ]
   },
   { path: 'add-intro-video', component: AddIntroVideoComponent, canActivate: [AuthGuard, CoachRestrictGuard] },
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-  { path: '**', redirectTo: '/dashboard' }
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '**', redirectTo: '/login' }
 ];
 
 @NgModule({
