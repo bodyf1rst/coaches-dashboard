@@ -47,17 +47,98 @@
       }
     }
 
-    .search-box {
-      .search-input {
-        padding: 10px 15px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        width: 300px;
-        font-size: 14px;
+    .search-controls {
+      display: flex;
+      gap: 10px;
 
-        &:focus {
-          outline: none;
-          border-color: #e74c3c;
+      .search-box {
+        display: flex;
+        gap: 10px;
+
+        .search-mode {
+          padding: 10px;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          background: white;
+          cursor: pointer;
+
+          &:focus {
+            outline: none;
+            border-color: #e74c3c;
+          }
+        }
+
+        .search-input {
+          padding: 10px 15px;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          width: 400px;
+          font-size: 14px;
+
+          &:focus {
+            outline: none;
+            border-color: #e74c3c;
+          }
+        }
+      }
+    }
+  }
+
+  .tag-filter {
+    background: #f8f9fa;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+
+    .filter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+
+      h3 {
+        margin: 0;
+        color: #333;
+        font-size: 18px;
+      }
+
+      .clear-btn {
+        padding: 5px 15px;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+
+        &:hover {
+          background: #c82333;
+        }
+      }
+    }
+
+    .tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      .filter-tag {
+        padding: 5px 12px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 13px;
+
+        &:hover {
+          background: #f0f0f0;
+        }
+
+        &.active {
+          background: #007bff;
+          color: white;
+          border-color: #007bff;
         }
       }
     }

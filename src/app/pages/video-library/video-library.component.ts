@@ -16,6 +16,9 @@ export class VideoLibraryComponent implements OnInit {
   currentPage = 1;
   itemsPerPage = 20;
   totalPages = 0;
+  selectedTags: string[] = [];
+  allTags: string[] = [];
+  searchMode: 'title' | 'tags' | 'transcription' | 'all' = 'all';
 
   categories = [
     { value: 'all', label: 'All Videos' },
@@ -303,7 +306,7 @@ export class VideoLibraryComponent implements OnInit {
       'Zottman Curl.mov'
     ];
 
-    // Convert file names to video objects with tags
+    // Convert file names to video objects with tags and mock transcriptions
     this.videos = videoList.map((fileName, index) => {
       const title = fileName.replace('.mov', '').replace(/([A-Z])/g, ' $1').trim();
       const tags = this.generateTags(title);
@@ -315,13 +318,24 @@ export class VideoLibraryComponent implements OnInit {
         duration: '0:30',
         url: `https://bodyf1rst-workout-video-storage.s3.amazonaws.com/${encodeURIComponent(fileName)}`,
         tags: tags,
-        transcription: null, // Will be populated when AWS Transcribe is integrated
-        transcriptionStatus: 'pending' // pending, processing, completed
+        transcription: this.generateMockTranscription(title), // Mock for now
+        transcriptionStatus: Math.random() > 0.3 ? 'completed' : 'pending',
+        s3Key: fileName
       };
     });
 
+    // Extract all unique tags
+    const tagSet = new Set<string>();
+    this.videos.forEach(video => {
+      video.tags.forEach((tag: string) => tagSet.add(tag));
+    });
+    this.allTags = Array.from(tagSet).sort();
+
     this.filterVideos();
     this.isLoading = false;
+    
+    // Simulate AWS Transcribe integration
+    this.startTranscriptionJobs();
   }
 
   onCategoryChange(category: string): void {
@@ -335,10 +349,36 @@ export class VideoLibraryComponent implements OnInit {
 
   filterVideos(): void {
     this.filteredVideos = this.videos.filter(video => {
+      // Category filter
       const categoryMatch = this.selectedCategory === 'all' || video.category === this.selectedCategory;
-      const searchMatch = !this.searchText || 
-        video.title.toLowerCase().includes(this.searchText.toLowerCase());
-      return categoryMatch && searchMatch;
+      
+      // Tag filter
+      const tagMatch = this.selectedTags.length === 0 || 
+        this.selectedTags.every(tag => video.tags.includes(tag));
+      
+      // Search filter based on mode
+      let searchMatch = true;
+      if (this.searchText) {
+        const searchLower = this.searchText.toLowerCase();
+        switch (this.searchMode) {
+          case 'title':
+            searchMatch = video.title.toLowerCase().includes(searchLower);
+            break;
+          case 'tags':
+            searchMatch = video.tags.some((tag: string) => tag.toLowerCase().includes(searchLower));
+            break;
+          case 'transcription':
+            searchMatch = video.transcription && video.transcription.toLowerCase().includes(searchLower);
+            break;
+          case 'all':
+            searchMatch = video.title.toLowerCase().includes(searchLower) ||
+              video.tags.some((tag: string) => tag.toLowerCase().includes(searchLower)) ||
+              (video.transcription && video.transcription.toLowerCase().includes(searchLower));
+            break;
+        }
+      }
+      
+      return categoryMatch && tagMatch && searchMatch;
     });
     this.currentPage = 1;
     this.updatePagination();
@@ -405,6 +445,80 @@ export class VideoLibraryComponent implements OnInit {
     
     // In the future, this will open a modal with the video player
     // and display the transcription if available
+  }
+
+  toggleTag(tag: string): void {
+    const index = this.selectedTags.indexOf(tag);
+    if (index > -1) {
+      this.selectedTags.splice(index, 1);
+    } else {
+      this.selectedTags.push(tag);
+    }
+    this.filterVideos();
+  }
+
+  clearFilters(): void {
+    this.selectedTags = [];
+    this.selectedCategory = 'all';
+    this.searchText = '';
+    this.filterVideos();
+  }
+
+  generateMockTranscription(title: string): string {
+    // Mock transcription for demonstration
+    // In production, this will be replaced with actual AWS Transcribe data
+    const transcriptions: { [key: string]: string } = {
+      'squat': 'Begin with feet shoulder-width apart. Lower your body by bending at the knees and hips. Keep your chest up and core engaged. Push through your heels to return to standing position.',
+      'press': 'Start with weights at shoulder level. Press upward in a controlled motion. Fully extend arms without locking elbows. Lower back to starting position with control.',
+      'curl': 'Hold weights with palms facing forward. Keep elbows stationary at your sides. Curl weights toward shoulders. Slowly lower back to starting position.',
+      'row': 'Hinge forward at the hips. Pull weights toward your torso. Squeeze shoulder blades together. Return to starting position with control.',
+      'deadlift': 'Stand with feet hip-width apart. Hinge at hips, keeping back straight. Grip the bar and drive through heels to stand. Keep core engaged throughout movement.'
+    };
+    
+    const lowerTitle = title.toLowerCase();
+    for (const [key, value] of Object.entries(transcriptions)) {
+      if (lowerTitle.includes(key)) {
+        return value;
+      }
+    }
+    
+    return `Professional exercise demonstration for ${title}. This exercise targets multiple muscle groups and should be performed with proper form and control.`;
+  }
+
+  startTranscriptionJobs(): void {
+    // Simulate AWS Transcribe job initialization
+    // In production, this would trigger actual AWS Transcribe jobs
+    console.log('Starting AWS Transcribe jobs for videos without transcriptions...');
+    
+    const pendingVideos = this.videos.filter(v => v.transcriptionStatus === 'pending');
+    
+    // Simulate processing some videos
+    pendingVideos.slice(0, 5).forEach((video, index) => {
+      setTimeout(() => {
+        video.transcriptionStatus = 'processing';
+        console.log(`Started transcription for: ${video.title}`);
+        
+        // Simulate completion
+        setTimeout(() => {
+          video.transcriptionStatus = 'completed';
+          video.transcription = this.generateMockTranscription(video.title);
+          console.log(`Completed transcription for: ${video.title}`);
+        }, 5000 + (index * 1000));
+      }, index * 500);
+    });
+  }
+
+  triggerAwsTranscribe(video: any): void {
+    // This method would be called to manually trigger AWS Transcribe for a specific video
+    const params = {
+      s3Uri: `s3://bodyf1rst-workout-video-storage/${video.s3Key}`,
+      outputBucket: 'bodyf1rst-transcriptions',
+      languageCode: 'en-US',
+      jobName: `transcribe-${video.id}-${Date.now()}`
+    };
+    
+    console.log('AWS Transcribe params:', params);
+    // In production: this.awsService.startTranscriptionJob(params)
   }
 }
 // Force rebuild at Thu Sep 25 20:14:00 CDT 2025

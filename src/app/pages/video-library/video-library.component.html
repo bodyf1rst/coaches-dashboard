@@ -14,14 +14,38 @@
         {{cat.label}}
       </button>
     </div>
+    
+    <div class="search-controls">
+      <div class="search-box">
+        <select [(ngModel)]="searchMode" (change)="filterVideos()" class="search-mode">
+          <option value="all">Search All</option>
+          <option value="title">Title Only</option>
+          <option value="tags">Tags Only</option>
+          <option value="transcription">Transcription</option>
+        </select>
+        <input 
+          type="text" 
+          [(ngModel)]="searchText" 
+          (input)="onSearch()"
+          placeholder="Search videos, tags, or transcriptions..."
+          class="search-input">
+      </div>
+    </div>
+  </div>
 
-    <div class="search-box">
-      <input 
-        type="text" 
-        [(ngModel)]="searchText" 
-        (input)="onSearch()"
-        placeholder="Search videos..."
-        class="search-input">
+  <div class="tag-filter" *ngIf="allTags.length > 0">
+    <div class="filter-header">
+      <h3>Filter by Tags</h3>
+      <button (click)="clearFilters()" class="clear-btn">Clear All</button>
+    </div>
+    <div class="tag-cloud">
+      <button 
+        *ngFor="let tag of allTags.slice(0, 20)" 
+        [class.active]="selectedTags.includes(tag)"
+        (click)="toggleTag(tag)"
+        class="filter-tag">
+        {{tag}}
+      </button>
     </div>
   </div>
 
