@@ -62,6 +62,7 @@ import { NutritionsVideosComponent } from './pages/manage-nutritions/nutritions-
 import { AddNutritionsVideosComponent } from './pages/manage-nutritions/add-nutritions-videos/add-nutritions-videos.component';
 import { PlaceholderTabComponent } from './components/placeholder-tab/placeholder-tab.component';
 import { LeaderboardComponent } from './pages/leaderboard/leaderboard.component';
+import { VideoLibraryComponent } from './pages/video-library/video-library.component';
 
 
 @NgModule({
@@ -118,6 +119,7 @@ import { LeaderboardComponent } from './pages/leaderboard/leaderboard.component'
     AddNutritionsVideosComponent,
     PlaceholderTabComponent,
     LeaderboardComponent,
+    VideoLibraryComponent,
   ],
   imports: [
     BrowserModule,

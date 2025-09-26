@@ -1,0 +1,49 @@
+<div class="video-library-container">
+  <div class="header">
+    <h2>Video Library</h2>
+    <p>Manage and view all training videos</p>
+  </div>
+
+  <div class="controls">
+    <div class="category-buttons">
+      <button 
+        *ngFor="let cat of categories" 
+        [class.active]="selectedCategory === cat.value"
+        (click)="onCategoryChange(cat.value)"
+        class="category-btn">
+        {{cat.label}}
+      </button>
+    </div>
+
+    <div class="search-box">
+      <input 
+        type="text" 
+        [(ngModel)]="searchText" 
+        (input)="onSearch()"
+        placeholder="Search videos..."
+        class="search-input">
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner-border"></div>
+    <p>Loading videos...</p>
+  </div>
+
+  <div *ngIf="!isLoading && filteredVideos.length === 0" class="no-videos">
+    <p>No videos found</p>
+  </div>
+
+  <div *ngIf="!isLoading && filteredVideos.length > 0" class="video-grid">
+    <div *ngFor="let video of filteredVideos" class="video-card">
+      <div class="video-thumbnail">
+        <div class="play-button">▶</div>
+        <span class="duration">{{video.duration}}</span>
+      </div>
+      <div class="video-info">
+        <h4>{{video.title}}</h4>
+        <span class="category">{{video.category}}</span>
+      </div>
+    </div>
+  </div>
+</div>
