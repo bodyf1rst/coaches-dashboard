@@ -68,8 +68,9 @@
         <img *ngIf="video.thumbnail" 
              [src]="video.thumbnail" 
              [alt]="video.title"
+             (error)="onThumbnailError($event, video)"
              class="thumbnail-image">
-        <div *ngIf="!video.thumbnail" class="placeholder-thumbnail">
+        <div *ngIf="!video.thumbnail || video.thumbnailError" class="placeholder-thumbnail">
           <div class="play-icon">▶</div>
         </div>
         <div class="thumbnail-overlay">

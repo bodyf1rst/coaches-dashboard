@@ -207,6 +207,18 @@
           width: 100%;
           height: 100%;
           object-fit: cover;
+          background: #f0f0f0;
+          
+          &:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: -1;
+          }
         }
 
         .placeholder-thumbnail {
