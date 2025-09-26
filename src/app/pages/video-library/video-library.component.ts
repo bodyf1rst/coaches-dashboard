@@ -303,14 +303,22 @@ export class VideoLibraryComponent implements OnInit {
       'Zottman Curl.mov'
     ];
 
-    // Convert file names to video objects
-    this.videos = videoList.map((fileName, index) => ({
-      id: index + 1,
-      title: fileName.replace('.mov', '').replace(/([A-Z])/g, ' $1').trim(),
-      category: 'workout',
-      duration: '0:30',
-      url: `https://bodyf1rst-workout-video-storage.s3.amazonaws.com/${encodeURIComponent(fileName)}`
-    }));
+    // Convert file names to video objects with tags
+    this.videos = videoList.map((fileName, index) => {
+      const title = fileName.replace('.mov', '').replace(/([A-Z])/g, ' $1').trim();
+      const tags = this.generateTags(title);
+      
+      return {
+        id: index + 1,
+        title: title,
+        category: 'workout',
+        duration: '0:30',
+        url: `https://bodyf1rst-workout-video-storage.s3.amazonaws.com/${encodeURIComponent(fileName)}`,
+        tags: tags,
+        transcription: null, // Will be populated when AWS Transcribe is integrated
+        transcriptionStatus: 'pending' // pending, processing, completed
+      };
+    });
 
     this.filterVideos();
     this.isLoading = false;
@@ -355,6 +363,48 @@ export class VideoLibraryComponent implements OnInit {
       this.currentPage--;
       this.updatePagination();
     }
+  }
+
+  generateTags(title: string): string[] {
+    const tags = [];
+    const lowerTitle = title.toLowerCase();
+    
+    // Equipment tags
+    if (lowerTitle.includes('dumbbell') || lowerTitle.includes('db')) tags.push('dumbbells');
+    if (lowerTitle.includes('barbell')) tags.push('barbell');
+    if (lowerTitle.includes('cable')) tags.push('cable');
+    if (lowerTitle.includes('band')) tags.push('resistance band');
+    if (lowerTitle.includes('ball')) tags.push('exercise ball');
+    if (lowerTitle.includes('machine')) tags.push('machine');
+    
+    // Body part tags
+    if (lowerTitle.includes('chest') || lowerTitle.includes('pec')) tags.push('chest');
+    if (lowerTitle.includes('back') || lowerTitle.includes('lat') || lowerTitle.includes('row')) tags.push('back');
+    if (lowerTitle.includes('shoulder') || lowerTitle.includes('delt')) tags.push('shoulders');
+    if (lowerTitle.includes('bicep') || lowerTitle.includes('curl')) tags.push('biceps');
+    if (lowerTitle.includes('tricep')) tags.push('triceps');
+    if (lowerTitle.includes('leg') || lowerTitle.includes('squat') || lowerTitle.includes('lunge')) tags.push('legs');
+    if (lowerTitle.includes('glute') || lowerTitle.includes('hip')) tags.push('glutes');
+    if (lowerTitle.includes('ab') || lowerTitle.includes('core') || lowerTitle.includes('crunch')) tags.push('core');
+    if (lowerTitle.includes('calf')) tags.push('calves');
+    
+    // Exercise type tags
+    if (lowerTitle.includes('press')) tags.push('press');
+    if (lowerTitle.includes('pull')) tags.push('pull');
+    if (lowerTitle.includes('squat')) tags.push('squat');
+    if (lowerTitle.includes('deadlift')) tags.push('deadlift');
+    if (lowerTitle.includes('stretch')) tags.push('flexibility');
+    if (lowerTitle.includes('plank')) tags.push('isometric');
+    
+    return tags;
+  }
+
+  playVideo(video: any): void {
+    // Open video in modal or new tab
+    window.open(video.url, '_blank');
+    
+    // In the future, this will open a modal with the video player
+    // and display the transcription if available
   }
 }
 // Force rebuild at Thu Sep 25 20:14:00 CDT 2025
