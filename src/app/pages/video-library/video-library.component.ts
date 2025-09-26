@@ -29,34 +29,46 @@ export class VideoLibraryComponent implements OnInit {
 
   loadVideos(): void {
     this.isLoading = true;
-    // Mock data for now
-    setTimeout(() => {
-      this.videos = [
-        {
-          id: 1,
-          title: 'Full Body Workout',
-          category: 'workout',
-          duration: '15:00',
-          url: 'https://example.com/video1.mp4'
-        },
-        {
-          id: 2,
-          title: 'Nutrition Basics',
-          category: 'nutrition',
-          duration: '10:00',
-          url: 'https://example.com/video2.mp4'
-        },
-        {
-          id: 3,
-          title: 'Mindfulness Meditation',
-          category: 'mindset',
-          duration: '20:00',
-          url: 'https://example.com/video3.mp4'
-        }
-      ];
-      this.filterVideos();
-      this.isLoading = false;
-    }, 1000);
+    // Using actual S3 videos
+    this.videos = [
+      {
+        id: 1,
+        title: 'Ab Roll Out',
+        category: 'workout',
+        duration: '0:30',
+        url: 'https://bodyf1rst-workout-video-storage.s3.amazonaws.com/Ab+Roll+Out.mov'
+      },
+      {
+        id: 2,
+        title: 'Ab Slider',
+        category: 'workout',
+        duration: '0:30',
+        url: 'https://bodyf1rst-workout-video-storage.s3.amazonaws.com/Ab+Slider.mov'
+      },
+      {
+        id: 3,
+        title: 'Ab Wheel Roll Out',
+        category: 'workout',
+        duration: '0:30',
+        url: 'https://bodyf1rst-workout-video-storage.s3.amazonaws.com/Ab+Wheel+Roll+Out.mov'
+      },
+      {
+        id: 4,
+        title: 'Adored Health',
+        category: 'workout',
+        duration: '0:30',
+        url: 'https://bodyf1rst-workout-video-storage.s3.amazonaws.com/Adored+Health.mov'
+      },
+      {
+        id: 5,
+        title: 'Alternating High Pull',
+        category: 'workout',
+        duration: '0:30',
+        url: 'https://bodyf1rst-workout-video-storage.s3.amazonaws.com/Alternating+High+Pull+Ups.mov'
+      }
+    ];
+    this.filterVideos();
+    this.isLoading = false;
   }
 
   onCategoryChange(category: string): void {

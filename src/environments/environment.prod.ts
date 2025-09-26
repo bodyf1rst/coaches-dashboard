@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://awseb-e-q-AWSEBLoa-13KGFBL7R8KWS-1984160231.us-east-1.elb.amazonaws.com/api'
+  apiUrl: 'https://api-bodyf1rst.com/api',
+  s3BucketUrl: 'https://bodyf1rst-workout-video-storage.s3.amazonaws.com'
 };
