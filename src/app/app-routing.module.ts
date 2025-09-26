@@ -11,6 +11,7 @@ import { ManagePreferencesComponent } from './pages/manage-preferences/manage-pr
 import { AuthGuard } from './guard/auth.guard';
 import { ManageCoachesComponent } from './pages/manage-coaches/manage-coaches.component';
 import { AddCoachComponent } from './pages/manage-coaches/add-coach/add-coach.component';
+import { VideoLibraryComponent } from './pages/video-library/video-library.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { ManageVideosComponent } from './pages/manage-videos/manage-videos.component';
 import { AddVideoComponent } from './pages/manage-videos/add-video/add-video.component';
@@ -267,10 +268,11 @@ const routes: Routes = [
       {
         path: 'intro-video-detail/:id',
         component: AddIntroVideoComponent
-      },
+      }
     ]
   },
   { path: 'add-intro-video', component: AddIntroVideoComponent, canActivate: [AuthGuard, CoachRestrictGuard] },
+  { path: 'video-library', component: VideoLibraryComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' }
 ];
