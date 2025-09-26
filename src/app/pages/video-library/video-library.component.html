@@ -34,8 +34,12 @@
     <p>No videos found</p>
   </div>
 
-  <div *ngIf="!isLoading && filteredVideos.length > 0" class="video-grid">
-    <div *ngFor="let video of filteredVideos" class="video-card">
+  <div *ngIf="!isLoading && filteredVideos.length > 0">
+    <div class="pagination-info">
+      Showing {{(currentPage - 1) * itemsPerPage + 1}} - {{currentPage * itemsPerPage > filteredVideos.length ? filteredVideos.length : currentPage * itemsPerPage}} of {{filteredVideos.length}} videos
+    </div>
+    <div class="video-grid">
+      <div *ngFor="let video of paginatedVideos" class="video-card">
       <div class="video-thumbnail">
         <video [src]="video.url" controls preload="metadata" style="width: 100%; height: 180px; object-fit: cover;">
           Your browser does not support the video tag.
@@ -46,6 +50,12 @@
         <h4>{{video.title}}</h4>
         <span class="category">{{video.category}}</span>
       </div>
+      </div>
+    </div>
+    <div class="pagination-controls">
+      <button (click)="previousPage()" [disabled]="currentPage === 1" class="btn btn-secondary">Previous</button>
+      <span class="page-info">Page {{currentPage}} of {{totalPages}}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="btn btn-secondary">Next</button>
     </div>
   </div>
 </div>
