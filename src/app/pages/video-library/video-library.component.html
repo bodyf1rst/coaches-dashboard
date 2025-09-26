@@ -65,8 +65,15 @@
     <div class="video-grid">
       <div *ngFor="let video of paginatedVideos" class="video-card">
       <div class="video-thumbnail" (click)="playVideo(video)">
-        <div class="placeholder-thumbnail">
+        <img *ngIf="video.thumbnail" 
+             [src]="video.thumbnail" 
+             [alt]="video.title"
+             class="thumbnail-image">
+        <div *ngIf="!video.thumbnail" class="placeholder-thumbnail">
           <div class="play-icon">▶</div>
+        </div>
+        <div class="thumbnail-overlay">
+          <div class="play-button">▶</div>
         </div>
         <span class="duration">{{video.duration}}</span>
       </div>
