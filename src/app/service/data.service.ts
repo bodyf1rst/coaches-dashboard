@@ -93,9 +93,14 @@ export class DataService {
   }
   // This funciton for quit this app
   logout() {
+    // Try to call the logout API, but ensure we logout even if it fails
     this.httpService.getApiData(this.httpService.logoutApi).then(async (res: any) => {
-      this.clearData();
-    }).catch((errors: any) => { this.onApiError(errors) });
+      this.clearData('Logged out successfully!');
+    }).catch((errors: any) => { 
+      console.error('Logout API error:', errors);
+      // Even if API fails, still clear local data and redirect
+      this.clearData('Logged out successfully!');
+    });
   }
   // This funciton for fetch current login user.
   getCurrentUserData() {
