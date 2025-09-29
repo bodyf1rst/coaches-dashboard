@@ -23,13 +23,12 @@ export interface VideoMetadata {
 export class S3VideoService {
   private s3BucketName = 'bodyf1rst-workout-storage';
   private s3Region = 'us-east-1';
-  private apiUrl = 'https://api.bodyf1rst.com';
+  private apiUrl = 'https://api.bodyf1rst.net';
   
   constructor(private http: HttpClient) {}
 
   /**
    * Get all videos from a specific category
-   */
   getVideosByCategory(category: string): Observable<VideoMetadata[]> {
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + localStorage.getItem('userToken')
