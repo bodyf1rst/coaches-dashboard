@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VIDEO TEST - DIRECT API CALL</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .count { font-size: 48px; color: green; font-weight: bold; }
+        .error { color: red; }
+        .video-item { padding: 5px; border-bottom: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>DIRECT VIDEO COUNT TEST</h1>
+    <div id="result">Loading...</div>
+    
+    <script>
+        fetch('http://api.bodyf1rst.net/api/admin/get-videos.php')
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                if (data.videos) {
+                    resultDiv.innerHTML = `
+                        <div class="count">✅ ${data.total} VIDEOS FOUND!</div>
+                        <p>Message: ${data.message || 'No message'}</p>
+                        <h3>First 10 videos:</h3>
+                        ${data.videos.slice(0, 10).map(v => 
+                            `<div class="video-item">${v.video_title}</div>`
+                        ).join('')}
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<div class="error">No videos found</div>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = 
+                    `<div class="error">Error: ${error.message}</div>`;
+            });
+    </script>
+</body>
+</html>

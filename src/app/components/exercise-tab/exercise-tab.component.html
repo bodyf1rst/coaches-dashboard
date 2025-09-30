@@ -1,22 +1,64 @@
-<div class="g-tab" [routerLink]="'./exercise-detail/'+item?.id">
-  <div class="g-tab-img"><img class="img-fluid"
-      [src]="item?.videos[0]?.video_thumbnail?item?.videos[0]?.video_thumbnail:'../../../assets/images/default-thumbnail.jpg'"><i
-      class="fa-solid fa-play"></i></div>
-  <div class="g-tab-text">
-    <h6 class="mb-0"> {{item?.title}}<span class="type">{{item.visibility_type}}</span></h6>
-    <span class="text-gray reg">{{item?.created_at | date:'medium'}}</span>
-    <div class="coach-info">
-      <span *ngIf="item?.duration"><strong>Duration: </strong>{{item?.duration}} min</span>
-      <span *ngIf="item?.calories_burn"><strong>Calories: </strong>{{item?.calories_burn}}</span>
+<div class="exercise-card">
+  <div class="exercise-thumbnail" (click)="toggleVideo()">
+    <!-- Video with multiple source formats for compatibility -->
+    <video *ngIf="!thumbnailError"
+           #videoElement
+           [poster]="getPosterFrame()" 
+           [controls]="showVideo"
+           (loadedmetadata)="onVideoLoaded($event)"
+           (error)="onVideoError($event)"
+           class="video-player"
+           [style.display]="showVideo ? 'block' : 'block'"
+           playsinline
+           preload="metadata">
+      <source [src]="item?.video_url" type="video/mp4">
+      <source [src]="item?.video_url?.replace('.mp4', '.mov')" type="video/quicktime">
+      Your browser does not support the video tag.
+    </video>
+    
+    <!-- Gradient fallback if video fails -->
+    <div *ngIf="thumbnailError" class="thumbnail-gradient">
+      <i class="play-icon fas fa-play"></i>
     </div>
-    <div class="coach-info">
-      <div class="coach-info-img"><img class="img-fluid"
-          [src]="item.upload_by.profile_image ?item.upload_by.profile_image:'../../../assets/images/default-thumbnail.jpg'">
-      </div> {{item.upload_by.name}} / {{item.uploader}}
+    
+    <!-- Play overlay when not playing -->
+    <div *ngIf="!showVideo && !thumbnailError" class="play-overlay">
+      <i class="play-icon fas fa-play-circle"></i>
     </div>
+    
+    <!-- Duration badge -->
+    <span class="duration-badge" *ngIf="!showVideo">{{item?.duration || '0:30'}}</span>
   </div>
-  <div class="g-tab-action">
-    <button type="button" class="btn"
-      [ngClass]="item?.is_active?'btn-outline-success':'btn-outline-danger'">{{item?.is_active?'Active':'Blocked'}}</button>
+  
+  <div class="exercise-info">
+    <h5 class="exercise-title" (click)="toggleDetails()" [class.expanded]="showDetails">
+      {{item?.title}}
+      <i class="fas fa-chevron-down expand-icon"></i>
+    </h5>
+    
+    <div class="exercise-tags">
+      <span class="tag category-tag">WORKOUT</span>
+      <span class="tag type-tag" *ngFor="let tag of item?.tags || []">{{tag}}</span>
+    </div>
+    
+    <div class="exercise-status">
+      <span class="status-active" *ngIf="item?.is_active">Active</span>
+      <span class="status-public">Public</span>
+      <span class="transcription-badge" *ngIf="item?.transcription">
+        <i class="fas fa-closed-captioning"></i> Transcribed
+      </span>
+    </div>
+    
+    <!-- Expandable transcription section -->
+    <div class="exercise-details" *ngIf="showDetails">
+      <div class="transcription-section" *ngIf="item?.transcription">
+        <h6>Transcription:</h6>
+        <p>{{item?.transcription || 'Transcription will appear here once the video is processed.'}}</p>
+      </div>
+      <div class="description-section">
+        <h6>Description:</h6>
+        <p>{{item?.description || 'No description available.'}}</p>
+      </div>
+    </div>
   </div>
 </div>

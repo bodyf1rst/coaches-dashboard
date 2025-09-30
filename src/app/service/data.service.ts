@@ -194,6 +194,17 @@ export class DataService {
       });
     });
   }
+  // Method to get all videos
+  getVideos() {
+    return new Promise((resolve: any, reject: any) => {
+      this.httpService.getApiData(this.httpService.getVideosApi).then((res: any) => {
+        resolve(res);
+      }).catch((errors: any) => {
+        reject(errors);
+      });
+    });
+  }
+  
   // This funciton for fatch dropdowns data into the app with its url name key etc
   fetchDropdownData(limit: number, apiUrl: string, dataKey: string, storageKey: string, search?: any) {
     return new Promise((resolve: any, reject: any) => {

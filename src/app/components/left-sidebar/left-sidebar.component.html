@@ -85,23 +85,7 @@
       </li>
       
       <!-- Video Libraries Section with All Categories -->
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-          [ngClass]="{'active': isDropdownActive(vidlib)}" aria-expanded="isDropdownActive()">
-          <i><span style="font-style: normal;">📹</span></i>
-          Video Libraries
-        </a>
-        <ul class="dropdown-menu" routerLinkActive="show" #vidlib="routerLinkActive">
-          <li><a class="dropdown-item" [routerLink]="'/workout-videos'" routerLinkActive="active">
-            <i><span style="font-style: normal;">💪</span></i> Workout Videos</a></li>
-          <li><a class="dropdown-item" [routerLink]="'/nutrition-videos'" routerLinkActive="active">
-            <i><span style="font-style: normal;">🥗</span></i> Nutrition Videos</a></li>
-          <li><a class="dropdown-item" [routerLink]="'/mindset-videos'" routerLinkActive="active">
-            <i><span style="font-style: normal;">🧘</span></i> Spirit & Mindset</a></li>
-          <li><a class="dropdown-item" [routerLink]="'/notification-videos'" routerLinkActive="active">
-            <i><span style="font-style: normal;">🔔</span></i> Push Notifications (≤30s)</a></li>
-        </ul>
-      </li>
+      <!-- Video Libraries Section Removed -->
       <li class="nav-item">
         <a class="nav-link" [routerLink]="'/video-library'" routerLinkActive="active">
           <i><span style="font-style: normal;">📚</span></i>

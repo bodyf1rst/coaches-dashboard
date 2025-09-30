@@ -1,99 +1,99 @@
 <div class="video-library-container">
-  <div class="header">
-    <h2>Video Library</h2>
-    <p>Manage and view all training videos</p>
-  </div>
-
-  <div class="controls">
-    <div class="category-buttons">
-      <button 
-        *ngFor="let cat of categories" 
-        [class.active]="selectedCategory === cat.value"
-        (click)="onCategoryChange(cat.value)"
-        class="category-btn">
-        {{cat.label}}
-      </button>
-    </div>
-    
-    <div class="search-controls">
-      <div class="search-box">
-        <select [(ngModel)]="searchMode" (change)="filterVideos()" class="search-mode">
-          <option value="all">Search All</option>
-          <option value="title">Title Only</option>
-          <option value="tags">Tags Only</option>
-          <option value="transcription">Transcription</option>
-        </select>
-        <input 
-          type="text" 
-          [(ngModel)]="searchText" 
-          (input)="onSearch()"
-          placeholder="Search videos, tags, or transcriptions..."
-          class="search-input">
+  <div class="header-section">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="page-title">All Exercises ({{filteredVideos.length}})</h1>
+      <div class="header-actions">
+        <input type="text"
+               class="search-input"
+               placeholder="Search here..."
+               [(ngModel)]="searchText"
+               (ngModelChange)="searchVideos()">
+        <button class="btn btn-add">Add Exercise</button>
+        <button class="btn btn-filter">Filter</button>
       </div>
     </div>
   </div>
 
-  <div class="tag-filter" *ngIf="allTags.length > 0">
-    <div class="filter-header">
-      <h3>Filter by Tags</h3>
-      <button (click)="clearFilters()" class="clear-btn">Clear All</button>
-    </div>
-    <div class="tag-cloud">
-      <button 
-        *ngFor="let tag of allTags.slice(0, 20)" 
-        [class.active]="selectedTags.includes(tag)"
-        (click)="toggleTag(tag)"
-        class="filter-tag">
-        {{tag}}
-      </button>
-    </div>
-  </div>
-
-  <div *ngIf="isLoading" class="loading">
-    <div class="spinner-border"></div>
-    <p>Loading videos...</p>
-  </div>
-
-  <div *ngIf="!isLoading && filteredVideos.length === 0" class="no-videos">
-    <p>No videos found</p>
-  </div>
-
-  <div *ngIf="!isLoading && filteredVideos.length > 0">
-    <div class="pagination-info">
-      Showing {{(currentPage - 1) * itemsPerPage + 1}} - {{currentPage * itemsPerPage > filteredVideos.length ? filteredVideos.length : currentPage * itemsPerPage}} of {{filteredVideos.length}} videos
-    </div>
-    <div class="video-grid">
-      <div *ngFor="let video of paginatedVideos" class="video-card">
-      <div class="video-thumbnail" (click)="playVideo(video)">
-        <img *ngIf="video.thumbnail" 
-             [src]="video.thumbnail" 
-             [alt]="video.title"
-             (error)="onThumbnailError($event, video)"
-             class="thumbnail-image">
-        <div *ngIf="!video.thumbnail || video.thumbnailError" class="placeholder-thumbnail">
-          <div class="play-icon">▶</div>
+  <div class="exercise-grid" *ngIf="!loading">
+    <div class="exercise-card" *ngFor="let video of filteredVideos" (click)="playVideo(video)">
+      <div class="video-thumbnail">
+        <div class="thumbnail-gradient" [style.display]="video.thumbnailError ? 'flex' : 'none'">
+          <i class="fas fa-play play-icon"></i>
         </div>
-        <div class="thumbnail-overlay">
-          <div class="play-button">▶</div>
-        </div>
-        <span class="duration">{{video.duration}}</span>
+        <img *ngIf="!video.thumbnailError"
+             [src]="video.thumbnailUrl"
+             [alt]="video.video_title"
+             (error)="handleThumbnailError(video, $event)"
+             class="thumbnail-img">
+        <span class="duration-badge">{{video.duration || '0:00'}}</span>
       </div>
       <div class="video-info">
-        <h4>{{video.title}}</h4>
+        <h3 class="video-title">{{video.video_title}}</h3>
         <div class="video-tags">
-          <span class="category">{{video.category}}</span>
-          <span *ngFor="let tag of video.tags" class="tag">{{tag}}</span>
+          <span class="tag category" *ngIf="video.category">{{video.category}}</span>
+          <span class="tag type" *ngFor="let tag of video.tags || []">{{tag}}</span>
         </div>
-        <div *ngIf="video.transcription" class="transcription-status">
-          <span class="transcribed">✓ Transcribed</span>
+        <div class="video-status">
+          <span class="status-badge active" *ngIf="video.is_active">Active</span>
+          <span class="status-badge public">Public</span>
         </div>
-      </div>
       </div>
     </div>
-    <div class="pagination-controls">
-      <button (click)="previousPage()" [disabled]="currentPage === 1" class="btn btn-secondary">Previous</button>
-      <span class="page-info">Page {{currentPage}} of {{totalPages}}</span>
-      <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="btn btn-secondary">Next</button>
+  </div>
+
+  <div class="text-center py-5" *ngIf="loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div class="text-center py-5" *ngIf="!loading && filteredVideos.length === 0">
+    <p>No videos found matching your search criteria.</p>
+  </div>
+</div>
+
+<!-- Video Player Modal -->
+<div class="video-modal-overlay" *ngIf="showVideoModal" (click)="closeVideoModal()">
+  <div class="video-modal-content" (click)="$event.stopPropagation()">
+    <button class="modal-close-btn" (click)="closeVideoModal()">
+      <i class="fas fa-times"></i>
+    </button>
+
+    <div class="modal-header">
+      <h2>{{selectedVideo?.video_title}}</h2>
+    </div>
+
+    <div class="modal-body">
+      <div class="video-player-wrapper">
+        <video
+          *ngIf="selectedVideo?.video_url"
+          [src]="selectedVideo.video_url"
+          controls
+          autoplay
+          class="video-player">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+
+      <div class="video-details">
+        <div class="video-meta">
+          <span class="badge category-badge">{{selectedVideo?.category}}</span>
+          <span class="badge duration-badge">{{selectedVideo?.duration}}</span>
+        </div>
+
+        <div class="video-tags" *ngIf="selectedVideo?.tags?.length">
+          <span class="tag" *ngFor="let tag of selectedVideo.tags">{{tag}}</span>
+        </div>
+
+        <div class="video-transcription" *ngIf="selectedVideo?.transcription">
+          <h4>Transcription</h4>
+          <p>{{selectedVideo.transcription}}</p>
+        </div>
+
+        <div class="no-transcription" *ngIf="!selectedVideo?.transcription">
+          <p class="text-muted"><i class="fas fa-info-circle"></i> No transcription available for this video</p>
+        </div>
+      </div>
     </div>
   </div>
 </div>

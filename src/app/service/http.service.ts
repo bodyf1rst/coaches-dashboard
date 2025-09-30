@@ -77,13 +77,13 @@ export class HttpService {
   public updateChallengeApi: string = 'update-challenge/';
   public deleteChallengeApi: string = 'delete-challenge/';
   public getChallengeTypeDropdown: string = 'get-challenge-types';
-  public getVideosApi: string = 'get-videos';
+  public getVideosApi: string = 'get-videos.php'; // FIXED: Points to PHP endpoint with 509 videos!
   public addVideosApi: string = 'add-video';
   public getSingleVideoApi: string = 'get-video/';
   public updateVideoApi: string = 'update-video/';
   public deleteVideoApi: string = 'delete-video/';
   public getTagsApi: string = 'get-video-tags';
-  public getExercisesApi: string = 'get-exercises'
+  public getExercisesApi: string = 'get-exercises.php' // FIXED: Points to PHP endpoint with 513 exercises!
   public addExercisesApi: string = 'add-exercise'
   public getSingleExerciseApi: string = 'get-exercise/';
   public updateExerciseApi: string = 'update-exercise/';
