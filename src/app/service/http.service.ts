@@ -5,8 +5,8 @@ import { HttpClient, HttpEvent, HttpEventType, HttpHeaders } from '@angular/comm
   providedIn: 'root'
 })
 export class HttpService {
-  public isLiveMode: boolean = false;
-  private baseUrl: string = this.isLiveMode ? 'https://bodyf1rst-v1.codexia.tech/api/admin/' : 'http://127.0.0.1:8001/api/admin/';
+  public isLiveMode: boolean = true; // CHANGED TO TRUE
+  private baseUrl: string = this.isLiveMode ? 'http://api.bodyf1rst.net/api/admin/' : 'http://127.0.0.1:8001/api/admin/'; // CHANGED TO EC2!
   public progressBar: number = 0;
   public loginApi: string = 'login';
   public getProfileApi: string = 'get-my-profile';
