@@ -19,12 +19,12 @@
 }
 
 body {
-  background: #1a1a1a; // DARK THEME BACKGROUND!
+  background: #ffffff !important; /* WHITE BACKGROUND */
   font-family: "Montserrat", sans-serif;
   font-size: 13px;
   font-weight: 400;
   margin: 0;
-  color: #ffffff; // WHITE TEXT FOR DARK THEME
+  color: #333333; /* DARK TEXT FOR WHITE BACKGROUND */
 }
 
 body ul {
