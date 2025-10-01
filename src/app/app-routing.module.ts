@@ -11,17 +11,12 @@ import { ManagePreferencesComponent } from './pages/manage-preferences/manage-pr
 import { AuthGuard } from './guard/auth.guard';
 import { ManageCoachesComponent } from './pages/manage-coaches/manage-coaches.component';
 import { AddCoachComponent } from './pages/manage-coaches/add-coach/add-coach.component';
-import { VideoLibraryComponent } from './pages/video-library/video-library.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { ManageVideosComponent } from './pages/manage-videos/manage-videos.component';
 import { AddVideoComponent } from './pages/manage-videos/add-video/add-video.component';
 import { ManageChallengesComponent } from './pages/manage-challenges/manage-challenges.component';
 import { AddChallengeComponent } from './pages/manage-challenges/add-challenge/add-challenge.component';
 import { ChallengeDetailComponent } from './pages/manage-challenges/challenge-detail/challenge-detail.component';
-import { ManageExercisesComponent } from './pages/manage-exercises/manage-exercises.component';
-import { AddExerciseComponent } from './pages/manage-exercises/add-exercise/add-exercise.component';
-import { ManageWorkoutComponent } from './pages/manage-workout/manage-workout.component';
-import { AddWorkoutComponent } from './pages/manage-workout/add-workout/add-workout.component';
 import { StopNavigateGuard } from './guard/stop-navigate.guard';
 import { ManagePlansComponent } from './pages/manage-plans/manage-plans.component';
 import { AddPlanComponent } from './pages/manage-plans/add-plan/add-plan.component';
@@ -160,43 +155,6 @@ const routes: Routes = [
   },
   { path: 'add-challenge', component: AddChallengeComponent, canActivate: [AuthGuard] },
   {
-    path: 'manage-exercises',
-    canActivate: [AuthGuard],
-    children: [
-      {
-        path: '',
-        component: ManageExercisesComponent,
-      },
-      {
-        path: 'exercise-detail/:id',
-        component: AddExerciseComponent
-      },
-      {
-        path: 'add-exercise',
-        component: AddExerciseComponent
-      },
-    ]
-  },
-  { path: 'manage-workouts', component: ManageWorkoutComponent, canActivate: [AuthGuard] },
-  {
-    path: 'manage-workouts',
-    canActivate: [AuthGuard],
-    children: [
-      {
-        path: '',
-        component: ManageWorkoutComponent,
-      },
-      {
-        path: 'workout-detail/:id',
-        component: AddWorkoutComponent
-      },
-      {
-        path: 'add-workout',
-        component: AddWorkoutComponent
-      },
-    ]
-  },
-  {
     path: 'plans',
     canActivate: [AuthGuard],
     children: [
@@ -272,7 +230,6 @@ const routes: Routes = [
     ]
   },
   { path: 'add-intro-video', component: AddIntroVideoComponent, canActivate: [AuthGuard, CoachRestrictGuard] },
-  { path: 'video-library', component: VideoLibraryComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' }
 ];

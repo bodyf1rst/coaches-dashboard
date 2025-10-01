@@ -33,13 +33,7 @@ import { ManageChallengesComponent } from './pages/manage-challenges/manage-chal
 import { AddChallengeComponent } from './pages/manage-challenges/add-challenge/add-challenge.component';
 import { ChallengeTabComponent } from './components/challenge-tab/challenge-tab.component';
 import { ChallengeDetailComponent } from './pages/manage-challenges/challenge-detail/challenge-detail.component';
-import { ManageExercisesComponent } from './pages/manage-exercises/manage-exercises.component';
-import { AddExerciseComponent } from './pages/manage-exercises/add-exercise/add-exercise.component';
-import { ExerciseTabComponent } from './components/exercise-tab/exercise-tab.component';
-import { ManageWorkoutComponent } from './pages/manage-workout/manage-workout.component';
-import { AddWorkoutComponent } from './pages/manage-workout/add-workout/add-workout.component';
 import { NgxSortableModule } from 'ngx-sortable';
-import { WorkoutTabComponent } from './components/workout-tab/workout-tab.component';
 import { ManagePlansComponent } from './pages/manage-plans/manage-plans.component';
 import { AddPlanComponent } from './pages/manage-plans/add-plan/add-plan.component';
 import { PlanTabComponent } from './components/plan-tab/plan-tab.component'
@@ -62,7 +56,6 @@ import { NutritionsVideosComponent } from './pages/manage-nutritions/nutritions-
 import { AddNutritionsVideosComponent } from './pages/manage-nutritions/add-nutritions-videos/add-nutritions-videos.component';
 import { PlaceholderTabComponent } from './components/placeholder-tab/placeholder-tab.component';
 import { LeaderboardComponent } from './pages/leaderboard/leaderboard.component';
-import { VideoLibraryComponent } from './pages/video-library/video-library.component';
 
 
 @NgModule({
@@ -94,12 +87,6 @@ import { VideoLibraryComponent } from './pages/video-library/video-library.compo
     AddChallengeComponent,
     ChallengeTabComponent,
     ChallengeDetailComponent,
-    ManageExercisesComponent,
-    AddExerciseComponent,
-    ExerciseTabComponent,
-    ManageWorkoutComponent,
-    AddWorkoutComponent,
-    WorkoutTabComponent,
     ManagePlansComponent,
     AddPlanComponent,
     PlanTabComponent,
@@ -119,7 +106,6 @@ import { VideoLibraryComponent } from './pages/video-library/video-library.compo
     AddNutritionsVideosComponent,
     PlaceholderTabComponent,
     LeaderboardComponent,
-    VideoLibraryComponent,
   ],
   imports: [
     BrowserModule,
@@ -164,7 +150,7 @@ export class AppModule implements OnInit {
     const Link = Quill.import('formats/link');
     Quill.register('formats/link', class extends Link {
       static create(value: any) {
-        
+
         if (value) {
           // Check if the value has a protocol (http:// or https://)
           if (!/^https?:\/\//i.test(value)) {

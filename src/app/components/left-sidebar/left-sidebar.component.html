@@ -83,35 +83,7 @@
 
         </ul>
       </li>
-      
-      <!-- Video Libraries Section with All Categories -->
-      <!-- Video Libraries Section Removed -->
-      <li class="nav-item">
-        <a class="nav-link" [routerLink]="'/video-library'" routerLinkActive="active">
-          <i><span style="font-style: normal;">📚</span></i>
-          Video Library
-        </a>
-      </li>
-      
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-          [ngClass]="{'active': isDropdownActive(fid)}" aria-expanded="isDropdownActive()">
-          <i><span style="font-style: normal;">🏋️</span></i>
-          Manage Fitness
-        </a>
-        <ul class="dropdown-menu" routerLinkActive="show" #fid="routerLinkActive">
-          <li><a class="dropdown-item" [routerLink]="'/manage-exercises'" routerLinkActive="active"><i><img
-                  src="../../assets/images/exercise.svg" class="img-fluid" /></i> Exercises</a></li>
-          <li><a class="dropdown-item" [routerLink]="'/manage-workouts'" routerLinkActive="active"><i><img
-                  src="../../assets/images/workout.svg" class="img-fluid" /></i>Workout Builder</a>
-          </li>
-          <li><a class="dropdown-item" [routerLink]="'/workout-videos'" routerLinkActive="active">
-            <i><span style="font-style: normal;">🎥</span></i> Workout Videos</a></li>
-          <li><a class="dropdown-item" [routerLink]="'/plans'" routerLinkActive="active"><i><img
-                  src="../../assets/images/plan.svg" class="img-fluid" /></i>Fitness Plans</a>
-          </li>
-        </ul>
-      </li>
+
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
           [ngClass]="{'active': isDropdownActive(cid)}" aria-expanded="isDropdownActive()">
@@ -125,7 +97,7 @@
                   src="../../assets/images/goal-icon.svg" class="img-fluid" /></i> Add Challenge</a></li>
         </ul>
       </li>
-      
+
       <li class="nav-item dropdown" *ngIf="dataService.currentUserData.role == 'Admin'">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
           [ngClass]="{'active': isDropdownActive(nv)}" aria-expanded="isDropdownActive()">
@@ -147,21 +119,21 @@
           <i><span style="font-style: normal;">📊</span></i>
           Client Dashboard</a>
       </li>
-      
+
       <!-- Analytics & Insights Section -->
       <li *ngIf="dataService.currentUserData.role == 'Admin'">
         <a [routerLink]="'/analytics'" routerLinkActive="active">
           <i><span style="font-style: normal;">📈</span></i>
           Analytics & Insights</a>
       </li>
-      
+
       <!-- Coach Workflow Section -->
       <li>
         <a [routerLink]="'/coach-workflow'" routerLinkActive="active">
           <i><span style="font-style: normal;">🚀</span></i>
           Coach Workflow</a>
       </li>
-      
+
       <li>
         <a *ngIf="dataService.currentUserData.role == 'Admin'" [routerLink]="'/manage-body-points'"
           routerLinkActive="active"><i><span style="font-style: normal;">🎖️</span></i>
