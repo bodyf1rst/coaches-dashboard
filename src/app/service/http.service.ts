@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpEvent, HttpEventType, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HttpService {
-  public isLiveMode: boolean = true; // CHANGED TO TRUE
-  private baseUrl: string = this.isLiveMode ? 'https://api.bodyf1rst.net/api/admin/' : 'http://127.0.0.1:8001/api/admin/'; // CHANGED TO HTTPS!
+  public isLiveMode: boolean = true;
+  private baseUrl: string = environment.apiUrl + '/';
   public progressBar: number = 0;
   public loginApi: string = 'login';
   public getProfileApi: string = 'get-my-profile';
