@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://18.205.116.101/api'
+  apiUrl: 'http://api.bodyf1rst.net/api'
 };
 
 /*
