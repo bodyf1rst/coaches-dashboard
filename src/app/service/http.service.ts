@@ -10,10 +10,10 @@ export class HttpService {
   private baseUrl: string = environment.apiUrl + '/';
   public progressBar: number = 0;
   public loginApi: string = 'login';
-  public getProfileApi: string = 'get-my-profile';
+  public getProfileApi: string = 'get-my-profile.php';
   public updateProfileApi: string = 'update-profile';
   public logoutApi: string = 'logout';
-  public getDashboardStats: string = 'get-dashboard-stats';
+  public getDashboardStats: string = 'get-dashboard-stats.php';
   public verifyLogin: string = 'verify-login-otp';
   public changePassApi: string = 'change-password';
   public sendOTPApi: string = 'send-forgot-otp';

@@ -134,6 +134,13 @@
           Coach Workflow</a>
       </li>
 
+      <!-- Video Library Section -->
+      <li>
+        <a [routerLink]="'/video-library'" routerLinkActive="active">
+          <i><span style="font-style: normal;">🎬</span></i>
+          Video Library</a>
+      </li>
+
       <li>
         <a *ngIf="dataService.currentUserData.role == 'Admin'" [routerLink]="'/manage-body-points'"
           routerLinkActive="active"><i><span style="font-style: normal;">🎖️</span></i>

@@ -1,0 +1,185 @@
+<div class="video-library-container">
+  <!-- Header Section -->
+  <div class="library-header">
+    <h1>📚 Video Library</h1>
+    <p class="subtitle">Browse and manage your workout, nutrition, and mindset videos</p>
+  </div>
+
+  <!-- Category Filter -->
+  <div class="category-filter">
+    <button
+      *ngFor="let cat of categories"
+      class="category-btn"
+      [class.active]="selectedCategory === cat.value"
+      (click)="selectCategory(cat.value)">
+      <span class="cat-icon">{{cat.icon}}</span>
+      <span class="cat-label">{{cat.label}}</span>
+    </button>
+  </div>
+
+  <!-- Search and Filters Bar -->
+  <div class="filters-bar">
+    <div class="search-box">
+      <i class="fa fa-search"></i>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange()"
+        placeholder="Search videos by title, description, transcription, or tags...">
+      <button *ngIf="searchQuery" class="clear-search" (click)="searchQuery=''; onSearchChange()">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+    <button class="clear-filters-btn" *ngIf="selectedCategory !== 'all' || selectedTags.length > 0 || searchQuery" (click)="clearFilters()">
+      <i class="fa fa-times-circle"></i> Clear All Filters
+    </button>
+  </div>
+
+  <!-- Tags Filter -->
+  <div class="tags-section" *ngIf="availableTags.length > 0">
+    <div class="tags-header">
+      <span class="tags-label">Filter by Tags:</span>
+      <span class="tags-count">{{selectedTags.length}} selected</span>
+    </div>
+    <div class="tags-container">
+      <button
+        *ngFor="let tag of availableTags"
+        class="tag-chip"
+        [class.selected]="selectedTags.includes(tag)"
+        (click)="toggleTag(tag)">
+        {{tag}}
+        <i *ngIf="selectedTags.includes(tag)" class="fa fa-check"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>🔄 Loading videos from API...</p>
+  </div>
+
+  <!-- Results Count -->
+  <div class="results-info" *ngIf="!loading">
+    <span class="results-count">
+      Showing {{filteredVideos.length}} of {{videos.length}} videos
+    </span>
+  </div>
+
+  <!-- Videos Grid -->
+  <div class="videos-grid" *ngIf="!loading && filteredVideos.length > 0">
+    <div
+      *ngFor="let video of filteredVideos"
+      class="video-card"
+      (click)="openVideoModal(video)">
+      <div class="video-thumbnail">
+        <img [src]="getThumbnailUrl(video)" [alt]="video.title" (error)="onImageError($event, video)">
+        <div class="video-duration">{{formatDuration(video.duration)}}</div>
+        <div class="video-category-badge" [class]="video.category">
+          {{video.category}}
+        </div>
+      </div>
+      <div class="video-info">
+        <h3 class="video-title">{{video.title}}</h3>
+        <div class="video-tags" *ngIf="video.tags && video.tags.length > 0">
+          <span class="tag" [ngClass]="getTagClass(tag)" *ngFor="let tag of video.tags.slice(0, 5)">{{tag}}</span>
+          <span class="more-tags" *ngIf="video.tags.length > 5">+{{video.tags.length - 5}}</span>
+        </div>
+        <p class="video-description">{{video.description || 'No description available'}}</p>
+        <div class="video-meta">
+          <span class="video-date">
+            <i class="fa fa-calendar"></i> {{formatDate(video.uploadedAt)}}
+          </span>
+          <span class="video-uploader">
+            <i class="fa fa-user"></i> {{video.uploadedBy}}
+          </span>
+        </div>
+      </div>
+      <div class="video-actions" (click)="$event.stopPropagation()">
+        <button class="action-btn delete" (click)="deleteVideo(video, $event)" title="Delete Video">
+          <i class="fa fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Results Message -->
+  <div class="no-results" *ngIf="!loading && filteredVideos.length === 0 && videos.length > 0">
+    <div class="no-results-icon">🔍</div>
+    <h3>No videos found</h3>
+    <p>Try adjusting your filters or search query</p>
+    <button class="btn-primary" (click)="clearFilters()">Clear Filters</button>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && videos.length === 0">
+    <div class="empty-icon">📹</div>
+    <h3>No videos yet</h3>
+    <p>Your video library is empty. Upload some videos to get started!</p>
+  </div>
+</div>
+
+<!-- Video Modal -->
+<div class="video-modal-overlay" *ngIf="showVideoModal && selectedVideo" (click)="closeVideoModal()">
+  <div class="video-modal" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="closeVideoModal()">
+      <i class="fa fa-times"></i>
+    </button>
+
+    <div class="modal-content">
+      <div class="video-player-section">
+        <video controls [src]="getVideoUrl(selectedVideo)" [poster]="getThumbnailUrl(selectedVideo)">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+
+      <div class="video-details-section">
+        <div class="video-header">
+          <h2 class="video-modal-title">{{selectedVideo.title}}</h2>
+          <span class="category-badge" [class]="selectedVideo.category">{{selectedVideo.category}}</span>
+        </div>
+
+        <div class="section-block description-block" *ngIf="selectedVideo.description">
+          <h4 class="section-title"><i class="fa fa-info-circle"></i> Description</h4>
+          <p class="video-description-full">{{selectedVideo.description}}</p>
+        </div>
+
+        <div class="section-block transcription-block" *ngIf="selectedVideo.transcription">
+          <h4 class="section-title"><i class="fa fa-file-text"></i> Transcription</h4>
+          <div class="transcription-text">
+            {{selectedVideo.transcription}}
+          </div>
+        </div>
+
+        <div class="section-block transcription-block empty" *ngIf="!selectedVideo.transcription">
+          <p class="empty-message"><i class="fa fa-info-circle"></i> No transcription available for this video.</p>
+        </div>
+
+        <div class="section-block tags-block" *ngIf="selectedVideo.tags && selectedVideo.tags.length > 0">
+          <h4 class="section-title"><i class="fa fa-tags"></i> Tags</h4>
+          <div class="tags-list">
+            <span class="tag" [ngClass]="getTagClass(tag)" *ngFor="let tag of selectedVideo.tags">{{tag}}</span>
+          </div>
+        </div>
+
+        <div class="section-block metadata-block">
+          <h4 class="section-title"><i class="fa fa-info"></i> Video Information</h4>
+          <div class="video-metadata">
+            <div class="meta-item">
+              <i class="fa fa-clock"></i>
+              <span>Duration: {{formatDuration(selectedVideo.duration)}}</span>
+            </div>
+            <div class="meta-item">
+              <i class="fa fa-calendar"></i>
+              <span>Uploaded: {{formatDate(selectedVideo.uploadedAt)}}</span>
+            </div>
+            <div class="meta-item">
+              <i class="fa fa-user"></i>
+              <span>By: {{selectedVideo.uploadedBy}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
