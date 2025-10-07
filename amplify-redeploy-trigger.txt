@@ -1,0 +1,3 @@
+Deployment trigger for API fixes
+Date: October 6, 2025 8:13 PM
+Changes: Fixed get-videos.php and get-my-profile.php on production API
