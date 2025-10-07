@@ -73,7 +73,7 @@
       class="video-card"
       (click)="openVideoModal(video)">
       <div class="video-thumbnail">
-        <img [src]="getThumbnailUrl(video)" [alt]="video.title" (error)="onImageError($event, video)">
+        <img [src]="getThumbnailUrl(video)" [alt]="video.title" crossorigin="anonymous" (error)="onImageError($event, video)">
         <div class="video-duration">{{formatDuration(video.duration)}}</div>
         <div class="video-category-badge" [class]="video.category">
           {{video.category}}
@@ -128,7 +128,8 @@
 
     <div class="modal-content">
       <div class="video-player-section">
-        <video controls [src]="getVideoUrl(selectedVideo)" [poster]="getThumbnailUrl(selectedVideo)">
+        <video controls crossorigin="anonymous" preload="metadata" [src]="getVideoUrl(selectedVideo)" [poster]="getThumbnailUrl(selectedVideo)">
+          <source [src]="getVideoUrl(selectedVideo)" type="video/mp4">
           Your browser does not support the video tag.
         </video>
       </div>
