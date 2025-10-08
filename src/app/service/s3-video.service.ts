@@ -55,6 +55,7 @@ export class S3VideoService {
 
   /**
    * Map API response to VideoMetadata format
+   * 🔧 FIXED: Handles both snake_case (old API) and camelCase (new API) for backward compatibility
    */
   private mapToVideoMetadata(video: any): VideoMetadata {
     // Parse tags - they come from DB as JSON string or pipe-separated
@@ -74,13 +75,14 @@ export class S3VideoService {
     }
 
     // Get correct thumbnail URL with fallbacks
-    // PHP API returns thumbnail_url, but we'll add fallbacks since many thumbnails have different naming
+    // PHP API returns thumbnail_url (snake_case) OR thumbnailUrl (camelCase)
     const baseUrl = 'https://bodyf1rst-workout-video-storage.s3.amazonaws.com/thumbnails/';
     const cleanTitle = (video.video_title || '').replace(/\.(mp4|mov)$/i, '');
     const encodedTitle = encodeURIComponent(cleanTitle);
 
-    // Primary: Use PHP API thumbnail_url if available
-    const thumbnailUrl = video.thumbnail_url || video.thumbnailUrl;
+    // 🔧 FIXED: Try camelCase first (new API), then snake_case (old API) for backward compatibility
+    const thumbnailUrl = video.thumbnailUrl || video.thumbnail_url;
+    const videoUrl = video.videoUrl || video.video_url;
 
     // Store fallback patterns for client-side retry (in order of likelihood)
     const thumbnailFallbacks = [
@@ -98,7 +100,7 @@ export class S3VideoService {
       transcription: video.transcription || '',
       duration: this.parseDuration(video.duration),
       thumbnailUrl: thumbnailUrl || thumbnailFallbacks[0],
-      videoUrl: video.video_url || video.videoUrl,
+      videoUrl: videoUrl,
       s3Key: video.s3_key || video.video_title || '',
       uploadedAt: video.created_at ? new Date(video.created_at) : new Date(),
       uploadedBy: video.uploaded_by || 'Admin',
