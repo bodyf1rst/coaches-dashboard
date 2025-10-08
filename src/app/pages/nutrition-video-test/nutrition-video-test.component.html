@@ -1,14 +1,18 @@
 <div class="test-container">
   <div class="test-header">
-    <h1>🧪 Phase 1 Test: Hardcoded Video</h1>
-    <p>Testing: Can we play ONE hardcoded S3 video?</p>
+    <h1>🧪 Phase 2 Test: Hardcoded Video + Thumbnail</h1>
+    <p>Testing: Can we display thumbnail and play video?</p>
     <p><strong>Video:</strong> Ab Roll Out</p>
   </div>
 
-  <div class="test-controls">
-    <button class="play-button" (click)="playVideo()">
-      ▶️ Click to Load and Play Video
-    </button>
+  <div class="thumbnail-section">
+    <img
+      [src]="thumbnailUrl"
+      alt="Ab Roll Out Thumbnail"
+      class="video-thumbnail"
+      (click)="playVideo()"
+      style="cursor: pointer;">
+    <p style="text-align: center; margin-top: 10px;">👆 Click thumbnail to play video</p>
   </div>
 
   <div class="video-container" *ngIf="showVideo">
@@ -30,15 +34,17 @@
       <li>✅ CORS configuration</li>
       <li>✅ Video file format compatibility</li>
       <li>✅ Basic Angular video rendering</li>
+      <li>✅ Thumbnail image loading</li>
+      <li>✅ Click interaction</li>
     </ul>
 
     <h3>What this does NOT test (yet):</h3>
     <ul>
       <li>❌ API calls</li>
       <li>❌ Database</li>
-      <li>❌ Thumbnails</li>
       <li>❌ Tags</li>
       <li>❌ Transcription</li>
+      <li>❌ Dynamic data</li>
     </ul>
   </div>
 </div>

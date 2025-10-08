@@ -28,6 +28,24 @@
   margin: 30px 0;
 }
 
+.thumbnail-section {
+  text-align: center;
+  margin: 40px 0;
+}
+
+.video-thumbnail {
+  max-width: 400px;
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: all 0.3s;
+}
+
+.video-thumbnail:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
 .play-button {
   padding: 20px 40px;
   font-size: 18px;
