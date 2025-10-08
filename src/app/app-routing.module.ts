@@ -36,6 +36,7 @@ import { NutritionsVideosComponent } from './pages/manage-nutritions/nutritions-
 import { AddNutritionsVideosComponent } from './pages/manage-nutritions/add-nutritions-videos/add-nutritions-videos.component';
 import { LeaderboardComponent } from './pages/leaderboard/leaderboard.component';
 import { VideoLibraryComponent } from './pages/video-library/video-library.component';
+import { NutritionVideoTestComponent } from './pages/nutrition-video-test/nutrition-video-test.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [StopNavigateGuard] },
@@ -196,6 +197,7 @@ const routes: Routes = [
   { path: 'privacy-terms', component: StaticContentComponent, canActivate: [AuthGuard] },
   { path: 'leaderboard', component: LeaderboardComponent, canActivate: [AuthGuard] },
   { path: 'video-library', component: VideoLibraryComponent, canActivate: [AuthGuard] },
+  { path: 'nutrition-video-test', component: NutritionVideoTestComponent, canActivate: [AuthGuard] },
   {
     path: 'manage-content',
     canActivate: [AuthGuard],

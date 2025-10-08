@@ -1,0 +1,44 @@
+<div class="test-container">
+  <div class="test-header">
+    <h1>🧪 Phase 1 Test: Hardcoded Video</h1>
+    <p>Testing: Can we play ONE hardcoded S3 video?</p>
+    <p><strong>Video:</strong> Ab Roll Out</p>
+  </div>
+
+  <div class="test-controls">
+    <button class="play-button" (click)="playVideo()">
+      ▶️ Click to Load and Play Video
+    </button>
+  </div>
+
+  <div class="video-container" *ngIf="showVideo">
+    <video
+      controls
+      crossorigin="anonymous"
+      autoplay
+      width="100%"
+      style="max-width: 800px;"
+      [src]="videoUrl">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <div class="test-info">
+    <h3>What this tests:</h3>
+    <ul>
+      <li>✅ S3 bucket accessibility</li>
+      <li>✅ CORS configuration</li>
+      <li>✅ Video file format compatibility</li>
+      <li>✅ Basic Angular video rendering</li>
+    </ul>
+
+    <h3>What this does NOT test (yet):</h3>
+    <ul>
+      <li>❌ API calls</li>
+      <li>❌ Database</li>
+      <li>❌ Thumbnails</li>
+      <li>❌ Tags</li>
+      <li>❌ Transcription</li>
+    </ul>
+  </div>
+</div>
