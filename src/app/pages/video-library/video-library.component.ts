@@ -205,13 +205,23 @@ export class VideoLibraryComponent implements OnInit {
   onImageError(event: Event, video?: VideoMetadata): void {
     const target = event.target as HTMLImageElement;
 
+    // Prevent infinite loop - mark that we tried this image
+    if ((target as any)._errorAttempted) {
+      console.log('Image load failed permanently for:', video?.title);
+      return; // Stop trying
+    }
+    (target as any)._errorAttempted = true;
+
     // Try fallback URLs if available
     if (video && (video as any).thumbnailFallbacks && (video as any).thumbnailFallbacks.length > 0) {
       const nextFallback = (video as any).thumbnailFallbacks.shift();
+      console.log('Trying fallback thumbnail:', nextFallback);
       target.src = nextFallback;
+      (target as any)._errorAttempted = false; // Allow retry for new URL
     } else {
-      // Use default thumbnail as last resort
-      target.src = 'assets/default-thumb.png';
+      // NO default thumbnail - just show broken image or placeholder div
+      console.warn('No thumbnail available for:', video?.title);
+      target.style.display = 'none'; // Hide broken image
     }
   }
 
