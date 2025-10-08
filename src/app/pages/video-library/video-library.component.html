@@ -74,6 +74,9 @@
       (click)="openVideoModal(video)">
       <div class="video-thumbnail">
         <img [src]="getThumbnailUrl(video)" [alt]="video.title" crossorigin="anonymous" (error)="onImageError($event, video)">
+        <div class="play-button-overlay">
+          <i class="fa fa-play"></i>
+        </div>
         <div class="video-duration">{{formatDuration(video.duration)}}</div>
         <div class="video-category-badge" [class]="video.category">
           {{video.category}}
