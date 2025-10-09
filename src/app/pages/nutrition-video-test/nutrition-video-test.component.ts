@@ -62,17 +62,17 @@ export class NutritionVideoTestComponent implements OnInit {
         if (response.status === 'success' && response.videos.length > 0) {
           const video = response.videos[0];
 
-          // Map API response to component properties
+          // Map API response to component properties - 100% from database!
           this.title = video.video_title;
           this.videoUrl = video.videoUrl;
           this.thumbnailUrl = video.thumbnailUrl;
           this.duration = video.duration || '1:00';
           this.category = video.category || 'Nutrition';
 
-          // Use fallback for fields not yet in database
-          this.transcription = video.transcription || 'Begin in a kneeling position with the ab wheel in front of you. Grip the handles firmly and engage your core. Slowly roll the wheel forward, extending your body while keeping your core tight and maintaining a neutral spine. Roll out as far as you can while maintaining control, then use your core strength to pull yourself back to the starting position. Keep your movements controlled and avoid arching your lower back.';
-          this.workoutTags = video.workout_tags || ['core', 'abs', 'strength', 'stability'];
-          this.equipmentTags = video.equipment_tags || ['ab wheel', 'mat'];
+          // PHASE 6: All data now from database (no fallbacks!)
+          this.transcription = video.transcription || 'No transcription available';
+          this.workoutTags = video.workout_tags || [];
+          this.equipmentTags = video.equipment_tags || [];
 
           this.loading = false;
           console.log('Video loaded successfully:', this.title);
