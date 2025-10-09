@@ -50,7 +50,14 @@ export class NutritionVideoTestComponent implements OnInit {
     this.http.get<ApiResponse>(apiUrl).subscribe({
       next: (response) => {
         if (response.status === 'success' && response.videos.length > 0) {
-          this.allVideos = response.videos;
+          // Clean and process video data
+          this.allVideos = response.videos.map(video => ({
+            ...video,
+            // Clean workout_tags: remove quotes, brackets, only A-Z and spaces
+            workout_tags: this.cleanTags(video.workout_tags),
+            // Clean equipment_tags: remove quotes, brackets, only A-Z and spaces
+            equipment_tags: this.cleanTags(video.equipment_tags)
+          }));
 
           // Initialize playback and transcription states for each video
           this.playingVideos = new Array(this.allVideos.length).fill(false);
@@ -77,5 +84,34 @@ export class NutritionVideoTestComponent implements OnInit {
 
   toggleTranscriptionForVideo(index: number) {
     this.showTranscription[index] = !this.showTranscription[index];
+  }
+
+  // Clean tags: Remove quotes, brackets, special chars - only keep A-Z and spaces
+  private cleanTags(tags: string[] | any): string[] {
+    if (!tags) return [];
+
+    // If it's a string (shouldn't be, but handle it)
+    if (typeof tags === 'string') {
+      tags = [tags];
+    }
+
+    // Ensure it's an array
+    if (!Array.isArray(tags)) {
+      return [];
+    }
+
+    // Clean each tag: remove everything except letters and spaces
+    return tags.map(tag => {
+      let cleaned = String(tag)
+        .replace(/[\[\]"'{}]/g, '')  // Remove brackets, quotes, braces
+        .replace(/[^a-zA-Z\s]/g, '')  // Remove anything that's not a letter or space
+        .trim();                      // Remove leading/trailing spaces
+
+      // Capitalize first letter of each word
+      return cleaned
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+    }).filter(tag => tag.length > 0);  // Remove empty tags
   }
 }
