@@ -1,10 +1,24 @@
 <div class="test-container">
   <div class="test-header">
-    <h1>🧪 Phase 3 Test: Title + Transcription + Tags</h1>
-    <p>Testing: Can we display video metadata?</p>
+    <h1>🧪 Phase 4 Test: Improved Layout + Collapsible Transcription</h1>
+    <p>Testing: Better UX with thumbnail first, collapsible content</p>
   </div>
 
-  <!-- NEW: Video Info Section -->
+  <!-- Thumbnail with Play Button Overlay - MOVED TO TOP -->
+  <div class="thumbnail-section">
+    <div class="thumbnail-wrapper" (click)="playVideo()">
+      <img
+        [src]="thumbnailUrl"
+        alt="{{ title }} Thumbnail"
+        class="video-thumbnail">
+      <div class="play-button-overlay">
+        <div class="play-icon">▶</div>
+      </div>
+    </div>
+    <p style="text-align: center; margin-top: 10px;">👆 Click thumbnail to play video</p>
+  </div>
+
+  <!-- Video Info Section - NOW BELOW THUMBNAIL -->
   <div class="video-info-section">
     <h2 class="video-title">{{ title }}</h2>
 
@@ -28,24 +42,20 @@
       </div>
     </div>
 
+    <!-- NEW: Collapsible Transcription -->
     <div class="transcription-section">
-      <h3>Transcription:</h3>
-      <p class="transcription-text">{{ transcription }}</p>
-    </div>
-  </div>
+      <button
+        class="transcription-toggle"
+        (click)="toggleTranscription()"
+        [attr.aria-expanded]="showTranscription">
+        <span class="toggle-label">📝 Transcription</span>
+        <span class="toggle-icon">{{ showTranscription ? '▲' : '▼' }}</span>
+      </button>
 
-  <!-- Thumbnail with Play Button Overlay -->
-  <div class="thumbnail-section">
-    <div class="thumbnail-wrapper" (click)="playVideo()">
-      <img
-        [src]="thumbnailUrl"
-        alt="{{ title }} Thumbnail"
-        class="video-thumbnail">
-      <div class="play-button-overlay">
-        <div class="play-icon">▶</div>
+      <div class="transcription-content" *ngIf="showTranscription">
+        <p class="transcription-text">{{ transcription }}</p>
       </div>
     </div>
-    <p style="text-align: center; margin-top: 10px;">👆 Click thumbnail to play video</p>
   </div>
 
   <div class="video-container" *ngIf="showVideo">
