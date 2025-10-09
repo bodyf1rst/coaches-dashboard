@@ -377,11 +377,11 @@
               box-shadow: 0 2px 6px rgba(46, 125, 50, 0.3);
             }
 
-            // Category Tags (Orange/Yellow shades) - WORKOUT, CARDIO, GENERAL
+            // Category Tags (Darker Orange shades) - WORKOUT, CARDIO, GENERAL
             &.category {
-              background: linear-gradient(135deg, #ffb74d 0%, #f57c00 100%);
+              background: linear-gradient(135deg, #ff6f00 0%, #c43e00 100%);
               color: white;
-              box-shadow: 0 2px 6px rgba(245, 124, 0, 0.3);
+              box-shadow: 0 2px 6px rgba(196, 62, 0, 0.3);
             }
 
             // Difficulty Tags (Purple/Pink shades)
@@ -391,11 +391,11 @@
               box-shadow: 0 2px 6px rgba(123, 31, 162, 0.3);
             }
 
-            // Equipment Tags (Teal/Cyan shades)
+            // Equipment Tags (Green shades)
             &.equipment {
-              background: linear-gradient(135deg, #4dd0e1 0%, #0097a7 100%);
+              background: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
               color: white;
-              box-shadow: 0 2px 6px rgba(0, 151, 167, 0.3);
+              box-shadow: 0 2px 6px rgba(46, 125, 50, 0.3);
             }
 
             // Default fallback
@@ -650,11 +650,11 @@
                   box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3);
                 }
 
-                // Category Tags (Orange/Yellow shades) - WORKOUT, CARDIO, GENERAL
+                // Category Tags (Darker Orange shades) - WORKOUT, CARDIO, GENERAL
                 &.category {
-                  background: linear-gradient(135deg, #ffb74d 0%, #f57c00 100%);
+                  background: linear-gradient(135deg, #ff6f00 0%, #c43e00 100%);
                   color: white;
-                  box-shadow: 0 2px 8px rgba(245, 124, 0, 0.3);
+                  box-shadow: 0 2px 8px rgba(196, 62, 0, 0.3);
                 }
 
                 // Difficulty Tags (Purple/Pink shades)
@@ -664,11 +664,11 @@
                   box-shadow: 0 2px 8px rgba(123, 31, 162, 0.3);
                 }
 
-                // Equipment Tags (Teal/Cyan shades)
+                // Equipment Tags (Green shades)
                 &.equipment {
-                  background: linear-gradient(135deg, #4dd0e1 0%, #0097a7 100%);
+                  background: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
                   color: white;
-                  box-shadow: 0 2px 8px rgba(0, 151, 167, 0.3);
+                  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3);
                 }
 
                 // Default fallback
@@ -812,11 +812,11 @@
                 box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3);
               }
 
-              // Category Tags (Orange/Yellow shades)
+              // Category Tags (Darker Orange shades)
               &.category {
-                background: linear-gradient(135deg, #ffb74d 0%, #f57c00 100%);
+                background: linear-gradient(135deg, #ff6f00 0%, #c43e00 100%);
                 color: white;
-                box-shadow: 0 2px 8px rgba(245, 124, 0, 0.3);
+                box-shadow: 0 2px 8px rgba(196, 62, 0, 0.3);
               }
 
               // Difficulty Tags (Purple/Pink shades)
@@ -826,11 +826,11 @@
                 box-shadow: 0 2px 8px rgba(123, 31, 162, 0.3);
               }
 
-              // Equipment Tags (Teal/Cyan shades)
+              // Equipment Tags (Green shades)
               &.equipment {
-                background: linear-gradient(135deg, #4dd0e1 0%, #0097a7 100%);
+                background: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
                 color: white;
-                box-shadow: 0 2px 8px rgba(0, 151, 167, 0.3);
+                box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3);
               }
 
               // Default fallback
