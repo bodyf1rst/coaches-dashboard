@@ -287,33 +287,37 @@
       font-weight: 600;
     }
 
-    // Workout tags (BodyFirst orange theme)
+    // Workout tags (Darker orange gradient theme)
     .tag {
       display: inline-block;
-      background: #fff3e0;
-      color: #e65100;
+      background: linear-gradient(135deg, #ff6f00 0%, #c43e00 100%);
+      color: white;
       padding: 5px 14px;
       border-radius: 16px;
       font-size: 12px;
       font-weight: 600;
-      border: 1px solid #ffb74d;
+      border: 1px solid #c43e00;
+      box-shadow: 0 2px 6px rgba(196, 62, 0, 0.3);
       transition: all 0.2s ease;
 
       &:hover {
-        background: #ffe0b2;
-        transform: translateY(-1px);
+        background: linear-gradient(135deg, #e65100 0%, #bf360c 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(196, 62, 0, 0.4);
       }
     }
 
-    // Equipment tags (silver/gray theme)
+    // Equipment tags (Green gradient theme)
     .equipment-tag {
-      background: #f5f5f5;
-      color: #424242;
-      border: 1px solid #bdbdbd;
+      background: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
+      color: white;
+      border: 1px solid #2e7d32;
+      box-shadow: 0 2px 6px rgba(46, 125, 50, 0.3);
 
       &:hover {
-        background: #e0e0e0;
-        transform: translateY(-1px);
+        background: linear-gradient(135deg, #4caf50 0%, #1b5e20 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
       }
     }
   }
