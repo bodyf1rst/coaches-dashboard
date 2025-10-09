@@ -1,11 +1,25 @@
 <div class="test-container">
   <div class="test-header">
-    <h1>🧪 Phase 4 Test: Improved Layout + Collapsible Transcription</h1>
-    <p>Testing: Better UX with thumbnail first, collapsible content</p>
+    <h1>🧪 Phase 5 Test: API Integration</h1>
+    <p>Testing: Loading data dynamically from backend</p>
   </div>
 
-  <!-- Thumbnail with Play Button Overlay - Video replaces thumbnail when playing -->
-  <div class="thumbnail-section">
+  <!-- Loading State -->
+  <div class="loading-section" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Loading video data from API...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-section" *ngIf="error && !loading">
+    <p class="error-message">❌ {{ error }}</p>
+    <button class="retry-button" (click)="loadVideo()">Try Again</button>
+  </div>
+
+  <!-- Video Content (show when loaded successfully) -->
+  <div class="content-wrapper" *ngIf="!loading && !error">
+    <!-- Thumbnail with Play Button Overlay - Video replaces thumbnail when playing -->
+    <div class="thumbnail-section">
     <!-- Show thumbnail when video not playing -->
     <div class="thumbnail-wrapper" (click)="playVideo()" *ngIf="!showVideo">
       <img
@@ -73,24 +87,23 @@
     </div>
   </div>
 
-  <div class="test-info">
-    <h3>What this tests:</h3>
-    <ul>
-      <li>✅ S3 bucket accessibility</li>
-      <li>✅ CORS configuration</li>
-      <li>✅ Video file format compatibility</li>
-      <li>✅ Basic Angular video rendering</li>
-      <li>✅ Thumbnail image loading</li>
-      <li>✅ Click interaction</li>
-    </ul>
+    <div class="test-info">
+      <h3>Phase 5 - What's New:</h3>
+      <ul>
+        <li>✅ API Integration - Loading from backend</li>
+        <li>✅ Dynamic data (not hardcoded)</li>
+        <li>✅ Loading state with spinner</li>
+        <li>✅ Error handling with retry</li>
+        <li>✅ TypeScript type safety</li>
+        <li>✅ Real database content</li>
+      </ul>
 
-    <h3>What this does NOT test (yet):</h3>
-    <ul>
-      <li>❌ API calls</li>
-      <li>❌ Database</li>
-      <li>❌ Tags</li>
-      <li>❌ Transcription</li>
-      <li>❌ Dynamic data</li>
-    </ul>
-  </div>
+      <h3>Still Using Fallbacks:</h3>
+      <ul>
+        <li>⚠️ Transcription (not in DB yet)</li>
+        <li>⚠️ Workout tags (not in DB yet)</li>
+        <li>⚠️ Equipment tags (not in DB yet)</li>
+      </ul>
+    </div>
+  </div> <!-- Close content-wrapper -->
 </div>
