@@ -1,7 +1,7 @@
 <div class="test-container">
   <div class="test-header">
-    <h1>🧪 Phase 5 Test: API Integration</h1>
-    <p>Testing: Loading data dynamically from backend</p>
+    <h1>🧪 Phase 7 Test: Multiple Videos</h1>
+    <p>Testing: Video grid with selection</p>
   </div>
 
   <!-- Loading State -->
@@ -13,12 +13,41 @@
   <!-- Error State -->
   <div class="error-section" *ngIf="error && !loading">
     <p class="error-message">❌ {{ error }}</p>
-    <button class="retry-button" (click)="loadVideo()">Try Again</button>
+    <button class="retry-button" (click)="loadVideos()">Try Again</button>
   </div>
 
   <!-- Video Content (show when loaded successfully) -->
   <div class="content-wrapper" *ngIf="!loading && !error">
-    <!-- Thumbnail with Play Button Overlay - Video replaces thumbnail when playing -->
+
+    <!-- NEW: Video Selection Grid -->
+    <div class="video-grid-section" *ngIf="allVideos.length > 0">
+      <h2 class="grid-header">🎬 Select a Video ({{ allVideos.length }} total)</h2>
+
+      <div class="video-grid">
+        <div
+          *ngFor="let video of allVideos; let i = index"
+          class="video-card"
+          [class.selected]="i === selectedVideoIndex"
+          (click)="selectVideo(i)">
+
+          <img
+            [src]="video.thumbnailUrl"
+            [alt]="video.video_title"
+            class="grid-thumbnail"
+            loading="lazy">
+
+          <div class="video-card-title">{{ video.video_title }}</div>
+          <div class="video-card-duration">{{ video.duration || '1:00' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="now-playing-header">
+      <h2>📽️ Now Playing</h2>
+    </div>
+
+    <!-- Selected Video Display -->
     <div class="thumbnail-section">
     <!-- Show thumbnail when video not playing -->
     <div class="thumbnail-wrapper" (click)="playVideo()" *ngIf="!showVideo">

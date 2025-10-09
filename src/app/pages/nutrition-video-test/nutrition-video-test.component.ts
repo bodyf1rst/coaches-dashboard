@@ -27,7 +27,7 @@ interface ApiResponse {
   styleUrls: ['./nutrition-video-test.component.scss']
 })
 export class NutritionVideoTestComponent implements OnInit {
-  // PHASE 5: API Integration - Dynamic data loading
+  // PHASE 7: Multiple videos with selection
   loading = true;
   error: string | null = null;
 
@@ -35,7 +35,11 @@ export class NutritionVideoTestComponent implements OnInit {
   showVideo = false;
   showTranscription = false;
 
-  // Video data (will be populated from API)
+  // Video library
+  allVideos: VideoData[] = [];
+  selectedVideoIndex = 0;
+
+  // Currently displayed video data
   videoUrl = '';
   thumbnailUrl = '';
   title = '';
@@ -48,45 +52,59 @@ export class NutritionVideoTestComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.loadVideo();
+    this.loadVideos();
   }
 
-  loadVideo() {
+  loadVideos() {
     this.loading = true;
     this.error = null;
-    // Temporarily use existing get-videos.php endpoint (works right now)
     const apiUrl = `${environment.apiUrl}/get-videos.php`;
 
     this.http.get<ApiResponse>(apiUrl).subscribe({
       next: (response) => {
         if (response.status === 'success' && response.videos.length > 0) {
-          const video = response.videos[0];
+          // Store all videos
+          this.allVideos = response.videos;
 
-          // Map API response to component properties - 100% from database!
-          this.title = video.video_title;
-          this.videoUrl = video.videoUrl;
-          this.thumbnailUrl = video.thumbnailUrl;
-          this.duration = video.duration || '1:00';
-          this.category = video.category || 'Nutrition';
-
-          // PHASE 6: All data now from database (no fallbacks!)
-          this.transcription = video.transcription || 'No transcription available';
-          this.workoutTags = video.workout_tags || [];
-          this.equipmentTags = video.equipment_tags || [];
+          // Select first video by default
+          this.selectVideo(0);
 
           this.loading = false;
-          console.log('Video loaded successfully:', this.title);
+          console.log(`Loaded ${this.allVideos.length} videos successfully`);
         } else {
           this.error = 'No video data available';
           this.loading = false;
         }
       },
       error: (err) => {
-        console.error('Error loading video:', err);
-        this.error = 'Failed to load video. Please try again.';
+        console.error('Error loading videos:', err);
+        this.error = 'Failed to load videos. Please try again.';
         this.loading = false;
       }
     });
+  }
+
+  selectVideo(index: number) {
+    if (index < 0 || index >= this.allVideos.length) return;
+
+    const video = this.allVideos[index];
+    this.selectedVideoIndex = index;
+
+    // Populate display from selected video
+    this.title = video.video_title;
+    this.videoUrl = video.videoUrl;
+    this.thumbnailUrl = video.thumbnailUrl;
+    this.duration = video.duration || '1:00';
+    this.category = video.category || 'Nutrition';
+    this.transcription = video.transcription || 'No transcription available';
+    this.workoutTags = video.workout_tags || [];
+    this.equipmentTags = video.equipment_tags || [];
+
+    // Reset video player when switching videos
+    this.showVideo = false;
+    this.showTranscription = false;
+
+    console.log('Selected video:', this.title);
   }
 
   playVideo() {
