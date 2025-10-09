@@ -1,7 +1,7 @@
 <div class="test-container">
   <div class="test-header">
-    <h1>🧪 Phase 7 Test: Multiple Videos</h1>
-    <p>Testing: Video grid with selection</p>
+    <h1>🧪 Phase 7: Side-by-Side Video Test</h1>
+    <p>Testing: 2 videos side-by-side with click-to-play</p>
   </div>
 
   <!-- Loading State -->
@@ -16,123 +16,102 @@
     <button class="retry-button" (click)="loadVideos()">Try Again</button>
   </div>
 
-  <!-- Video Content (show when loaded successfully) -->
-  <div class="content-wrapper" *ngIf="!loading && !error">
+  <!-- Side-by-Side Video Display -->
+  <div class="two-video-container" *ngIf="!loading && !error && allVideos.length > 0">
 
-    <!-- NEW: Video Selection Grid -->
-    <div class="video-grid-section" *ngIf="allVideos.length > 0">
-      <h2 class="grid-header">🎬 Select a Video ({{ allVideos.length }} total)</h2>
+    <!-- Loop through each video (should be 2) -->
+    <div class="video-card" *ngFor="let video of allVideos; let i = index">
 
-      <div class="video-grid">
-        <div
-          *ngFor="let video of allVideos; let i = index"
-          class="video-card"
-          [class.selected]="i === selectedVideoIndex"
-          (click)="selectVideo(i)">
+      <!-- Thumbnail or Video Player Container -->
+      <div class="media-container">
 
+        <!-- Show Thumbnail when not playing -->
+        <div class="thumbnail-wrapper" *ngIf="!playingVideos[i]" (click)="toggleVideo(i)">
           <img
             [src]="video.thumbnailUrl"
             [alt]="video.video_title"
-            class="grid-thumbnail"
+            class="video-thumbnail"
             loading="lazy">
-
-          <div class="video-card-title">{{ video.video_title }}</div>
-          <div class="video-card-duration">{{ video.duration || '1:00' }}</div>
+          <div class="play-button-overlay">
+            <div class="play-icon">▶</div>
+          </div>
+          <p class="click-hint">👆 Click to play</p>
         </div>
+
+        <!-- Show Video Player when playing -->
+        <div class="video-wrapper" *ngIf="playingVideos[i]">
+          <video
+            controls
+            crossorigin="anonymous"
+            autoplay
+            class="video-player"
+            [src]="video.videoUrl">
+            Your browser does not support the video tag.
+          </video>
+          <button class="close-video" (click)="toggleVideo(i)">✕ Close Video</button>
+        </div>
+
+      </div>
+
+      <!-- Video Information Below -->
+      <div class="video-info">
+
+        <!-- Title -->
+        <h2 class="video-title">{{ video.video_title }}</h2>
+
+        <!-- Metadata -->
+        <div class="video-meta">
+          <span class="meta-item">
+            <strong>Duration:</strong> {{ video.duration || '1:00' }}
+          </span>
+          <span class="meta-item">
+            <strong>Category:</strong> {{ video.category || 'Workout' }}
+          </span>
+        </div>
+
+        <!-- Tags -->
+        <div class="tags-section">
+          <div class="tag-group" *ngIf="video.workout_tags && video.workout_tags.length > 0">
+            <strong>Workout Type:</strong>
+            <span class="tag" *ngFor="let tag of video.workout_tags">{{ tag }}</span>
+          </div>
+          <div class="tag-group" *ngIf="video.equipment_tags && video.equipment_tags.length > 0">
+            <strong>Equipment:</strong>
+            <span class="tag equipment-tag" *ngFor="let tag of video.equipment_tags">{{ tag }}</span>
+          </div>
+        </div>
+
+        <!-- Transcription (Collapsible) -->
+        <div class="transcription-section">
+          <button
+            class="transcription-toggle"
+            (click)="toggleTranscriptionForVideo(i)"
+            [attr.aria-expanded]="showTranscription[i]">
+            <span class="toggle-label">📝 Transcription</span>
+            <span class="toggle-icon">{{ showTranscription[i] ? '▲' : '▼' }}</span>
+          </button>
+
+          <div class="transcription-content" *ngIf="showTranscription[i]">
+            <p class="transcription-text">{{ video.transcription || 'No transcription available' }}</p>
+          </div>
+        </div>
+
       </div>
     </div>
 
-    <!-- Divider -->
-    <div class="now-playing-header">
-      <h2>📽️ Now Playing</h2>
-    </div>
-
-    <!-- Selected Video Display -->
-    <div class="thumbnail-section">
-    <!-- Show thumbnail when video not playing -->
-    <div class="thumbnail-wrapper" (click)="playVideo()" *ngIf="!showVideo">
-      <img
-        [src]="thumbnailUrl"
-        alt="{{ title }} Thumbnail"
-        class="video-thumbnail">
-      <div class="play-button-overlay">
-        <div class="play-icon">▶</div>
-      </div>
-    </div>
-
-    <!-- Show video in same spot when playing -->
-    <div class="video-player-wrapper" *ngIf="showVideo">
-      <video
-        controls
-        crossorigin="anonymous"
-        autoplay
-        width="100%"
-        class="video-player"
-        [src]="videoUrl">
-        Your browser does not support the video tag.
-      </video>
-    </div>
-
-    <p style="text-align: center; margin-top: 10px;" *ngIf="!showVideo">👆 Click thumbnail to play video</p>
   </div>
 
-  <!-- Video Info Section - NOW BELOW THUMBNAIL -->
-  <div class="video-info-section">
-    <h2 class="video-title">{{ title }}</h2>
-
-    <div class="video-meta">
-      <span class="meta-item">
-        <strong>Duration:</strong> {{ duration }}
-      </span>
-      <span class="meta-item">
-        <strong>Category:</strong> {{ category }}
-      </span>
-    </div>
-
-    <div class="tags-section">
-      <div class="tag-group">
-        <strong>Workout Type:</strong>
-        <span class="tag" *ngFor="let tag of workoutTags">{{ tag }}</span>
-      </div>
-      <div class="tag-group">
-        <strong>Equipment:</strong>
-        <span class="tag equipment-tag" *ngFor="let tag of equipmentTags">{{ tag }}</span>
-      </div>
-    </div>
-
-    <!-- NEW: Collapsible Transcription -->
-    <div class="transcription-section">
-      <button
-        class="transcription-toggle"
-        (click)="toggleTranscription()"
-        [attr.aria-expanded]="showTranscription">
-        <span class="toggle-label">📝 Transcription</span>
-        <span class="toggle-icon">{{ showTranscription ? '▲' : '▼' }}</span>
-      </button>
-
-      <div class="transcription-content" *ngIf="showTranscription">
-        <p class="transcription-text">{{ transcription }}</p>
-      </div>
-    </div>
+  <!-- Info Section -->
+  <div class="test-info" *ngIf="!loading && !error">
+    <h3>✅ Phase 7 Complete - Side-by-Side Layout:</h3>
+    <ul>
+      <li>✅ 2 videos displayed side-by-side</li>
+      <li>✅ Thumbnail on top, info below</li>
+      <li>✅ Click thumbnail to play video in-place</li>
+      <li>✅ Each video has its own controls</li>
+      <li>✅ Transcriptions toggle independently</li>
+      <li>✅ Full metadata from database</li>
+    </ul>
   </div>
 
-    <div class="test-info">
-      <h3>Phase 5 - What's New:</h3>
-      <ul>
-        <li>✅ API Integration - Loading from backend</li>
-        <li>✅ Dynamic data (not hardcoded)</li>
-        <li>✅ Loading state with spinner</li>
-        <li>✅ Error handling with retry</li>
-        <li>✅ TypeScript type safety</li>
-        <li>✅ Real database content</li>
-      </ul>
-
-      <h3>Now From Database (Phase 6 Complete):</h3>
-      <ul>
-        <li>✅ Transcription - Loaded from database</li>
-        <li>✅ Workout tags - From muscle_groups field</li>
-        <li>✅ Equipment tags - From equipment field</li>
-      </ul>
-    </div>
-  </div> <!-- Close content-wrapper -->
 </div>

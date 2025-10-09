@@ -27,27 +27,14 @@ interface ApiResponse {
   styleUrls: ['./nutrition-video-test.component.scss']
 })
 export class NutritionVideoTestComponent implements OnInit {
-  // PHASE 7: Multiple videos with selection
+  // PHASE 7: Side-by-side video display
   loading = true;
   error: string | null = null;
 
-  // Video display states
-  showVideo = false;
-  showTranscription = false;
-
-  // Video library
+  // Video library and playback states
   allVideos: VideoData[] = [];
-  selectedVideoIndex = 0;
-
-  // Currently displayed video data
-  videoUrl = '';
-  thumbnailUrl = '';
-  title = '';
-  transcription = '';
-  duration = '';
-  category = '';
-  workoutTags: string[] = [];
-  equipmentTags: string[] = [];
+  playingVideos: boolean[] = [];
+  showTranscription: boolean[] = [];
 
   constructor(private http: HttpClient) {}
 
@@ -58,17 +45,16 @@ export class NutritionVideoTestComponent implements OnInit {
   loadVideos() {
     this.loading = true;
     this.error = null;
-    // STEP 1: Single video test - get-videos.php now returns ONLY Ab Roll Out
     const apiUrl = `${environment.apiUrl}/get-videos.php`;
 
     this.http.get<ApiResponse>(apiUrl).subscribe({
       next: (response) => {
         if (response.status === 'success' && response.videos.length > 0) {
-          // Store all videos
           this.allVideos = response.videos;
 
-          // Select first video by default
-          this.selectVideo(0);
+          // Initialize playback and transcription states for each video
+          this.playingVideos = new Array(this.allVideos.length).fill(false);
+          this.showTranscription = new Array(this.allVideos.length).fill(false);
 
           this.loading = false;
           console.log(`Loaded ${this.allVideos.length} videos successfully`);
@@ -85,34 +71,11 @@ export class NutritionVideoTestComponent implements OnInit {
     });
   }
 
-  selectVideo(index: number) {
-    if (index < 0 || index >= this.allVideos.length) return;
-
-    const video = this.allVideos[index];
-    this.selectedVideoIndex = index;
-
-    // Populate display from selected video
-    this.title = video.video_title;
-    this.videoUrl = video.videoUrl;
-    this.thumbnailUrl = video.thumbnailUrl;
-    this.duration = video.duration || '1:00';
-    this.category = video.category || 'Nutrition';
-    this.transcription = video.transcription || 'No transcription available';
-    this.workoutTags = video.workout_tags || [];
-    this.equipmentTags = video.equipment_tags || [];
-
-    // Reset video player when switching videos
-    this.showVideo = false;
-    this.showTranscription = false;
-
-    console.log('Selected video:', this.title);
+  toggleVideo(index: number) {
+    this.playingVideos[index] = !this.playingVideos[index];
   }
 
-  playVideo() {
-    this.showVideo = true;
-  }
-
-  toggleTranscription() {
-    this.showTranscription = !this.showTranscription;
+  toggleTranscriptionForVideo(index: number) {
+    this.showTranscription[index] = !this.showTranscription[index];
   }
 }
