@@ -58,8 +58,8 @@ export class NutritionVideoTestComponent implements OnInit {
   loadVideos() {
     this.loading = true;
     this.error = null;
-    // TWO VIDEO TEST: Compare Ab Roll Out (working) vs Alternating High Cable Row (check)
-    const apiUrl = `${environment.apiUrl}/get-two-test-videos.php`;
+    // Back to single working video for now
+    const apiUrl = `${environment.apiUrl}/get-nutrition-videos-test.php`;
 
     this.http.get<ApiResponse>(apiUrl).subscribe({
       next: (response) => {
