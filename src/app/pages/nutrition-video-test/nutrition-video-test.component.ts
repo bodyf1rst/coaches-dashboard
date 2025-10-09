@@ -54,7 +54,8 @@ export class NutritionVideoTestComponent implements OnInit {
   loadVideo() {
     this.loading = true;
     this.error = null;
-    const apiUrl = `${environment.apiUrl}/get-nutrition-videos-test.php`;
+    // Temporarily use existing get-videos.php endpoint (works right now)
+    const apiUrl = `${environment.apiUrl}/get-videos.php`;
 
     this.http.get<ApiResponse>(apiUrl).subscribe({
       next: (response) => {
