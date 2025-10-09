@@ -4,9 +4,10 @@
     <p>Testing: Better UX with thumbnail first, collapsible content</p>
   </div>
 
-  <!-- Thumbnail with Play Button Overlay - MOVED TO TOP -->
+  <!-- Thumbnail with Play Button Overlay - Video replaces thumbnail when playing -->
   <div class="thumbnail-section">
-    <div class="thumbnail-wrapper" (click)="playVideo()">
+    <!-- Show thumbnail when video not playing -->
+    <div class="thumbnail-wrapper" (click)="playVideo()" *ngIf="!showVideo">
       <img
         [src]="thumbnailUrl"
         alt="{{ title }} Thumbnail"
@@ -15,7 +16,21 @@
         <div class="play-icon">▶</div>
       </div>
     </div>
-    <p style="text-align: center; margin-top: 10px;">👆 Click thumbnail to play video</p>
+
+    <!-- Show video in same spot when playing -->
+    <div class="video-player-wrapper" *ngIf="showVideo">
+      <video
+        controls
+        crossorigin="anonymous"
+        autoplay
+        width="100%"
+        class="video-player"
+        [src]="videoUrl">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+
+    <p style="text-align: center; margin-top: 10px;" *ngIf="!showVideo">👆 Click thumbnail to play video</p>
   </div>
 
   <!-- Video Info Section - NOW BELOW THUMBNAIL -->
@@ -56,18 +71,6 @@
         <p class="transcription-text">{{ transcription }}</p>
       </div>
     </div>
-  </div>
-
-  <div class="video-container" *ngIf="showVideo">
-    <video
-      controls
-      crossorigin="anonymous"
-      autoplay
-      width="100%"
-      style="max-width: 800px;"
-      [src]="videoUrl">
-      Your browser does not support the video tag.
-    </video>
   </div>
 
   <div class="test-info">

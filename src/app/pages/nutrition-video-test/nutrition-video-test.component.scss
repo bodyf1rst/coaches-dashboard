@@ -260,6 +260,19 @@
   width: 100%;
 }
 
+// Video player wrapper - replaces thumbnail in same position
+.video-player-wrapper {
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.video-player {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  background: #000;
+}
+
 .play-button-overlay {
   position: absolute;
   top: 50%;
