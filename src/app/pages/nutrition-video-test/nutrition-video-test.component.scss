@@ -72,27 +72,23 @@
   }
 }
 
-// Video Grid Container - 5 per row for scaling to 700+ videos
+// Video Grid Container - 4 per row for better spacing
 .two-video-container {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
   margin-bottom: 30px;
 
   // Responsive breakpoints
-  @media (max-width: 1400px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  @media (max-width: 1100px) {
+  @media (max-width: 1200px) {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (max-width: 500px) {
+  @media (max-width: 600px) {
     grid-template-columns: 1fr;
   }
 }
