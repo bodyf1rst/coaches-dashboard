@@ -58,8 +58,8 @@ export class NutritionVideoTestComponent implements OnInit {
   loadVideos() {
     this.loading = true;
     this.error = null;
-    // STEP 1: Single video test - Ab Roll Out only
-    const apiUrl = `${environment.apiUrl}/get-single-test-video.php`;
+    // STEP 1: Single video test - get-videos.php now returns ONLY Ab Roll Out
+    const apiUrl = `${environment.apiUrl}/get-videos.php`;
 
     this.http.get<ApiResponse>(apiUrl).subscribe({
       next: (response) => {
