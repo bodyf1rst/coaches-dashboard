@@ -140,10 +140,6 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 50%;
-    width: 80px;
-    height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -151,13 +147,13 @@
 
     .play-icon {
       color: white;
-      font-size: 32px;
+      font-size: 48px;
       margin-left: 5px; // Visual centering
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
     }
   }
 
   &:hover .play-button-overlay {
-    background: rgba(0, 0, 0, 0.9);
     transform: translate(-50%, -50%) scale(1.1);
   }
 
