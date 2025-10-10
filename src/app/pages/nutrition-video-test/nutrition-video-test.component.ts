@@ -1,26 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment.prod';
-
-// TypeScript interfaces for type safety
-interface VideoData {
-  video_id: string;
-  video_title: string;
-  videoUrl: string;
-  thumbnailUrl: string;
-  transcription?: string;
-  duration?: string;
-  category?: string;
-  workout_type?: string;        // Phase 4: resistance, strength, cardio, etc.
-  workout_tags?: string[];      // Muscle groups: chest, back, quads, etc.
-  equipment_tags?: string[];    // Equipment: dumbbells, bodyweight, etc.
-}
-
-interface ApiResponse {
-  status: string;
-  videos: VideoData[];
-  total: number;
-}
+import { VideoData, VideoApiResponse } from '../../models/video.model';
+import { VideoTagsValidatorService } from '../../services/video-tags-validator.service';
 
 @Component({
   selector: 'app-nutrition-video-test',
@@ -37,7 +19,10 @@ export class NutritionVideoTestComponent implements OnInit {
   playingVideos: boolean[] = [];
   showTranscription: boolean[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private validator: VideoTagsValidatorService
+  ) {}
 
   ngOnInit() {
     this.loadVideos();
@@ -48,11 +33,11 @@ export class NutritionVideoTestComponent implements OnInit {
     this.error = null;
     const apiUrl = `${environment.apiUrl}/get-videos.php`;
 
-    this.http.get<ApiResponse>(apiUrl).subscribe({
+    this.http.get<VideoApiResponse>(apiUrl).subscribe({
       next: (response) => {
         if (response.status === 'success' && response.videos.length > 0) {
           // Clean and process video data
-          this.allVideos = response.videos.map(video => ({
+          this.allVideos = response.videos.map((video: VideoData) => ({
             ...video,
             // Clean workout_tags: remove quotes, brackets, only A-Z and spaces
             workout_tags: this.cleanTags(video.workout_tags),
@@ -65,7 +50,11 @@ export class NutritionVideoTestComponent implements OnInit {
           this.showTranscription = new Array(this.allVideos.length).fill(false);
 
           this.loading = false;
-          console.log(`Loaded ${this.allVideos.length} videos successfully`);
+
+          // Phase 7: Validate all videos
+          this.validator.validateVideos(this.allVideos, false);
+
+          console.log(`✅ Loaded ${this.allVideos.length} videos successfully`);
         } else {
           this.error = 'No video data available';
           this.loading = false;
