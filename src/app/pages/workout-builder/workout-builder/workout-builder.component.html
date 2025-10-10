@@ -1,39 +1,259 @@
 <div class="workout-builder-container">
+  <!-- Header -->
   <div class="header">
     <button class="btn-back" (click)="goBack()">
       ← Back to Plans
     </button>
-    <h1 *ngIf="plan">🎯 Building: {{ plan.name }}</h1>
+    <h1 *ngIf="plan">🎯 Building Workout for: {{ plan.name }}</h1>
   </div>
 
+  <!-- Loading State -->
   <div *ngIf="loading" class="loading">
     <p>Loading workout plan...</p>
   </div>
 
+  <!-- Error State -->
   <div *ngIf="error" class="error-message">
     <p>{{ error }}</p>
     <button (click)="loadPlan()">Retry</button>
   </div>
 
-  <div *ngIf="!loading && !error && plan" class="builder-content">
-    <div class="plan-info">
-      <h2>Plan Details</h2>
-      <p><strong>Duration:</strong> {{ plan.duration_weeks }} weeks</p>
-      <p><strong>Description:</strong> {{ plan.description || 'No description' }}</p>
-      <p><strong>Status:</strong> {{ plan.is_public ? '🌐 Public' : '🔒 Private' }}</p>
+  <!-- Main Builder -->
+  <div *ngIf="!loading && !error && plan" class="builder-main">
+
+    <!-- Workout Configuration -->
+    <div class="workout-config">
+      <div class="config-row">
+        <div class="config-item">
+          <label>Workout Name *</label>
+          <input
+            type="text"
+            [(ngModel)]="workoutName"
+            placeholder="e.g., Full Body Strength Day 1"
+            class="workout-name-input"
+          />
+        </div>
+
+        <div class="config-item">
+          <label>Workout Type</label>
+          <select [(ngModel)]="workoutType" class="workout-type-select">
+            <option *ngFor="let type of workoutTypes" [value]="type.value">
+              {{ type.label }} - {{ type.description }}
+            </option>
+          </select>
+        </div>
+      </div>
     </div>
 
-    <div class="coming-soon">
-      <h2>🚀 Workout Builder Coming Soon!</h2>
-      <p>The drag-and-drop workout builder with the following features will be available in the next update:</p>
+    <!-- Two Panel Layout -->
+    <div class="builder-panels">
+
+      <!-- LEFT PANEL: Video Library -->
+      <div class="video-library-panel">
+        <div class="panel-header">
+          <h2>📹 Video Library</h2>
+          <p class="panel-subtitle">Drag videos to add exercises</p>
+        </div>
+
+        <!-- Search -->
+        <div class="search-box">
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            (input)="filterVideos()"
+            placeholder="🔍 Search by title, muscle group, or type..."
+            class="search-input"
+          />
+        </div>
+
+        <!-- Videos -->
+        <div *ngIf="loadingVideos" class="loading-videos">
+          <p>Loading videos...</p>
+        </div>
+
+        <div
+          *ngIf="!loadingVideos"
+          class="video-list"
+          cdkDropList
+          id="videoList"
+          [cdkDropListData]="filteredVideos"
+          [cdkDropListConnectedTo]="['workoutList']"
+        >
+          <div
+            *ngFor="let video of filteredVideos"
+            class="video-card"
+            cdkDrag
+          >
+            <img
+              [src]="video.thumbnail_url"
+              [alt]="video.video_title"
+              class="video-thumbnail"
+              onerror="this.src='assets/images/placeholder.png'"
+            />
+            <div class="video-info">
+              <h4>{{ video.video_title }}</h4>
+              <p class="video-meta">
+                <span *ngIf="video.muscle_groups">💪 {{ video.muscle_groups }}</span>
+                <span *ngIf="video.workout_type">🏋️ {{ video.workout_type }}</span>
+              </p>
+            </div>
+            <div class="drag-handle" cdkDragHandle>⋮⋮</div>
+          </div>
+
+          <div *ngIf="filteredVideos.length === 0" class="no-videos">
+            <p>No videos found</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL: Workout Builder -->
+      <div class="workout-builder-panel">
+        <div class="panel-header">
+          <h2>💪 Workout Exercises</h2>
+          <p class="panel-subtitle">
+            {{ workoutExercises.length }} exercise{{ workoutExercises.length !== 1 ? 's' : '' }}
+          </p>
+        </div>
+
+        <!-- Drop Zone -->
+        <div
+          class="exercise-list"
+          cdkDropList
+          id="workoutList"
+          [cdkDropListData]="workoutExercises"
+          [cdkDropListConnectedTo]="['videoList']"
+          (cdkDropListDropped)="dropVideo($event)"
+        >
+          <!-- Empty State -->
+          <div *ngIf="workoutExercises.length === 0" class="empty-state">
+            <div class="empty-icon">🎯</div>
+            <h3>Start Building Your Workout</h3>
+            <p>Drag videos from the library to add exercises</p>
+          </div>
+
+          <!-- Exercise Cards -->
+          <div
+            *ngFor="let exercise of workoutExercises; let i = index"
+            class="exercise-card"
+            cdkDrag
+          >
+            <!-- Drag Handle & Order -->
+            <div class="exercise-header">
+              <div class="exercise-order" cdkDragHandle>
+                <span class="drag-dots">⋮⋮</span>
+                <span class="order-number">{{ i + 1 }}</span>
+              </div>
+              <h3 class="exercise-name">{{ exercise.video?.video_title }}</h3>
+              <button class="btn-toggle" (click)="toggleExerciseExpanded(exercise)">
+                {{ exercise.isExpanded ? '▼' : '▶' }}
+              </button>
+              <button class="btn-remove" (click)="removeExercise(i)">
+                ✕
+              </button>
+            </div>
+
+            <!-- Exercise Config (Expanded) -->
+            <div *ngIf="exercise.isExpanded" class="exercise-config">
+              <div class="config-grid">
+                <!-- Sets -->
+                <div class="config-field">
+                  <label>Sets</label>
+                  <input
+                    type="number"
+                    [(ngModel)]="exercise.sets"
+                    min="1"
+                    max="20"
+                    placeholder="3"
+                  />
+                </div>
+
+                <!-- Reps -->
+                <div class="config-field">
+                  <label>Reps</label>
+                  <input
+                    type="number"
+                    [(ngModel)]="exercise.reps"
+                    min="1"
+                    max="100"
+                    placeholder="10"
+                  />
+                </div>
+
+                <!-- Duration -->
+                <div class="config-field">
+                  <label>Duration (sec)</label>
+                  <input
+                    type="number"
+                    [(ngModel)]="exercise.duration_seconds"
+                    min="5"
+                    max="600"
+                    placeholder="60"
+                  />
+                </div>
+
+                <!-- Rest Timer -->
+                <div class="config-field rest-timer">
+                  <label>
+                    ⏱️ Rest Timer (sec)
+                    <span class="field-help">1-120 seconds</span>
+                  </label>
+                  <input
+                    type="number"
+                    [(ngModel)]="exercise.rest_timer_seconds"
+                    min="1"
+                    max="120"
+                    placeholder="60"
+                  />
+                  <label class="checkbox-label">
+                    <input
+                      type="checkbox"
+                      [(ngModel)]="exercise.timer_beep_enabled"
+                    />
+                    Enable beep sound
+                  </label>
+                </div>
+              </div>
+
+              <!-- Notes -->
+              <div class="config-field full-width">
+                <label>Notes (optional)</label>
+                <textarea
+                  [(ngModel)]="exercise.notes"
+                  rows="2"
+                  placeholder="e.g., Focus on form, slow tempo, use light weight..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="btn-cancel" (click)="goBack()" [disabled]="saving">
+        Cancel
+      </button>
+      <button
+        class="btn-save"
+        (click)="saveWorkout()"
+        [disabled]="saving || workoutExercises.length === 0 || !workoutName.trim()"
+      >
+        <span *ngIf="!saving">💾 Save Workout</span>
+        <span *ngIf="saving">⏳ Saving...</span>
+      </button>
+    </div>
+
+    <!-- Help Text -->
+    <div class="help-text">
+      <h3>🎯 Quick Tips:</h3>
       <ul>
-        <li>✅ 7 Workout Types (Traditional, EMOM, AMRAP, Circuit, Tabata, Superset, Custom)</li>
-        <li>✅ Drag & Drop Exercise Ordering</li>
-        <li>✅ Rest Timer (1-120 seconds with audio beep)</li>
-        <li>✅ Custom Template Nesting</li>
-        <li>✅ Week/Day Scheduling</li>
+        <li>✅ Drag videos from left to right to add exercises</li>
+        <li>✅ Reorder exercises by dragging them up or down</li>
+        <li>✅ Click ▶ to expand and configure sets, reps, rest timer</li>
+        <li>✅ Rest timer beeps when finished (1-120 seconds)</li>
+        <li>✅ Choose workout type: Traditional, EMOM, AMRAP, Circuit, Tabata, Superset, or Custom</li>
       </ul>
-      <p class="note">Backend APIs are ready and tested! Frontend UI coming next.</p>
     </div>
   </div>
 </div>
