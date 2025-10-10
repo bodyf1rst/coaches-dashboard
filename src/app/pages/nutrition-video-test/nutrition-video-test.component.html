@@ -32,13 +32,14 @@
         </select>
       </div>
 
-      <!-- Clear Filters Button -->
+      <!-- Clear Filters Button with Active Count Badge -->
       <div class="filter-item">
         <button
           class="clear-button"
           (click)="clearFilters()"
-          [disabled]="!searchQuery && !selectedWorkoutType && selectedMuscleGroups.length === 0 && selectedEquipment.length === 0">
+          [disabled]="!hasActiveFilters()">
           ✕ Clear All Filters
+          <span class="filter-badge" *ngIf="getActiveFilterCount() > 0">{{ getActiveFilterCount() }}</span>
         </button>
       </div>
     </div>

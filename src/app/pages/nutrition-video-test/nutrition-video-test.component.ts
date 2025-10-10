@@ -387,6 +387,25 @@ export class NutritionVideoTestComponent implements OnInit, OnDestroy {
     console.log('🔍 All filters cleared');
   }
 
+  /**
+   * TASK 8: Count active filters for badge display
+   */
+  getActiveFilterCount(): number {
+    let count = 0;
+    if (this.searchQuery && this.searchQuery.trim()) count++;
+    if (this.selectedWorkoutType) count++;
+    count += this.selectedMuscleGroups.length;
+    count += this.selectedEquipment.length;
+    return count;
+  }
+
+  /**
+   * TASK 8: Check if any filters are active
+   */
+  hasActiveFilters(): boolean {
+    return this.getActiveFilterCount() > 0;
+  }
+
   toggleVideo(index: number) {
     this.playingVideos[index] = !this.playingVideos[index];
   }
