@@ -22,9 +22,8 @@
     class="viewport"
     *ngIf="!loading && !error && allVideos.length > 0">
 
-    <div class="two-video-container">
-      <!-- Loop through each video with virtual scrolling -->
-      <div class="video-card" *cdkVirtualFor="let video of allVideos; let i = index">
+    <!-- Loop through each video with virtual scrolling -->
+    <div class="video-card" *cdkVirtualFor="let video of allVideos; let i = index">
 
         <!-- Thumbnail or Video Player Container -->
         <div class="media-container">
@@ -108,7 +107,6 @@
 
         </div>
       </div>
-    </div>
 
   </cdk-virtual-scroll-viewport>
 
