@@ -16,97 +16,107 @@
     <button class="retry-button" (click)="loadVideos()">Try Again</button>
   </div>
 
-  <!-- Virtual Scroll Container for Performance with 500+ Videos -->
+  <!-- Virtual Scroll Container - Renders ROWS of 4 videos -->
   <cdk-virtual-scroll-viewport
-    itemSize="550"
+    itemSize="600"
     class="viewport"
     *ngIf="!loading && !error && allVideos.length > 0">
 
-    <!-- Loop through each video with virtual scrolling -->
-    <div class="video-card" *cdkVirtualFor="let video of allVideos; let i = index">
+    <!-- Loop through video ROWS (groups of 4) with virtual scrolling -->
+    <div class="video-row" *cdkVirtualFor="let row of videoRows; let rowIndex = index">
 
-        <!-- Thumbnail or Video Player Container -->
-        <div class="media-container">
+      <!-- Each row contains up to 4 video cards in a grid -->
+      <div class="video-card" *ngFor="let video of row; let colIndex = index; let isLast = last">
 
-          <!-- Show Thumbnail when not playing -->
-          <div class="thumbnail-wrapper" *ngIf="!playingVideos[i]" (click)="toggleVideo(i)">
-            <img
-              [src]="video.thumbnailUrl"
-              [alt]="video.video_title"
-              class="video-thumbnail"
-              loading="lazy">
-            <div class="play-button-overlay">
-              <div class="play-icon">▶</div>
+        <!-- Calculate actual video index for playback tracking -->
+        <ng-container *ngIf="(rowIndex * 4 + colIndex) as i">
+
+          <!-- Thumbnail or Video Player Container -->
+          <div class="media-container">
+
+            <!-- Show Thumbnail when not playing -->
+            <div class="thumbnail-wrapper" *ngIf="!playingVideos[i]" (click)="toggleVideo(i)">
+              <img
+                [src]="video.thumbnailUrl"
+                [alt]="video.video_title"
+                class="video-thumbnail"
+                loading="lazy">
+              <div class="play-button-overlay">
+                <div class="play-icon">▶</div>
+              </div>
             </div>
+
+            <!-- Show Video Player when playing -->
+            <div class="video-wrapper" *ngIf="playingVideos[i]">
+              <video
+                controls
+                crossorigin="anonymous"
+                autoplay
+                class="video-player"
+                [src]="video.videoUrl">
+                Your browser does not support the video tag.
+              </video>
+              <button class="close-video" (click)="toggleVideo(i)">✕ Close Video</button>
+            </div>
+
           </div>
 
-          <!-- Show Video Player when playing -->
-          <div class="video-wrapper" *ngIf="playingVideos[i]">
-            <video
-              controls
-              crossorigin="anonymous"
-              autoplay
-              class="video-player"
-              [src]="video.videoUrl">
-              Your browser does not support the video tag.
-            </video>
-            <button class="close-video" (click)="toggleVideo(i)">✕ Close Video</button>
+          <!-- Video Information Below -->
+          <div class="video-info">
+
+            <!-- Title -->
+            <h2 class="video-title">{{ video.video_title }}</h2>
+
+            <!-- Metadata -->
+            <div class="video-meta">
+              <span class="meta-item">
+                <strong>Duration:</strong> {{ video.duration || '1:00' }}
+              </span>
+              <span class="meta-item">
+                <strong>Category:</strong> {{ video.category || 'Workout' }}
+              </span>
+            </div>
+
+            <!-- Tags - Phase 6: Three separate tag groups with color coding -->
+            <div class="tags-section">
+              <!-- Workout Type (Orange) - Single value from Phase 4 classification -->
+              <div class="tag-group" *ngIf="video.workout_type">
+                <strong>Workout Type:</strong>
+                <span class="tag workout-type-tag">{{ video.workout_type | titlecase }}</span>
+              </div>
+              <!-- Equipment (Green) - Array of equipment used -->
+              <div class="tag-group" *ngIf="video.equipment_tags && video.equipment_tags.length > 0">
+                <strong>Equipment:</strong>
+                <span class="tag equipment-tag" *ngFor="let tag of video.equipment_tags">{{ tag }}</span>
+              </div>
+              <!-- Muscle Group (Red) - Array of muscles targeted -->
+              <div class="tag-group" *ngIf="video.workout_tags && video.workout_tags.length > 0">
+                <strong>Muscle Group:</strong>
+                <span class="tag muscle-group-tag" *ngFor="let tag of video.workout_tags">{{ tag }}</span>
+              </div>
+            </div>
+
+            <!-- Transcription (Collapsible) -->
+            <div class="transcription-section">
+              <button
+                class="transcription-toggle"
+                (click)="toggleTranscriptionForVideo(i)"
+                [attr.aria-expanded]="showTranscription[i]">
+                <span class="toggle-label">📝 Transcription</span>
+                <span class="toggle-icon">{{ showTranscription[i] ? '▲' : '▼' }}</span>
+              </button>
+
+              <div class="transcription-content" *ngIf="showTranscription[i]">
+                <p class="transcription-text">{{ video.transcription || 'No transcription available' }}</p>
+              </div>
+            </div>
+
           </div>
 
-        </div>
-
-        <!-- Video Information Below -->
-        <div class="video-info">
-
-          <!-- Title -->
-          <h2 class="video-title">{{ video.video_title }}</h2>
-
-          <!-- Metadata -->
-          <div class="video-meta">
-            <span class="meta-item">
-              <strong>Duration:</strong> {{ video.duration || '1:00' }}
-            </span>
-            <span class="meta-item">
-              <strong>Category:</strong> {{ video.category || 'Workout' }}
-            </span>
-          </div>
-
-          <!-- Tags - Phase 6: Three separate tag groups with color coding -->
-          <div class="tags-section">
-            <!-- Workout Type (Orange) - Single value from Phase 4 classification -->
-            <div class="tag-group" *ngIf="video.workout_type">
-              <strong>Workout Type:</strong>
-              <span class="tag workout-type-tag">{{ video.workout_type | titlecase }}</span>
-            </div>
-            <!-- Equipment (Green) - Array of equipment used -->
-            <div class="tag-group" *ngIf="video.equipment_tags && video.equipment_tags.length > 0">
-              <strong>Equipment:</strong>
-              <span class="tag equipment-tag" *ngFor="let tag of video.equipment_tags">{{ tag }}</span>
-            </div>
-            <!-- Muscle Group (Red) - Array of muscles targeted -->
-            <div class="tag-group" *ngIf="video.workout_tags && video.workout_tags.length > 0">
-              <strong>Muscle Group:</strong>
-              <span class="tag muscle-group-tag" *ngFor="let tag of video.workout_tags">{{ tag }}</span>
-            </div>
-          </div>
-
-          <!-- Transcription (Collapsible) -->
-          <div class="transcription-section">
-            <button
-              class="transcription-toggle"
-              (click)="toggleTranscriptionForVideo(i)"
-              [attr.aria-expanded]="showTranscription[i]">
-              <span class="toggle-label">📝 Transcription</span>
-              <span class="toggle-icon">{{ showTranscription[i] ? '▲' : '▼' }}</span>
-            </button>
-
-            <div class="transcription-content" *ngIf="showTranscription[i]">
-              <p class="transcription-text">{{ video.transcription || 'No transcription available' }}</p>
-            </div>
-          </div>
-
-        </div>
+        </ng-container>
       </div>
+
+    </div>
 
   </cdk-virtual-scroll-viewport>
 
@@ -115,7 +125,7 @@
     <h3>✅ 4-Panel Grid Layout Complete:</h3>
     <ul>
       <li>✅ {{ allVideos.length }} videos in 4-column responsive grid</li>
-      <li>✅ Virtual scrolling for smooth performance</li>
+      <li>✅ Virtual scrolling for smooth performance ({{ videoRows.length }} rows)</li>
       <li>✅ Click thumbnail to play video in-place</li>
       <li>✅ Responsive: 4→3→2→1 columns (desktop→tablet→mobile)</li>
       <li>✅ Workout type, equipment, and muscle group tags</li>

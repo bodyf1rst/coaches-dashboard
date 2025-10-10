@@ -16,6 +16,7 @@ export class NutritionVideoTestComponent implements OnInit {
 
   // Video library and playback states
   allVideos: VideoData[] = [];
+  videoRows: VideoData[][] = []; // Grouped into rows of 4 for grid display
   playingVideos: boolean[] = [];
   showTranscription: boolean[] = [];
 
@@ -48,6 +49,9 @@ export class NutritionVideoTestComponent implements OnInit {
           // Initialize playback and transcription states for each video
           this.playingVideos = new Array(this.allVideos.length).fill(false);
           this.showTranscription = new Array(this.allVideos.length).fill(false);
+
+          // Group videos into rows of 4 for grid display
+          this.videoRows = this.chunkVideos(this.allVideos, 4);
 
           this.loading = false;
 
@@ -103,5 +107,14 @@ export class NutritionVideoTestComponent implements OnInit {
         .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
         .join(' ');
     }).filter(tag => tag.length > 0);  // Remove empty tags
+  }
+
+  // Chunk videos into rows for grid display
+  private chunkVideos(videos: VideoData[], chunkSize: number): VideoData[][] {
+    const rows: VideoData[][] = [];
+    for (let i = 0; i < videos.length; i += chunkSize) {
+      rows.push(videos.slice(i, i + chunkSize));
+    }
+    return rows;
   }
 }
