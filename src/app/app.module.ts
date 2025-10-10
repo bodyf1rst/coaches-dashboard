@@ -59,6 +59,10 @@ import { PlaceholderTabComponent } from './components/placeholder-tab/placeholde
 import { LeaderboardComponent } from './pages/leaderboard/leaderboard.component';
 import { VideoLibraryComponent } from './pages/video-library/video-library.component';
 import { NutritionVideoTestComponent } from './pages/nutrition-video-test/nutrition-video-test.component';
+import { FitnessHubComponent } from './pages/fitness-hub/fitness-hub.component';
+import { NutritionHubComponent } from './pages/nutrition-hub/nutrition-hub.component';
+import { SpiritMindsetHubComponent } from './pages/spirit-mindset-hub/spirit-mindset-hub.component';
+import { FitnessVideosComponent } from './pages/fitness-videos/fitness-videos.component';
 
 
 @NgModule({
@@ -111,6 +115,9 @@ import { NutritionVideoTestComponent } from './pages/nutrition-video-test/nutrit
     LeaderboardComponent,
     VideoLibraryComponent,
     NutritionVideoTestComponent,
+    FitnessHubComponent,
+    NutritionHubComponent,
+    SpiritMindsetHubComponent,
   ],
   imports: [
     BrowserModule,
@@ -120,6 +127,7 @@ import { NutritionVideoTestComponent } from './pages/nutrition-video-test/nutrit
     ReactiveFormsModule,
     HttpClientModule,
     ScrollingModule,
+    FitnessVideosComponent,
     NgxSortableModule,
     DragulaModule.forRoot(),
     QuillModule.forRoot({
