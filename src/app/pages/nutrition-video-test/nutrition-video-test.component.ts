@@ -34,19 +34,57 @@ export class NutritionVideoTestComponent implements OnInit {
     this.error = null;
     const apiUrl = `${environment.apiUrl}/get-videos.php`;
 
+    console.log('📡 Fetching videos from API:', apiUrl);
+
     this.http.get<VideoApiResponse>(apiUrl).subscribe({
       next: (response) => {
-        if (response.status === 'success' && response.videos.length > 0) {
-          // Clean and process video data
-          this.allVideos = response.videos.map((video: VideoData) => ({
-            ...video,
-            // Clean video_title: remove resolution tags like (360P), (1080P)
-            video_title: this.cleanTitle(video.video_title),
-            // Clean workout_tags: remove quotes, brackets, only A-Z and spaces
-            workout_tags: this.cleanTags(video.workout_tags),
-            // Clean equipment_tags: remove quotes, brackets, only A-Z and spaces
-            equipment_tags: this.cleanTags(video.equipment_tags)
-          }));
+        try {
+          // TASK 7: Comprehensive API response validation
+          const validationResult = this.validateApiResponse(response);
+
+          if (!validationResult.isValid) {
+            this.error = validationResult.errorMessage;
+            this.loading = false;
+            console.error('❌ API Response Validation Failed:', validationResult.errorMessage);
+            return;
+          }
+
+          // Clean and sanitize video data using validator service
+          this.allVideos = response.videos.map((video: VideoData) => {
+            const sanitized = this.validator.sanitizeVideo(video);
+            return {
+              ...sanitized,
+              // Clean video_title: remove resolution tags like (360P), (1080P)
+              video_title: this.cleanTitle(sanitized.video_title),
+              // Clean workout_tags: remove quotes, brackets, only A-Z and spaces
+              workout_tags: this.cleanTags(sanitized.workout_tags),
+              // Clean equipment_tags: remove quotes, brackets, only A-Z and spaces
+              equipment_tags: this.cleanTags(sanitized.equipment_tags)
+            };
+          });
+
+          // Validate each video and filter out invalid ones
+          const validVideos: VideoData[] = [];
+          const invalidVideos: VideoData[] = [];
+
+          this.allVideos.forEach(video => {
+            const result = this.validator.validateVideo(video);
+            if (result.isValid) {
+              validVideos.push(video);
+            } else {
+              invalidVideos.push(video);
+              console.error(`❌ Invalid video: ${video.video_title}`, result.errors);
+            }
+          });
+
+          // Use only valid videos
+          this.allVideos = validVideos;
+
+          if (this.allVideos.length === 0) {
+            this.error = 'No valid videos found. All videos failed validation.';
+            this.loading = false;
+            return;
+          }
 
           // Initialize playback and transcription states for each video
           this.playingVideos = new Array(this.allVideos.length).fill(false);
@@ -57,21 +95,108 @@ export class NutritionVideoTestComponent implements OnInit {
 
           this.loading = false;
 
-          // Phase 7: Validate all videos
-          this.validator.validateVideos(this.allVideos, false);
-
-          console.log(`✅ Loaded ${this.allVideos.length} videos successfully`);
-        } else {
-          this.error = 'No video data available';
+          // Log validation summary
+          const validationSummary = this.validator.validateVideos(this.allVideos, false);
+          console.log(`✅ Loaded ${this.allVideos.length} valid videos`);
+          if (invalidVideos.length > 0) {
+            console.warn(`⚠️ Filtered out ${invalidVideos.length} invalid videos`);
+          }
+        } catch (processingError) {
+          console.error('❌ Error processing API response:', processingError);
+          this.error = 'Error processing video data. Please contact support.';
           this.loading = false;
         }
       },
       error: (err) => {
-        console.error('Error loading videos:', err);
-        this.error = 'Failed to load videos. Please try again.';
+        // TASK 7: Enhanced error handling with specific messages
+        console.error('❌ API Request Failed:', err);
+
+        let errorMessage = 'Failed to load videos. ';
+
+        if (err.status === 0) {
+          errorMessage += 'Network error - please check your internet connection.';
+        } else if (err.status === 404) {
+          errorMessage += 'API endpoint not found. Please contact support.';
+        } else if (err.status === 500) {
+          errorMessage += 'Server error. Please try again later.';
+        } else if (err.status === 403) {
+          errorMessage += 'Access denied. Please check your permissions.';
+        } else if (err.error?.message) {
+          errorMessage += err.error.message;
+        } else {
+          errorMessage += 'Unknown error. Please try again.';
+        }
+
+        this.error = errorMessage;
         this.loading = false;
       }
     });
+  }
+
+  /**
+   * TASK 7: Validate API response structure
+   * Ensures response has required fields and proper format
+   */
+  private validateApiResponse(response: any): { isValid: boolean; errorMessage: string } {
+    // Check if response exists
+    if (!response) {
+      return {
+        isValid: false,
+        errorMessage: 'Empty response from API. Please try again.'
+      };
+    }
+
+    // Check if response has status field
+    if (!response.status) {
+      return {
+        isValid: false,
+        errorMessage: 'Invalid API response format (missing status field).'
+      };
+    }
+
+    // Check if status is success
+    if (response.status !== 'success') {
+      const apiMessage = response.message || 'Unknown API error';
+      return {
+        isValid: false,
+        errorMessage: `API returned error: ${apiMessage}`
+      };
+    }
+
+    // Check if videos array exists
+    if (!response.videos) {
+      return {
+        isValid: false,
+        errorMessage: 'API response missing videos data.'
+      };
+    }
+
+    // Check if videos is an array
+    if (!Array.isArray(response.videos)) {
+      return {
+        isValid: false,
+        errorMessage: 'Invalid videos data format (expected array).'
+      };
+    }
+
+    // Check if videos array is not empty
+    if (response.videos.length === 0) {
+      return {
+        isValid: false,
+        errorMessage: 'No videos available. Please check your data source.'
+      };
+    }
+
+    // Check if response has total field (optional but expected)
+    if (!response.total && response.total !== 0) {
+      console.warn('⚠️ API response missing total field');
+    }
+
+    // All validation passed
+    return {
+      isValid: true,
+      errorMessage: ''
+    };
   }
 
   toggleVideo(index: number) {
