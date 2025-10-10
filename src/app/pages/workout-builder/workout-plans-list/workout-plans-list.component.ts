@@ -50,6 +50,7 @@ export class WorkoutPlansListComponent implements OnInit {
   openCreateModal(): void {
     this.showCreateModal = true;
     this.newPlan = {
+      coach_id: 1,  // TODO: Get from logged-in user/auth token
       name: '',
       description: '',
       duration_weeks: 4,
