@@ -84,6 +84,21 @@
         </ul>
       </li>
 
+      <!-- Fitness Hub - NEW -->
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+          [ngClass]="{'active': isDropdownActive(fitness)}" aria-expanded="isDropdownActive()">
+          <i><span style="font-style: normal;">🏋️</span></i>
+          Fitness Hub
+        </a>
+        <ul class="dropdown-menu" routerLinkActive="show" #fitness="routerLinkActive">
+          <li><a class="dropdown-item" [routerLink]="'/fitness-videos'" routerLinkActive="active">
+            <i><span style="font-style: normal;">💪</span></i> Fitness Videos</a></li>
+          <li><a class="dropdown-item" [routerLink]="'/workout-builder'" routerLinkActive="active">
+            <i><span style="font-style: normal;">🎯</span></i> Workout Builder</a></li>
+        </ul>
+      </li>
+
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
           [ngClass]="{'active': isDropdownActive(cid)}" aria-expanded="isDropdownActive()">
