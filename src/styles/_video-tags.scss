@@ -1,0 +1,89 @@
+/**
+ * Shared Video Tag Styles
+ * Centralized styling for workout_type, equipment, and muscle_group tags
+ * Created: October 9, 2025 - Task 3
+ */
+
+// Base tag styling (shared by all tag types)
+@mixin tag-base {
+  display: inline-block;
+  padding: 4px 12px;
+  margin: 4px 4px 0 0;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: white;
+  text-transform: capitalize;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+// Workout Type tags (Orange gradient) - Phase 4
+@mixin workout-type-tag {
+  @include tag-base;
+  background: linear-gradient(135deg, #ff6f00 0%, #c43e00 100%);
+  border: 1px solid #c43e00;
+  box-shadow: 0 2px 6px rgba(196, 62, 0, 0.3);
+
+  &:hover {
+    background: linear-gradient(135deg, #ff8f00 0%, #d45100 100%);
+  }
+}
+
+// Equipment tags (Green gradient)
+@mixin equipment-tag {
+  @include tag-base;
+  background: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
+  border: 1px solid #2e7d32;
+  box-shadow: 0 2px 6px rgba(46, 125, 50, 0.3);
+
+  &:hover {
+    background: linear-gradient(135deg, #81c784 0%, #388e3c 100%);
+  }
+}
+
+// Muscle Group tags (Red gradient) - Phase 5
+@mixin muscle-group-tag {
+  @include tag-base;
+  background: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
+  border: 1px solid #c62828;
+  box-shadow: 0 2px 6px rgba(198, 40, 40, 0.3);
+
+  &:hover {
+    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  }
+}
+
+// Tag group container
+@mixin tag-group {
+  margin-bottom: 12px;
+
+  strong {
+    display: inline-block;
+    margin-right: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+  }
+}
+
+// Export as classes for direct use (optional)
+.tag-group {
+  @include tag-group;
+}
+
+.workout-type-tag {
+  @include workout-type-tag;
+}
+
+.equipment-tag {
+  @include equipment-tag;
+}
+
+.muscle-group-tag {
+  @include muscle-group-tag;
+}
