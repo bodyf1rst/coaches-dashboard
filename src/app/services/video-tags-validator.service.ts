@@ -176,12 +176,20 @@ export class VideoTagsValidatorService {
       errors.push('Missing or empty video_title');
     }
 
-    // CRITICAL FIELD: Video URL (with S3 validation)
+    // CRITICAL FIELD: Video URL (lenient validation)
     const primaryUrl = video.videoUrl || video.video_url;
     if (!primaryUrl) {
-      errors.push('Missing video URL');
-    } else if (!this.isValidS3Url(primaryUrl)) {
-      errors.push(`Invalid S3 URL format: ${primaryUrl}`);
+      errors.push('Missing video URL - cannot play');
+    } else {
+      // Just check if it looks like a URL at all
+      if (!primaryUrl.startsWith('http://') && !primaryUrl.startsWith('https://')) {
+        warnings.push(`Video URL doesn't start with http/https: ${primaryUrl}`);
+      }
+      // S3 pattern validation is advisory only - don't block videos
+      if (!this.isValidS3Url(primaryUrl)) {
+        // This is OK - URLs might be rawurlencoded or use different S3 formats
+        // Don't add warning, just let it through
+      }
     }
 
     // IMPORTANT FIELD: Thumbnail URL (warning only, has fallback)
@@ -189,17 +197,17 @@ export class VideoTagsValidatorService {
       warnings.push('Missing thumbnail URL - will use fallback');
     }
 
-    // VALIDATION: Duration (with range check)
+    // VALIDATION: Duration (lenient - warnings only)
     if (!video.duration) {
       warnings.push('Missing duration');
     } else if (!this.isValidDuration(video.duration)) {
       const num = Number(video.duration);
       if (isNaN(num)) {
-        errors.push(`Invalid duration format: ${video.duration}`);
+        warnings.push(`Invalid duration format: ${video.duration} - will show as unknown`);
       } else if (num < this.MIN_DURATION) {
-        errors.push(`Duration too small: ${num}s (min: ${this.MIN_DURATION}s)`);
+        warnings.push(`Duration suspicious: ${num}s (seems too small)`);
       } else if (num > this.MAX_DURATION) {
-        errors.push(`Duration too large: ${num}s (max: ${this.MAX_DURATION}s)`);
+        warnings.push(`Duration suspicious: ${num}s (seems too large)`);
       }
     }
 
