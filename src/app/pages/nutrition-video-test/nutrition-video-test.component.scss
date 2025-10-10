@@ -5,7 +5,7 @@
 .viewport {
   height: 80vh; // 80% of viewport height for scrolling
   width: 100%;
-  max-width: 1800px; // Wider for 4 columns - increased from 1600px
+  max-width: 95vw; // Full-width on desktop for workout builder
   margin: 0 auto;
   padding: 20px;
 }
@@ -32,7 +32,7 @@
 }
 
 .test-container {
-  max-width: 1400px;
+  max-width: 100%; // Full-width for desktop (workout builder coming)
   margin: 0 auto;
   padding: 20px;
   font-family: Arial, sans-serif;
