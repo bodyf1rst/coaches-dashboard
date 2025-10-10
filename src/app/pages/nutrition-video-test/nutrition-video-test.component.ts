@@ -40,6 +40,8 @@ export class NutritionVideoTestComponent implements OnInit {
           // Clean and process video data
           this.allVideos = response.videos.map((video: VideoData) => ({
             ...video,
+            // Clean video_title: remove resolution tags like (360P), (1080P)
+            video_title: this.cleanTitle(video.video_title),
             // Clean workout_tags: remove quotes, brackets, only A-Z and spaces
             workout_tags: this.cleanTags(video.workout_tags),
             // Clean equipment_tags: remove quotes, brackets, only A-Z and spaces
@@ -107,6 +109,13 @@ export class NutritionVideoTestComponent implements OnInit {
         .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
         .join(' ');
     }).filter(tag => tag.length > 0);  // Remove empty tags
+  }
+
+  // Clean video titles: Remove resolution tags for uniform appearance
+  private cleanTitle(title: string): string {
+    if (!title) return title;
+    // Remove (360P), (1080P), (720P), etc. - case insensitive
+    return title.replace(/\s*\(?\d+P\)?\s*/gi, '').trim();
   }
 
   // Chunk videos into rows for grid display

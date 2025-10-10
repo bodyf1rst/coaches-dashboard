@@ -5,7 +5,7 @@
 .viewport {
   height: 80vh; // 80% of viewport height for scrolling
   width: 100%;
-  max-width: 1600px; // Wider for 4 columns
+  max-width: 1800px; // Wider for 4 columns - increased from 1600px
   margin: 0 auto;
   padding: 20px;
 }
@@ -14,8 +14,8 @@
 .video-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr); // 4 panels across
-  gap: 25px;
-  margin-bottom: 25px; // Space between rows
+  gap: 30px; // Increased from 25px for better spacing
+  margin-bottom: 30px; // Space between rows - increased from 25px
 
   // Responsive breakpoints
   @media (max-width: 1400px) {

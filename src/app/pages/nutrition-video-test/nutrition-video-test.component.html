@@ -26,16 +26,13 @@
     <div class="video-row" *cdkVirtualFor="let row of videoRows; let rowIndex = index">
 
       <!-- Each row contains up to 4 video cards in a grid -->
-      <div class="video-card" *ngFor="let video of row; let colIndex = index; let isLast = last">
+      <div class="video-card" *ngFor="let video of row; let colIndex = index">
 
-        <!-- Calculate actual video index for playback tracking -->
-        <ng-container *ngIf="(rowIndex * 4 + colIndex) as i">
+        <!-- Thumbnail or Video Player Container -->
+        <div class="media-container">
 
-          <!-- Thumbnail or Video Player Container -->
-          <div class="media-container">
-
-            <!-- Show Thumbnail when not playing -->
-            <div class="thumbnail-wrapper" *ngIf="!playingVideos[i]" (click)="toggleVideo(i)">
+          <!-- Show Thumbnail when not playing -->
+          <div class="thumbnail-wrapper" *ngIf="!playingVideos[rowIndex * 4 + colIndex]" (click)="toggleVideo(rowIndex * 4 + colIndex)">
               <img
                 [src]="video.thumbnailUrl"
                 [alt]="video.video_title"
@@ -47,7 +44,7 @@
             </div>
 
             <!-- Show Video Player when playing -->
-            <div class="video-wrapper" *ngIf="playingVideos[i]">
+            <div class="video-wrapper" *ngIf="playingVideos[rowIndex * 4 + colIndex]">
               <video
                 controls
                 crossorigin="anonymous"
@@ -56,13 +53,13 @@
                 [src]="video.videoUrl">
                 Your browser does not support the video tag.
               </video>
-              <button class="close-video" (click)="toggleVideo(i)">✕ Close Video</button>
+              <button class="close-video" (click)="toggleVideo(rowIndex * 4 + colIndex)">✕ Close Video</button>
             </div>
 
-          </div>
+        </div>
 
-          <!-- Video Information Below -->
-          <div class="video-info">
+        <!-- Video Information Below -->
+        <div class="video-info">
 
             <!-- Title -->
             <h2 class="video-title">{{ video.video_title }}</h2>
@@ -100,20 +97,19 @@
             <div class="transcription-section">
               <button
                 class="transcription-toggle"
-                (click)="toggleTranscriptionForVideo(i)"
-                [attr.aria-expanded]="showTranscription[i]">
+                (click)="toggleTranscriptionForVideo(rowIndex * 4 + colIndex)"
+                [attr.aria-expanded]="showTranscription[rowIndex * 4 + colIndex]">
                 <span class="toggle-label">📝 Transcription</span>
-                <span class="toggle-icon">{{ showTranscription[i] ? '▲' : '▼' }}</span>
+                <span class="toggle-icon">{{ showTranscription[rowIndex * 4 + colIndex] ? '▲' : '▼' }}</span>
               </button>
 
-              <div class="transcription-content" *ngIf="showTranscription[i]">
+              <div class="transcription-content" *ngIf="showTranscription[rowIndex * 4 + colIndex]">
                 <p class="transcription-text">{{ video.transcription || 'No transcription available' }}</p>
               </div>
             </div>
 
-          </div>
+        </div>
 
-        </ng-container>
       </div>
 
     </div>
