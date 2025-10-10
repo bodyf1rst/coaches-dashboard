@@ -68,15 +68,22 @@
           </span>
         </div>
 
-        <!-- Tags -->
+        <!-- Tags - Phase 6: Three separate tag groups with color coding -->
         <div class="tags-section">
-          <div class="tag-group" *ngIf="video.workout_tags && video.workout_tags.length > 0">
+          <!-- Workout Type (Orange) - Single value from Phase 4 classification -->
+          <div class="tag-group" *ngIf="video.workout_type">
             <strong>Workout Type:</strong>
-            <span class="tag" *ngFor="let tag of video.workout_tags">{{ tag }}</span>
+            <span class="tag workout-type-tag">{{ video.workout_type | titlecase }}</span>
           </div>
+          <!-- Equipment (Green) - Array of equipment used -->
           <div class="tag-group" *ngIf="video.equipment_tags && video.equipment_tags.length > 0">
             <strong>Equipment:</strong>
             <span class="tag equipment-tag" *ngFor="let tag of video.equipment_tags">{{ tag }}</span>
+          </div>
+          <!-- Muscle Group (Red) - Array of muscles targeted -->
+          <div class="tag-group" *ngIf="video.workout_tags && video.workout_tags.length > 0">
+            <strong>Muscle Group:</strong>
+            <span class="tag muscle-group-tag" *ngFor="let tag of video.workout_tags">{{ tag }}</span>
           </div>
         </div>
 

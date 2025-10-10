@@ -11,8 +11,9 @@ interface VideoData {
   transcription?: string;
   duration?: string;
   category?: string;
-  workout_tags?: string[];
-  equipment_tags?: string[];
+  workout_type?: string;        // Phase 4: resistance, strength, cardio, etc.
+  workout_tags?: string[];      // Muscle groups: chest, back, quads, etc.
+  equipment_tags?: string[];    // Equipment: dumbbells, bodyweight, etc.
 }
 
 interface ApiResponse {

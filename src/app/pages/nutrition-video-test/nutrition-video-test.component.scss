@@ -283,18 +283,22 @@
       font-weight: 600;
     }
 
-    // Workout tags (Darker orange gradient theme)
+    // Base tag styling
     .tag {
       display: inline-block;
-      background: linear-gradient(135deg, #ff6f00 0%, #c43e00 100%);
       color: white;
       padding: 5px 14px;
       border-radius: 16px;
       font-size: 12px;
       font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    // Workout Type tags (Orange gradient theme) - Phase 4
+    .workout-type-tag {
+      background: linear-gradient(135deg, #ff6f00 0%, #c43e00 100%);
       border: 1px solid #c43e00;
       box-shadow: 0 2px 6px rgba(196, 62, 0, 0.3);
-      transition: all 0.2s ease;
 
       &:hover {
         background: linear-gradient(135deg, #e65100 0%, #bf360c 100%);
@@ -306,7 +310,6 @@
     // Equipment tags (Green gradient theme)
     .equipment-tag {
       background: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
-      color: white;
       border: 1px solid #2e7d32;
       box-shadow: 0 2px 6px rgba(46, 125, 50, 0.3);
 
@@ -314,6 +317,19 @@
         background: linear-gradient(135deg, #4caf50 0%, #1b5e20 100%);
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
+      }
+    }
+
+    // Muscle Group tags (Red gradient theme) - Phase 5
+    .muscle-group-tag {
+      background: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
+      border: 1px solid #c62828;
+      box-shadow: 0 2px 6px rgba(198, 40, 40, 0.3);
+
+      &:hover {
+        background: linear-gradient(135deg, #e53935 0%, #b71c1c 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(198, 40, 40, 0.4);
       }
     }
   }
