@@ -1,0 +1,39 @@
+<div class="workout-builder-container">
+  <div class="header">
+    <button class="btn-back" (click)="goBack()">
+      ← Back to Plans
+    </button>
+    <h1 *ngIf="plan">🎯 Building: {{ plan.name }}</h1>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <p>Loading workout plan...</p>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+    <button (click)="loadPlan()">Retry</button>
+  </div>
+
+  <div *ngIf="!loading && !error && plan" class="builder-content">
+    <div class="plan-info">
+      <h2>Plan Details</h2>
+      <p><strong>Duration:</strong> {{ plan.duration_weeks }} weeks</p>
+      <p><strong>Description:</strong> {{ plan.description || 'No description' }}</p>
+      <p><strong>Status:</strong> {{ plan.is_public ? '🌐 Public' : '🔒 Private' }}</p>
+    </div>
+
+    <div class="coming-soon">
+      <h2>🚀 Workout Builder Coming Soon!</h2>
+      <p>The drag-and-drop workout builder with the following features will be available in the next update:</p>
+      <ul>
+        <li>✅ 7 Workout Types (Traditional, EMOM, AMRAP, Circuit, Tabata, Superset, Custom)</li>
+        <li>✅ Drag & Drop Exercise Ordering</li>
+        <li>✅ Rest Timer (1-120 seconds with audio beep)</li>
+        <li>✅ Custom Template Nesting</li>
+        <li>✅ Week/Day Scheduling</li>
+      </ul>
+      <p class="note">Backend APIs are ready and tested! Frontend UI coming next.</p>
+    </div>
+  </div>
+</div>

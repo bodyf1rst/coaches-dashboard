@@ -206,6 +206,7 @@ const routes: Routes = [
   { path: 'fitness-videos', component: FitnessVideosComponent, canActivate: [AuthGuard] },
   { path: 'nutrition-hub', component: NutritionHubComponent, canActivate: [AuthGuard] },
   { path: 'spirit-mindset-hub', component: SpiritMindsetHubComponent, canActivate: [AuthGuard] },
+  { path: 'workout-builder', loadChildren: () => import('./pages/workout-builder/workout-builder.module').then(m => m.WorkoutBuilderModule), canActivate: [AuthGuard] },
   {
     path: 'manage-content',
     canActivate: [AuthGuard],

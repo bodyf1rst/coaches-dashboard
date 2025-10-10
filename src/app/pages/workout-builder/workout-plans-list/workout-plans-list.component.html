@@ -1,0 +1,91 @@
+<div class="workout-plans-container">
+  <div class="header">
+    <h1>🏋️ Workout Builder</h1>
+    <button class="btn-primary" (click)="openCreateModal()">
+      ➕ Create New Plan
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <p>Loading workout plans...</p>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+    <button (click)="loadWorkoutPlans()">Retry</button>
+  </div>
+
+  <div *ngIf="!loading && !error && workoutPlans.length === 0" class="empty-state">
+    <h2>No Workout Plans Yet</h2>
+    <p>Create your first workout plan to get started!</p>
+    <button class="btn-primary" (click)="openCreateModal()">
+      Create Plan
+    </button>
+  </div>
+
+  <div *ngIf="!loading && workoutPlans.length > 0" class="plans-grid">
+    <div *ngFor="let plan of workoutPlans" class="plan-card">
+      <div class="plan-header">
+        <h3>{{ plan.name }}</h3>
+        <span class="plan-badge" [class.public]="plan.is_public">
+          {{ plan.is_public ? '🌐 Public' : '🔒 Private' }}
+        </span>
+      </div>
+
+      <p class="plan-description">{{ plan.description || 'No description' }}</p>
+
+      <div class="plan-meta">
+        <span>📅 {{ plan.duration_weeks }} weeks</span>
+        <span>🗓️ Created: {{ plan.created_at | date:'short' }}</span>
+      </div>
+
+      <div class="plan-actions">
+        <button class="btn-build" (click)="buildWorkout(plan.id!)">
+          🎯 Build Workouts
+        </button>
+        <button class="btn-delete" (click)="deletePlan(plan)">
+          🗑️ Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Plan Modal -->
+  <div *ngIf="showCreateModal" class="modal-overlay" (click)="closeCreateModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Create New Workout Plan</h2>
+        <button class="close-btn" (click)="closeCreateModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Plan Name *</label>
+          <input type="text" [(ngModel)]="newPlan.name" placeholder="e.g. 12-Week Strength Program" />
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea [(ngModel)]="newPlan.description" placeholder="Describe your workout plan..." rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Duration (weeks)</label>
+          <input type="number" [(ngModel)]="newPlan.duration_weeks" min="1" max="52" />
+        </div>
+
+        <div class="form-group checkbox">
+          <input type="checkbox" [(ngModel)]="newPlan.is_public" id="isPublic" />
+          <label for="isPublic">Make this plan public</label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeCreateModal()">Cancel</button>
+        <button class="btn-primary" (click)="createPlan()" [disabled]="!newPlan.name">
+          Create Plan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
