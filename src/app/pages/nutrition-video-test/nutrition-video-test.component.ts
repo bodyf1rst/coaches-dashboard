@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment.prod';
+import { environment } from '../../../environments/environment';
 import { VideoData, VideoApiResponse } from '../../models/video.model';
 import { VideoTagsValidatorService } from '../../services/video-tags-validator.service';
 import { Subject } from 'rxjs';
