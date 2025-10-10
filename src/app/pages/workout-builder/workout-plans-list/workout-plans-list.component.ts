@@ -33,7 +33,8 @@ export class WorkoutPlansListComponent implements OnInit {
     this.loading = true;
     this.error = '';
     try {
-      const response = await this.workoutService.listWorkoutPlans();
+      const coachId = 1; // TODO: Get from authentication service
+      const response = await this.workoutService.listWorkoutPlans(coachId);
       if (response.success) {
         this.workoutPlans = response.data || [];
       } else {

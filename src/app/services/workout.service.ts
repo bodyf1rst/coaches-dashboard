@@ -59,9 +59,12 @@ export class WorkoutService {
     }
   }
 
-  async listWorkoutPlans(): Promise<any> {
+  async listWorkoutPlans(coachId?: number): Promise<any> {
     try {
-      return await this.httpService.getApiData(this.workoutPlansPaths.list);
+      const endpoint = coachId
+        ? `${this.workoutPlansPaths.list}?coach_id=${coachId}`
+        : this.workoutPlansPaths.list;
+      return await this.httpService.getApiData(endpoint);
     } catch (error) {
       console.error('Error listing workout plans:', error);
       throw error;
