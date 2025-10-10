@@ -1,13 +1,25 @@
 // Import shared video tag styles
 @import '../../../styles/video-tags';
 
-// TASK 8: Search & Filter Bar Styling
+// TASK 8: Search & Filter Bar Styling - OPTIMIZED FOR DESKTOP
 .filter-bar {
   background: #f8f9fa;
   border: 1px solid #dee2e6;
   border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 30px;
+  padding: 15px; // Reduced from 20px for desktop
+  margin-bottom: 20px; // Reduced from 30px for more vertical space
+
+  // Desktop: Even tighter
+  @media (min-width: 1400px) {
+    padding: 15px 20px;
+    margin-bottom: 18px;
+  }
+
+  // Mobile: Standard padding
+  @media (max-width: 768px) {
+    padding: 15px;
+    margin-bottom: 20px;
+  }
 
   .filter-row {
     display: flex;
@@ -168,33 +180,34 @@
   }
 }
 
-// Virtual Scroll Viewport Styling - ENHANCED FOR DESKTOP
+// Virtual Scroll Viewport Styling - MAXIMIZED FOR DESKTOP FULL-SCREEN
 .viewport {
-  // Dynamic height that accounts for header and filter bar
-  height: calc(100vh - 280px); // Leaves room for header (100px) + filters (180px)
+  // DESKTOP FULL-SCREEN: Maximize vertical space (reduced overhead from 280px → 240px)
+  height: calc(100vh - 240px); // Compact header (70px) + filters (170px)
   width: 100%;
   max-width: 100%; // Full-width on desktop for workout builder
   margin: 0 auto;
-  padding: 20px;
+  padding: 15px; // Reduced from 20px for more usable space
 
   // Minimum height to prevent collapse on short screens
   min-height: 600px;
 
-  // Desktop optimization: More breathing room on large screens
+  // Desktop optimization: Tighter padding for max screen usage
   @media (min-width: 1920px) {
-    padding: 30px 40px;
+    padding: 20px 30px; // Reduced from 30px 40px
+    height: calc(100vh - 235px); // Even more space on large monitors
   }
 
   // Tablet: Reduce padding
   @media (max-width: 1024px) {
-    padding: 15px;
-    height: calc(100vh - 250px);
+    padding: 12px;
+    height: calc(100vh - 230px);
   }
 
   // Mobile: Minimal padding
   @media (max-width: 640px) {
     padding: 10px;
-    height: calc(100vh - 220px);
+    height: calc(100vh - 210px); // Reduced from 220px
     min-height: 400px;
   }
 }
@@ -255,32 +268,32 @@
   }
 }
 
-// CONTAINER - OPTIMIZED FOR FULL-SCREEN DESKTOP
+// CONTAINER - MAXIMIZED FOR FULL-SCREEN DESKTOP
 .test-container {
   max-width: 100%; // Full-width for desktop (workout builder will share screen)
   width: 100%;
   margin: 0;
-  padding: 20px;
+  padding: 15px; // Reduced from 20px for more space
   font-family: Arial, sans-serif;
 
-  // Large desktop: More horizontal padding
+  // Large desktop: Balanced padding
   @media (min-width: 1920px) {
-    padding: 25px 40px;
+    padding: 20px 30px; // Reduced from 25px 40px
   }
 
-  // Standard desktop: Standard padding
+  // Standard desktop: Tighter padding
   @media (min-width: 1400px) and (max-width: 1919px) {
-    padding: 20px 30px;
+    padding: 15px 25px; // Reduced from 20px 30px
   }
 
   // Laptop: Moderate padding
   @media (min-width: 1024px) and (max-width: 1399px) {
-    padding: 20px 25px;
+    padding: 15px 20px; // Reduced from 20px 25px
   }
 
   // Tablet: Reduced padding
   @media (max-width: 1023px) {
-    padding: 15px;
+    padding: 12px;
   }
 
   // Mobile: Minimal padding
@@ -291,16 +304,22 @@
 
 .test-header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px; // Reduced from 30px for more vertical space
 
   h1 {
     color: #333;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    font-size: 28px; // Compact on desktop
+
+    @media (max-width: 768px) {
+      font-size: 24px;
+    }
   }
 
   p {
     color: #666;
-    font-size: 16px;
+    font-size: 14px; // Smaller for desktop
+    margin: 0;
   }
 }
 
