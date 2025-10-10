@@ -37,6 +37,10 @@ import { AddNutritionsVideosComponent } from './pages/manage-nutritions/add-nutr
 import { LeaderboardComponent } from './pages/leaderboard/leaderboard.component';
 import { VideoLibraryComponent } from './pages/video-library/video-library.component';
 import { NutritionVideoTestComponent } from './pages/nutrition-video-test/nutrition-video-test.component';
+import { FitnessHubComponent } from './pages/fitness-hub/fitness-hub.component';
+import { FitnessVideosComponent } from './pages/fitness-videos/fitness-videos.component';
+import { NutritionHubComponent } from './pages/nutrition-hub/nutrition-hub.component';
+import { SpiritMindsetHubComponent } from './pages/spirit-mindset-hub/spirit-mindset-hub.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [StopNavigateGuard] },
@@ -198,6 +202,10 @@ const routes: Routes = [
   { path: 'leaderboard', component: LeaderboardComponent, canActivate: [AuthGuard] },
   { path: 'video-library', component: VideoLibraryComponent, canActivate: [AuthGuard] },
   { path: 'nutrition-video-test', component: NutritionVideoTestComponent, canActivate: [AuthGuard] },
+  { path: 'fitness-hub', component: FitnessHubComponent, canActivate: [AuthGuard] },
+  { path: 'fitness-videos', component: FitnessVideosComponent, canActivate: [AuthGuard] },
+  { path: 'nutrition-hub', component: NutritionHubComponent, canActivate: [AuthGuard] },
+  { path: 'spirit-mindset-hub', component: SpiritMindsetHubComponent, canActivate: [AuthGuard] },
   {
     path: 'manage-content',
     canActivate: [AuthGuard],

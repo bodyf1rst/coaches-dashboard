@@ -1,0 +1,209 @@
+<div class="test-container">
+  <div class="test-header">
+    <h1>🎬 Video Library Test - 4-Panel Grid Layout</h1>
+    <p>Testing: {{ allVideos.length }} videos with 4-column responsive grid + virtual scrolling</p>
+  </div>
+
+  <!-- TASK 8: Search & Filter Bar -->
+  <div class="filter-bar" *ngIf="!loading && !error && allVideos.length > 0">
+    <div class="filter-row">
+      <!-- Search Input -->
+      <div class="filter-item search-box">
+        <label for="search">🔍 Search by Title:</label>
+        <input
+          id="search"
+          type="text"
+          placeholder="Type to search videos..."
+          [value]="searchQuery"
+          (input)="onSearchInput($event)"
+          class="search-input">
+      </div>
+
+      <!-- Workout Type Filter -->
+      <div class="filter-item">
+        <label for="workoutType">💪 Workout Type:</label>
+        <select
+          id="workoutType"
+          [(ngModel)]="selectedWorkoutType"
+          (change)="applyFilters()"
+          class="filter-select">
+          <option value="">All Types</option>
+          <option *ngFor="let type of workoutTypes" [value]="type">{{ type | titlecase }}</option>
+        </select>
+      </div>
+
+      <!-- Clear Filters Button -->
+      <div class="filter-item">
+        <button
+          class="clear-button"
+          (click)="clearFilters()"
+          [disabled]="!searchQuery && !selectedWorkoutType && selectedMuscleGroups.length === 0 && selectedEquipment.length === 0">
+          ✕ Clear All Filters
+        </button>
+      </div>
+    </div>
+
+    <!-- Muscle Groups Multi-Select -->
+    <div class="filter-row">
+      <div class="filter-item multi-select-box">
+        <label>🎯 Target Muscle Groups:</label>
+        <div class="tag-container">
+          <button
+            *ngFor="let muscle of muscleGroupOptions"
+            class="tag-button"
+            [class.selected]="selectedMuscleGroups.includes(muscle)"
+            (click)="toggleMuscleGroup(muscle)">
+            {{ muscle }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Equipment Multi-Select -->
+    <div class="filter-row">
+      <div class="filter-item multi-select-box">
+        <label>🏋️ Equipment:</label>
+        <div class="tag-container">
+          <button
+            *ngFor="let equip of equipmentOptions"
+            class="tag-button"
+            [class.selected]="selectedEquipment.includes(equip)"
+            (click)="toggleEquipment(equip)">
+            {{ equip }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Results Summary -->
+    <div class="filter-summary" *ngIf="filteredVideos.length !== allVideos.length">
+      <p>Showing {{ filteredVideos.length }} of {{ allVideos.length }} videos</p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-section" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Loading video data from API...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-section" *ngIf="error && !loading">
+    <p class="error-message">❌ {{ error }}</p>
+    <button class="retry-button" (click)="loadVideos()">Try Again</button>
+  </div>
+
+  <!-- Virtual Scroll Container - Renders ROWS of 4 videos -->
+  <cdk-virtual-scroll-viewport
+    itemSize="600"
+    class="viewport"
+    *ngIf="!loading && !error && allVideos.length > 0">
+
+    <!-- Loop through video ROWS (groups of 4) with virtual scrolling -->
+    <div class="video-row" *cdkVirtualFor="let row of videoRows; let rowIndex = index">
+
+      <!-- Each row contains up to 4 video cards in a grid -->
+      <div class="video-card" *ngFor="let video of row; let colIndex = index">
+
+        <!-- Thumbnail or Video Player Container -->
+        <div class="media-container">
+
+          <!-- Show Thumbnail when not playing -->
+          <div class="thumbnail-wrapper" *ngIf="!playingVideos[rowIndex * 4 + colIndex]" (click)="toggleVideo(rowIndex * 4 + colIndex)">
+              <img
+                [src]="video.thumbnailUrl"
+                [alt]="video.video_title"
+                class="video-thumbnail"
+                loading="lazy">
+              <div class="play-button-overlay">
+                <div class="play-icon">▶</div>
+              </div>
+            </div>
+
+            <!-- Show Video Player when playing -->
+            <div class="video-wrapper" *ngIf="playingVideos[rowIndex * 4 + colIndex]">
+              <video
+                controls
+                crossorigin="anonymous"
+                autoplay
+                class="video-player"
+                [src]="video.videoUrl">
+                Your browser does not support the video tag.
+              </video>
+              <button class="close-video" (click)="toggleVideo(rowIndex * 4 + colIndex)">✕ Close Video</button>
+            </div>
+
+        </div>
+
+        <!-- Video Information Below -->
+        <div class="video-info">
+
+            <!-- Title -->
+            <h2 class="video-title">{{ video.video_title }}</h2>
+
+            <!-- Metadata -->
+            <div class="video-meta">
+              <span class="meta-item">
+                <strong>Duration:</strong> {{ video.duration || '1:00' }}
+              </span>
+              <span class="meta-item">
+                <strong>Category:</strong> {{ video.category || 'Workout' }}
+              </span>
+            </div>
+
+            <!-- Tags - Phase 6: Three separate tag groups with color coding -->
+            <div class="tags-section">
+              <!-- Workout Type (Orange) - Single value from Phase 4 classification -->
+              <div class="tag-group" *ngIf="video.workout_type">
+                <strong>Workout Type:</strong>
+                <span class="tag workout-type-tag">{{ video.workout_type | titlecase }}</span>
+              </div>
+              <!-- Equipment (Green) - Array of equipment used -->
+              <div class="tag-group" *ngIf="video.equipment_tags && video.equipment_tags.length > 0">
+                <strong>Equipment:</strong>
+                <span class="tag equipment-tag" *ngFor="let tag of video.equipment_tags">{{ tag }}</span>
+              </div>
+              <!-- Muscle Group (Red) - Array of muscles targeted -->
+              <div class="tag-group" *ngIf="video.workout_tags && video.workout_tags.length > 0">
+                <strong>Muscle Group:</strong>
+                <span class="tag muscle-group-tag" *ngFor="let tag of video.workout_tags">{{ tag }}</span>
+              </div>
+            </div>
+
+            <!-- Transcription (Collapsible) -->
+            <div class="transcription-section">
+              <button
+                class="transcription-toggle"
+                (click)="toggleTranscriptionForVideo(rowIndex * 4 + colIndex)"
+                [attr.aria-expanded]="showTranscription[rowIndex * 4 + colIndex]">
+                <span class="toggle-label">📝 Transcription</span>
+                <span class="toggle-icon">{{ showTranscription[rowIndex * 4 + colIndex] ? '▲' : '▼' }}</span>
+              </button>
+
+              <div class="transcription-content" *ngIf="showTranscription[rowIndex * 4 + colIndex]">
+                <p class="transcription-text">{{ video.transcription || 'No transcription available' }}</p>
+              </div>
+            </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </cdk-virtual-scroll-viewport>
+
+  <!-- Info Section -->
+  <div class="test-info" *ngIf="!loading && !error">
+    <h3>✅ 4-Panel Grid Layout Complete:</h3>
+    <ul>
+      <li>✅ {{ allVideos.length }} videos in 4-column responsive grid</li>
+      <li>✅ Virtual scrolling for smooth performance ({{ videoRows.length }} rows)</li>
+      <li>✅ Click thumbnail to play video in-place</li>
+      <li>✅ Responsive: 4→3→2→1 columns (desktop→tablet→mobile)</li>
+      <li>✅ Workout type, equipment, and muscle group tags</li>
+      <li>✅ Full metadata with collapsible transcriptions</li>
+    </ul>
+  </div>
+
+</div>

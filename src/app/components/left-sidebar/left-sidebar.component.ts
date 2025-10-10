@@ -14,51 +14,50 @@ export class LeftSidebarComponent implements OnInit {
     { route: '/manage-coaches', label: 'Manage Coaches', emoji: '👨‍🏫', color: '#4ECDC4' },
     { route: '/manage-users', label: 'Manage Users', emoji: '👥', color: '#45B7D1' },
     { route: '/manage-organizations', label: 'Manage Organizations', emoji: '🏢', color: '#96CEB4', hasDropdown: true },
-    
-    // Video & Content Section
-    { route: '/video-libraries', label: 'Video Libraries', emoji: '📹', color: '#DDA0DD', hasDropdown: true,
+
+    // Fitness Hub - NEW
+    { route: '/fitness-hub', label: 'Fitness Hub', emoji: '🏋️', color: '#FFB6C1', hasDropdown: true,
       subItems: [
-        { route: '/workout-videos', label: 'Workout Videos', emoji: '💪' },
-        { route: '/nutrition-videos', label: 'Nutrition Videos', emoji: '🥗' },
-        { route: '/mindset-videos', label: 'Mindset Videos', emoji: '🧘' },
-        { route: '/marketing-videos', label: 'Marketing Videos', emoji: '📢' },
-        { route: '/push-notifications', label: 'Push Notifications', emoji: '🔔' }
+        { route: '/fitness-videos', label: 'Fitness Videos', emoji: '💪' },
+        { route: '/workout-builder', label: 'Workout Builder', emoji: '🎯' }
       ]
     },
-    
-    // Fitness & Workout Section
-    { route: '/manage-fitness', label: 'Manage Fitness', emoji: '🏋️', color: '#FFB6C1', hasDropdown: true,
+
+    // Nutrition Hub - NEW
+    { route: '/nutrition-hub', label: 'Nutrition Hub', emoji: '🍎', color: '#6BCF7F', hasDropdown: true,
       subItems: [
-        { route: '/workout-builder', label: 'Workout Builder', emoji: '🎯' },
-        { route: '/amrap-builder', label: 'AMRAP Builder', emoji: '⏱️' },
-        { route: '/emom-builder', label: 'EMOM Builder', emoji: '⏲️' },
-        { route: '/templates', label: 'Templates', emoji: '📋' },
-        { route: '/weekly-plans', label: 'Weekly Plans', emoji: '📅' }
+        { route: '/nutrition-video-test', label: 'Nutrition Videos', emoji: '🥗' },
+        { route: '/nutrition-formula', label: 'Nutrition Formula', emoji: '🧪' }
       ]
     },
-    
+
+    // Spirit & Mindset Hub - NEW
+    { route: '/spirit-mindset-hub', label: 'Spirit & Mindset', emoji: '🧘', color: '#DDA0DD', hasDropdown: true,
+      subItems: [
+        { route: '/spirit-mindset-videos', label: 'Spirit & Mindset Videos', emoji: '✨' },
+        { route: '/meditation-library', label: 'Meditation Library', emoji: '🕉️' }
+      ]
+    },
+
     { route: '/manage-challenges', label: 'Manage Challenges', emoji: '🏆', color: '#FFD93D', hasDropdown: true,
       subItems: [
         { route: '/all-challenges', label: 'All Challenges', emoji: '🎯' },
         { route: '/add-challenge', label: 'Add Challenge', emoji: '➕' }
       ]
     },
-    
-    // Nutrition Section
-    { route: '/manage-nutrition', label: 'Manage Nutrition', emoji: '🍎', color: '#6BCF7F', hasDropdown: true },
-    
+
     // Analytics & Insights
     { route: '/client-dashboard', label: 'Client Dashboard', emoji: '📊', color: '#B19CD9' },
     { route: '/analytics', label: 'Analytics & Insights', emoji: '📈', color: '#FF9F40' },
     { route: '/coach-workflow', label: 'Coach Workflow', emoji: '🚀', color: '#66D9EF' },
-    
+
     // Points & Rewards
     { route: '/manage-bodypoints', label: 'Manage BodyPoints', emoji: '🎖️', color: '#FFB347' },
-    
+
     // Content & Communication
     { route: '/manage-announcements', label: 'Manage Announcements', emoji: '📣', color: '#87CEEB' },
     { route: '/manage-content', label: 'Manage Content', emoji: '📝', color: '#DDA0DD' },
-    
+
     // Profile & Settings
     { route: '/my-profile', label: 'My Profile', emoji: '👤', color: '#98D8C8' },
     { route: '/logout', label: 'Logout', emoji: '🚪', color: '#F06292' }
