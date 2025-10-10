@@ -23,9 +23,9 @@ export type WorkoutType =
 export type VideoFormat = '360P' | '720P' | '1080P' | '4K';
 
 /**
- * Video category
+ * Video category - matches database ENUM
  */
-export type VideoCategory = 'workout' | 'nutrition' | 'mindset' | 'recovery';
+export type VideoCategory = 'Fitness' | 'Nutrition' | 'Spirit & Mindset' | 'General';
 
 /**
  * Main video data interface

@@ -62,9 +62,10 @@ export class NutritionVideoTestComponent implements OnInit, OnDestroy {
   loadVideos() {
     this.loading = true;
     this.error = null;
-    const apiUrl = `${environment.apiUrl}/get-videos.php`;
+    // NEW TASK C: Add category filter for Nutrition videos only
+    const apiUrl = `${environment.apiUrl}/get-videos.php?category=Nutrition`;
 
-    console.log('📡 Fetching videos from API:', apiUrl);
+    console.log('📡 Fetching NUTRITION videos from API:', apiUrl);
 
     this.http.get<VideoApiResponse>(apiUrl).subscribe({
       next: (response) => {
