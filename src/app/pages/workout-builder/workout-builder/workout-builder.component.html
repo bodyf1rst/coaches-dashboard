@@ -45,8 +45,302 @@
       </div>
     </div>
 
-    <!-- Two Panel Layout -->
-    <div class="builder-panels">
+    <!-- CUSTOM TEMPLATE BUILDER (Only for Custom Type) -->
+    <div *ngIf="workoutType === 'custom'" class="custom-template-builder">
+
+      <!-- Add Block Menu -->
+      <div class="add-block-section">
+        <button class="btn-add-block" (click)="showAddBlockMenu = !showAddBlockMenu">
+          <span *ngIf="!showAddBlockMenu">➕ Add Template Block</span>
+          <span *ngIf="showAddBlockMenu">✕ Close Menu</span>
+        </button>
+
+        <div *ngIf="showAddBlockMenu" class="block-type-menu">
+          <button class="block-type-btn emom" (click)="addTemplateBlock('emom')">
+            ⏱️ EMOM
+            <span class="block-desc">Every Minute on the Minute</span>
+          </button>
+          <button class="block-type-btn amrap" (click)="addTemplateBlock('amrap')">
+            🔥 AMRAP
+            <span class="block-desc">As Many Rounds as Possible</span>
+          </button>
+          <button class="block-type-btn circuit" (click)="addTemplateBlock('circuit')">
+            🔄 Circuit
+            <span class="block-desc">Multiple rounds of exercises</span>
+          </button>
+          <button class="block-type-btn tabata" (click)="addTemplateBlock('tabata')">
+            ⚡ Tabata
+            <span class="block-desc">High-intensity intervals</span>
+          </button>
+          <button class="block-type-btn traditional" (click)="addTemplateBlock('traditional')">
+            💪 Traditional
+            <span class="block-desc">Standard sets & reps</span>
+          </button>
+          <button class="block-type-btn superset" (click)="addTemplateBlock('superset')">
+            🔗 Superset
+            <span class="block-desc">Back-to-back exercises</span>
+          </button>
+          <button class="block-type-btn rest" (click)="addTemplateBlock('rest')">
+            😌 Rest Period
+            <span class="block-desc">Recovery time</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Template Blocks & Video Library Side-by-Side -->
+      <div class="template-panels">
+
+        <!-- LEFT: Template Blocks -->
+        <div class="template-blocks-panel">
+          <div class="panel-header">
+            <h2>📋 Template Structure</h2>
+            <p class="panel-subtitle">{{ templateBlocks.length }} block{{ templateBlocks.length !== 1 ? 's' : '' }}</p>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="templateBlocks.length === 0" class="empty-state">
+            <div class="empty-icon">🎯</div>
+            <h3>Start Building Your Custom Template</h3>
+            <p>Click "Add Template Block" above to begin</p>
+          </div>
+
+          <!-- Template Blocks List -->
+          <div class="blocks-list">
+            <div
+              *ngFor="let block of templateBlocks; let blockIndex = index"
+              class="template-block"
+              [class.expanded]="block.isExpanded"
+            >
+              <!-- Block Header -->
+              <div class="block-header">
+                <span class="block-type-badge" [class]="block.type">
+                  {{ block.type.toUpperCase() }}
+                </span>
+                <input
+                  type="text"
+                  [(ngModel)]="block.name"
+                  placeholder="Block name..."
+                  class="block-name-input"
+                />
+                <div class="block-controls">
+                  <button
+                    class="btn-move-up"
+                    (click)="moveBlockUp(blockIndex)"
+                    [disabled]="blockIndex === 0"
+                    title="Move up"
+                  >
+                    ↑
+                  </button>
+                  <button
+                    class="btn-move-down"
+                    (click)="moveBlockDown(blockIndex)"
+                    [disabled]="blockIndex === templateBlocks.length - 1"
+                    title="Move down"
+                  >
+                    ↓
+                  </button>
+                  <button
+                    class="btn-toggle-block"
+                    (click)="toggleBlockExpanded(block)"
+                    title="Expand/Collapse"
+                  >
+                    {{ block.isExpanded ? '▼' : '▶' }}
+                  </button>
+                  <button
+                    class="btn-remove-block"
+                    (click)="removeTemplateBlock(blockIndex)"
+                    title="Remove block"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+
+              <!-- Block Configuration (Expanded) -->
+              <div *ngIf="block.isExpanded" class="block-config">
+
+                <!-- EMOM Configuration -->
+                <div *ngIf="block.type === 'emom'" class="config-row">
+                  <label>Duration (seconds)</label>
+                  <input
+                    type="number"
+                    [(ngModel)]="block.duration"
+                    min="60"
+                    max="3600"
+                    placeholder="600"
+                  />
+                  <span class="config-help">Total EMOM duration</span>
+                </div>
+
+                <!-- AMRAP Configuration -->
+                <div *ngIf="block.type === 'amrap'" class="config-row">
+                  <label>Duration (seconds)</label>
+                  <input
+                    type="number"
+                    [(ngModel)]="block.duration"
+                    min="60"
+                    max="3600"
+                    placeholder="600"
+                  />
+                  <span class="config-help">Time limit for AMRAP</span>
+                </div>
+
+                <!-- Circuit Configuration -->
+                <div *ngIf="block.type === 'circuit'" class="config-row">
+                  <label>Rounds</label>
+                  <input
+                    type="number"
+                    [(ngModel)]="block.rounds"
+                    min="1"
+                    max="20"
+                    placeholder="3"
+                  />
+                  <label>Rest Between Rounds (sec)</label>
+                  <input
+                    type="number"
+                    [(ngModel)]="block.rest_seconds"
+                    min="0"
+                    max="300"
+                    placeholder="60"
+                  />
+                </div>
+
+                <!-- Tabata Configuration -->
+                <div *ngIf="block.type === 'tabata'" class="config-row">
+                  <label>Rounds</label>
+                  <input
+                    type="number"
+                    [(ngModel)]="block.rounds"
+                    min="1"
+                    max="20"
+                    placeholder="8"
+                  />
+                  <span class="config-help">Work: 20s, Rest: 10s</span>
+                </div>
+
+                <!-- Rest Period Configuration -->
+                <div *ngIf="block.type === 'rest'" class="config-row">
+                  <label>Rest Duration (seconds)</label>
+                  <input
+                    type="number"
+                    [(ngModel)]="block.duration"
+                    min="10"
+                    max="600"
+                    placeholder="60"
+                  />
+                </div>
+
+                <!-- Exercises Drop Zone (Not for Rest) -->
+                <div *ngIf="block.type !== 'rest'" class="block-exercises">
+                  <div class="exercises-header">
+                    <h4>Exercises</h4>
+                    <span class="exercise-count">{{ block.exercises.length }}</span>
+                  </div>
+
+                  <!-- Drop Zone -->
+                  <div
+                    class="exercises-drop-zone"
+                    cdkDropList
+                    [id]="'block-' + blockIndex"
+                    [cdkDropListData]="block.exercises"
+                    [cdkDropListConnectedTo]="['videoList']"
+                    (cdkDropListDropped)="dropVideoToBlock($event, blockIndex)"
+                  >
+                    <!-- Empty State -->
+                    <div *ngIf="block.exercises.length === 0" class="drop-zone-empty">
+                      <p>Drag videos here</p>
+                    </div>
+
+                    <!-- Exercise Items -->
+                    <div
+                      *ngFor="let exercise of block.exercises; let exerciseIndex = index"
+                      class="block-exercise-item"
+                      cdkDrag
+                    >
+                      <span class="exercise-number">{{ exerciseIndex + 1 }}</span>
+                      <img
+                        [src]="exercise.video?.thumbnail_url"
+                        [alt]="exercise.video?.video_title"
+                        class="exercise-thumb"
+                        onerror="this.src='assets/images/placeholder.png'"
+                      />
+                      <span class="exercise-title">{{ exercise.video?.video_title }}</span>
+                      <button
+                        class="btn-remove-exercise"
+                        (click)="removeExerciseFromBlock(blockIndex, exerciseIndex)"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Video Library (Same as Traditional) -->
+        <div class="video-library-panel">
+          <div class="panel-header">
+            <h2>📹 Video Library</h2>
+            <p class="panel-subtitle">Drag videos into blocks</p>
+          </div>
+
+          <!-- Search -->
+          <div class="search-box">
+            <input
+              type="text"
+              [(ngModel)]="searchTerm"
+              (input)="filterVideos()"
+              placeholder="🔍 Search videos..."
+              class="search-input"
+            />
+          </div>
+
+          <!-- Videos -->
+          <div *ngIf="loadingVideos" class="loading-videos">
+            <p>Loading videos...</p>
+          </div>
+
+          <div
+            *ngIf="!loadingVideos"
+            class="video-list"
+            cdkDropList
+            id="videoList"
+            [cdkDropListData]="filteredVideos"
+            [cdkDropListConnectedTo]="getDropListIds()"
+          >
+            <div
+              *ngFor="let video of filteredVideos"
+              class="video-card"
+              cdkDrag
+            >
+              <img
+                [src]="video.thumbnail_url"
+                [alt]="video.video_title"
+                class="video-thumbnail"
+                onerror="this.src='assets/images/placeholder.png'"
+              />
+              <div class="video-info">
+                <h4>{{ video.video_title }}</h4>
+                <p class="video-meta">
+                  <span *ngIf="video.muscle_groups">💪 {{ video.muscle_groups }}</span>
+                  <span *ngIf="video.workout_type">🏋️ {{ video.workout_type }}</span>
+                </p>
+              </div>
+              <div class="drag-handle" cdkDragHandle>⋮⋮</div>
+            </div>
+
+            <div *ngIf="filteredVideos.length === 0" class="no-videos">
+              <p>No videos found</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Two Panel Layout (Traditional Types) -->
+    <div *ngIf="workoutType !== 'custom'" class="builder-panels">
 
       <!-- LEFT PANEL: Video Library -->
       <div class="video-library-panel">

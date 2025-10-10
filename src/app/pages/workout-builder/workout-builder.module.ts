@@ -6,11 +6,15 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { WorkoutBuilderRoutingModule } from './workout-builder-routing.module';
 import { WorkoutPlansListComponent } from './workout-plans-list/workout-plans-list.component';
 import { WorkoutBuilderComponent } from './workout-builder/workout-builder.component';
+import { WorkoutExecutionComponent } from './workout-execution/workout-execution.component';
+import { RestTimerComponent } from '../../components/rest-timer/rest-timer.component';
 
 @NgModule({
   declarations: [
     WorkoutPlansListComponent,
-    WorkoutBuilderComponent
+    WorkoutBuilderComponent,
+    WorkoutExecutionComponent,
+    RestTimerComponent
   ],
   imports: [
     CommonModule,

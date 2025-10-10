@@ -19,6 +19,17 @@ interface ExerciseConfig extends WorkoutExercise {
   isExpanded?: boolean;
 }
 
+interface TemplateBlock {
+  id: string;
+  type: 'emom' | 'amrap' | 'circuit' | 'tabata' | 'traditional' | 'superset' | 'rest';
+  name: string;
+  duration?: number;
+  rounds?: number;
+  rest_seconds?: number;
+  exercises: ExerciseConfig[];
+  isExpanded: boolean;
+}
+
 @Component({
   selector: 'app-workout-builder',
   templateUrl: './workout-builder.component.html',
@@ -52,6 +63,10 @@ export class WorkoutBuilderComponent implements OnInit {
     { value: 'superset', label: '💪 Superset', description: 'Back-to-back exercises' },
     { value: 'custom', label: '🎨 Custom', description: 'Custom workout structure' }
   ];
+
+  // Custom template blocks
+  templateBlocks: TemplateBlock[] = [];
+  showAddBlockMenu = false;
 
   // Saving state
   saving = false;
@@ -111,6 +126,107 @@ export class WorkoutBuilderComponent implements OnInit {
       (video.muscle_groups && video.muscle_groups.toLowerCase().includes(term)) ||
       (video.workout_type && video.workout_type.toLowerCase().includes(term))
     );
+  }
+
+  // Custom Template Methods
+  addTemplateBlock(type: 'emom' | 'amrap' | 'circuit' | 'tabata' | 'traditional' | 'superset' | 'rest'): void {
+    const blockNames: {[key: string]: string} = {
+      'emom': 'EMOM Block',
+      'amrap': 'AMRAP Block',
+      'circuit': 'Circuit Block',
+      'tabata': 'Tabata Block',
+      'traditional': 'Traditional Block',
+      'superset': 'Superset Block',
+      'rest': 'Rest Period'
+    };
+
+    const newBlock: TemplateBlock = {
+      id: 'block-' + Date.now(),
+      type: type,
+      name: blockNames[type] || 'Block',
+      duration: type === 'rest' ? 60 : type === 'emom' ? 600 : undefined,
+      rounds: ['circuit', 'amrap', 'tabata'].includes(type) ? 3 : undefined,
+      rest_seconds: type === 'rest' ? undefined : 60,
+      exercises: [],
+      isExpanded: true
+    };
+
+    this.templateBlocks.push(newBlock);
+    this.showAddBlockMenu = false;
+  }
+
+  removeTemplateBlock(index: number): void {
+    if (confirm('Remove this template block?')) {
+      this.templateBlocks.splice(index, 1);
+    }
+  }
+
+  toggleBlockExpanded(block: TemplateBlock): void {
+    block.isExpanded = !block.isExpanded;
+  }
+
+  moveBlockUp(index: number): void {
+    if (index > 0) {
+      [this.templateBlocks[index], this.templateBlocks[index - 1]] =
+      [this.templateBlocks[index - 1], this.templateBlocks[index]];
+    }
+  }
+
+  moveBlockDown(index: number): void {
+    if (index < this.templateBlocks.length - 1) {
+      [this.templateBlocks[index], this.templateBlocks[index + 1]] =
+      [this.templateBlocks[index + 1], this.templateBlocks[index]];
+    }
+  }
+
+  dropVideoToBlock(event: CdkDragDrop<any[]>, blockIndex: number): void {
+    const video = event.previousContainer.data[event.previousIndex];
+    const newExercise: ExerciseConfig = {
+      exercise_id: video.video_id,
+      workout_id: 0,
+      sets: 3,
+      reps: 10,
+      duration_seconds: video.video_duration || 60,
+      rest_timer_seconds: 60,
+      timer_beep_enabled: true,
+      notes: '',
+      exercise_order: this.templateBlocks[blockIndex].exercises.length + 1,
+      video: video,
+      isExpanded: false
+    };
+
+    this.templateBlocks[blockIndex].exercises.push(newExercise);
+  }
+
+  removeExerciseFromBlock(blockIndex: number, exerciseIndex: number): void {
+    if (confirm('Remove this exercise?')) {
+      this.templateBlocks[blockIndex].exercises.splice(exerciseIndex, 1);
+    }
+  }
+
+  buildCustomTemplateJSON(): string {
+    const structure = this.templateBlocks.map(block => ({
+      type: block.type,
+      name: block.name,
+      duration: block.duration,
+      rounds: block.rounds,
+      rest_seconds: block.rest_seconds,
+      exercises: block.exercises.map(ex => ({
+        exercise_id: ex.exercise_id,
+        sets: ex.sets,
+        reps: ex.reps,
+        duration_seconds: ex.duration_seconds,
+        rest_timer_seconds: ex.rest_timer_seconds,
+        timer_beep_enabled: ex.timer_beep_enabled,
+        notes: ex.notes
+      }))
+    }));
+
+    return JSON.stringify({
+      template_type: 'custom',
+      name: this.workoutName,
+      structure: structure
+    });
   }
 
   // Drag and drop handlers
@@ -173,14 +289,21 @@ export class WorkoutBuilderComponent implements OnInit {
 
     try {
       // Create workout
+      let workoutConfig;
+      if (this.workoutType === 'custom') {
+        workoutConfig = this.buildCustomTemplateJSON();
+      } else {
+        workoutConfig = JSON.stringify({
+          type: this.workoutType,
+          exercises_count: this.workoutExercises.length
+        });
+      }
+
       const workoutData = {
         plan_id: this.planId,
         name: this.workoutName,
         workout_type: this.workoutType,
-        workout_config: JSON.stringify({
-          type: this.workoutType,
-          exercises_count: this.workoutExercises.length
-        })
+        workout_config: workoutConfig
       };
 
       const workoutResponse = await this.workoutService.createWorkout(workoutData);
@@ -192,7 +315,21 @@ export class WorkoutBuilderComponent implements OnInit {
       const workoutId = workoutResponse.data.workout_id;
 
       // Add exercises
-      for (const exercise of this.workoutExercises) {
+      let exercisesToAdd: ExerciseConfig[] = [];
+
+      if (this.workoutType === 'custom') {
+        // Flatten all exercises from all blocks
+        let order = 1;
+        for (const block of this.templateBlocks) {
+          for (const exercise of block.exercises) {
+            exercisesToAdd.push({...exercise, exercise_order: order++});
+          }
+        }
+      } else {
+        exercisesToAdd = this.workoutExercises;
+      }
+
+      for (const exercise of exercisesToAdd) {
         const exerciseData: any = {
           workout_id: workoutId,
           exercise_id: exercise.exercise_id,
@@ -208,7 +345,8 @@ export class WorkoutBuilderComponent implements OnInit {
         await this.workoutService.addExercise(exerciseData);
       }
 
-      alert(`✅ Workout "${this.workoutName}" saved successfully with ${this.workoutExercises.length} exercises!`);
+      const totalExercises = exercisesToAdd.length;
+      alert(`✅ Workout "${this.workoutName}" saved successfully with ${totalExercises} exercises!`);
       this.goBack();
     } catch (error: any) {
       console.error('Error saving workout:', error);
@@ -217,6 +355,16 @@ export class WorkoutBuilderComponent implements OnInit {
     } finally {
       this.saving = false;
     }
+  }
+
+  getDropListIds(): string[] {
+    // For custom templates, return all block IDs plus video list
+    if (this.workoutType === 'custom') {
+      const blockIds = this.templateBlocks.map((_, index) => `block-${index}`);
+      return ['videoList', ...blockIds];
+    }
+    // For traditional types, just connect to workout list
+    return ['workoutList'];
   }
 
   goBack(): void {

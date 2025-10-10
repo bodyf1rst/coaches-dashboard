@@ -1,0 +1,90 @@
+<div class="rest-timer-container">
+  <!-- Circular Progress Timer -->
+  <div class="timer-circle-wrapper">
+    <svg class="timer-circle" viewBox="0 0 200 200">
+      <!-- Background circle -->
+      <circle
+        cx="100"
+        cy="100"
+        r="90"
+        fill="none"
+        stroke="#e0e0e0"
+        stroke-width="10"
+      />
+      <!-- Progress circle -->
+      <circle
+        cx="100"
+        cy="100"
+        r="90"
+        fill="none"
+        [attr.stroke]="countdown <= 5 ? '#ff4444' : '#4CAF50'"
+        stroke-width="10"
+        stroke-linecap="round"
+        [style.stroke-dasharray]="getCircleProgress()"
+        [style.stroke-dashoffset]="getCircleOffset()"
+        transform="rotate(-90 100 100)"
+        class="progress-ring"
+      />
+    </svg>
+
+    <!-- Countdown Display -->
+    <div class="countdown-display">
+      <div class="countdown-number" [class.warning]="countdown <= 5">
+        {{ formatTime(countdown) }}
+      </div>
+      <div class="countdown-label">Rest Time</div>
+    </div>
+  </div>
+
+  <!-- Timer Controls -->
+  <div class="timer-controls">
+    <!-- Start Button -->
+    <button
+      *ngIf="!isRunning && !isPaused"
+      class="btn-control btn-start"
+      (click)="start()"
+    >
+      ▶️ Start
+    </button>
+
+    <!-- Pause Button -->
+    <button
+      *ngIf="isRunning"
+      class="btn-control btn-pause"
+      (click)="pause()"
+    >
+      ⏸️ Pause
+    </button>
+
+    <!-- Resume Button -->
+    <button
+      *ngIf="isPaused"
+      class="btn-control btn-resume"
+      (click)="resume()"
+    >
+      ▶️ Resume
+    </button>
+
+    <!-- Reset Button -->
+    <button
+      class="btn-control btn-reset"
+      (click)="reset()"
+      [disabled]="!isRunning && !isPaused && countdown === durationSeconds"
+    >
+      🔄 Reset
+    </button>
+
+    <!-- Skip Button -->
+    <button
+      class="btn-control btn-skip"
+      (click)="skip()"
+    >
+      ⏭️ Skip
+    </button>
+  </div>
+
+  <!-- Beep Indicator -->
+  <div class="beep-indicator" *ngIf="beepEnabled">
+    🔊 Beep enabled
+  </div>
+</div>

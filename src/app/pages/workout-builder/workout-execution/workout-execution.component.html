@@ -1,0 +1,236 @@
+<!-- Loading State -->
+<div class="workout-execution-container" *ngIf="loading">
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Loading workout...</p>
+  </div>
+</div>
+
+<!-- Error State -->
+<div class="workout-execution-container" *ngIf="error && !loading">
+  <div class="error-message">
+    <i class="fas fa-exclamation-triangle"></i>
+    <h2>Error</h2>
+    <p>{{ error }}</p>
+    <button class="btn-primary" (click)="exitWorkout()">
+      Return to Workouts
+    </button>
+  </div>
+</div>
+
+<!-- Main Workout Execution -->
+<div class="workout-execution-container" *ngIf="!loading && !error && workout">
+
+  <!-- Workout Header -->
+  <div class="workout-header">
+    <div class="header-content">
+      <button class="btn-back" (click)="exitWorkout()">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+      <div class="workout-info">
+        <h1>{{ workout.name }}</h1>
+        <p class="workout-type-badge">{{ getWorkoutTypeLabel(workout.workout_type) }}</p>
+      </div>
+    </div>
+    <div class="workout-stats">
+      <div class="stat">
+        <span class="stat-label">Duration</span>
+        <span class="stat-value">{{ workoutDuration }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Progress</span>
+        <span class="stat-value">{{ completedExercises }}/{{ totalExercises }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Overall</span>
+        <span class="stat-value">{{ overallProgress.toFixed(0) }}%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="overallProgress"></div>
+    </div>
+  </div>
+
+  <!-- Pre-Workout State -->
+  <div class="pre-workout" *ngIf="!workoutStartTime && !workoutCompleted">
+    <div class="pre-workout-content">
+      <i class="fas fa-dumbbell"></i>
+      <h2>Ready to Start?</h2>
+      <p>{{ totalExercises }} exercises • {{ workout.duration_minutes || 'N/A' }} minutes</p>
+      <button class="btn-start-workout" (click)="startWorkout()">
+        <i class="fas fa-play"></i> Start Workout
+      </button>
+    </div>
+  </div>
+
+  <!-- During Workout State -->
+  <div class="during-workout" *ngIf="workoutStartTime && !workoutCompleted && currentExercise">
+
+    <!-- Rest Timer Overlay -->
+    <div class="rest-timer-overlay" *ngIf="showRestTimer && currentExercise">
+      <div class="rest-timer-content">
+        <h3>Rest Period</h3>
+        <app-rest-timer
+          [durationSeconds]="currentExercise.exercise.rest_timer_seconds || 60"
+          [beepEnabled]="currentExercise.exercise.timer_beep_enabled"
+          [autoStart]="true"
+          (timerComplete)="onRestTimerComplete()"
+          (timerSkipped)="onRestTimerSkipped()"
+        ></app-rest-timer>
+      </div>
+    </div>
+
+    <!-- Pause Overlay -->
+    <div class="pause-overlay" *ngIf="isPaused">
+      <div class="pause-content">
+        <i class="fas fa-pause-circle"></i>
+        <h2>Workout Paused</h2>
+        <button class="btn-resume" (click)="resumeWorkout()">
+          <i class="fas fa-play"></i> Resume
+        </button>
+        <button class="btn-exit" (click)="exitWorkout()">
+          <i class="fas fa-times"></i> Exit Workout
+        </button>
+      </div>
+    </div>
+
+    <!-- Current Exercise Display -->
+    <div class="current-exercise" *ngIf="!showRestTimer && !isPaused">
+
+      <!-- Exercise Info -->
+      <div class="exercise-header">
+        <div class="exercise-number">
+          Exercise {{ currentExerciseIndex + 1 }} of {{ totalExercises }}
+        </div>
+        <div class="exercise-name">
+          {{ currentExercise.exercise.exercise_name || 'Exercise ' + (currentExerciseIndex + 1) }}
+        </div>
+        <div class="set-info">
+          <span class="current-set">Set {{ currentExercise.currentSet }}</span>
+          <span class="set-divider">/</span>
+          <span class="total-sets">{{ currentExercise.totalSets }}</span>
+        </div>
+      </div>
+
+      <!-- Video Display -->
+      <div class="exercise-video-container">
+        <video
+          *ngIf="getVideoUrl(currentExercise.exercise)"
+          [src]="getVideoUrl(currentExercise.exercise)"
+          [poster]="getThumbnailUrl(currentExercise.exercise)"
+          controls
+          crossorigin="anonymous"
+          class="exercise-video"
+        ></video>
+        <div *ngIf="!getVideoUrl(currentExercise.exercise)" class="no-video">
+          <i class="fas fa-video-slash"></i>
+          <p>No video available</p>
+        </div>
+      </div>
+
+      <!-- Exercise Details -->
+      <div class="exercise-details">
+        <div class="detail-row" *ngIf="currentExercise.exercise.sets">
+          <span class="detail-label">Sets:</span>
+          <span class="detail-value">{{ currentExercise.exercise.sets }}</span>
+        </div>
+        <div class="detail-row" *ngIf="currentExercise.exercise.reps">
+          <span class="detail-label">Reps:</span>
+          <span class="detail-value">{{ currentExercise.exercise.reps }}</span>
+        </div>
+        <div class="detail-row" *ngIf="currentExercise.exercise.duration_seconds">
+          <span class="detail-label">Duration:</span>
+          <span class="detail-value">{{ currentExercise.exercise.duration_seconds }}s</span>
+        </div>
+        <div class="detail-row" *ngIf="currentExercise.exercise.weight">
+          <span class="detail-label">Weight:</span>
+          <span class="detail-value">{{ currentExercise.exercise.weight }} lbs</span>
+        </div>
+        <div class="detail-row" *ngIf="currentExercise.exercise.rest_timer_seconds">
+          <span class="detail-label">Rest Timer:</span>
+          <span class="detail-value">{{ formatRestTime(currentExercise.exercise.rest_timer_seconds) }}</span>
+        </div>
+        <div class="detail-row" *ngIf="currentExercise.exercise.notes">
+          <span class="detail-label">Notes:</span>
+          <span class="detail-value">{{ currentExercise.exercise.notes }}</span>
+        </div>
+      </div>
+
+      <!-- Exercise Controls -->
+      <div class="exercise-controls">
+        <button
+          class="btn-control btn-previous"
+          (click)="previousExercise()"
+          [disabled]="currentExerciseIndex === 0"
+        >
+          <i class="fas fa-chevron-left"></i> Previous
+        </button>
+
+        <button
+          class="btn-control btn-complete-set"
+          (click)="completeSet()"
+        >
+          <i class="fas fa-check"></i>
+          {{ currentExercise.currentSet < currentExercise.totalSets ? 'Complete Set' : 'Complete Exercise' }}
+        </button>
+
+        <button
+          class="btn-control btn-next"
+          (click)="nextExercise()"
+          [disabled]="currentExerciseIndex === exerciseProgress.length - 1"
+        >
+          Next <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <!-- Additional Controls -->
+      <div class="additional-controls">
+        <button class="btn-secondary" (click)="pauseWorkout()">
+          <i class="fas fa-pause"></i> Pause
+        </button>
+        <button class="btn-secondary" (click)="skipExercise()">
+          <i class="fas fa-forward"></i> Skip Exercise
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Completion State -->
+  <div class="workout-complete" *ngIf="workoutCompleted">
+    <div class="completion-content">
+      <div class="completion-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2>Workout Complete!</h2>
+      <p class="completion-message">Great job! You completed all exercises.</p>
+
+      <div class="completion-stats">
+        <div class="completion-stat">
+          <span class="stat-label">Duration</span>
+          <span class="stat-value">{{ workoutDuration }}</span>
+        </div>
+        <div class="completion-stat">
+          <span class="stat-label">Exercises</span>
+          <span class="stat-value">{{ totalExercises }}</span>
+        </div>
+        <div class="completion-stat">
+          <span class="stat-label">Sets Completed</span>
+          <span class="stat-value">{{ getTotalSets() }}</span>
+        </div>
+      </div>
+
+      <div class="completion-actions">
+        <button class="btn-primary" (click)="restartWorkout()">
+          <i class="fas fa-redo"></i> Restart Workout
+        </button>
+        <button class="btn-secondary" (click)="exitWorkout()">
+          <i class="fas fa-home"></i> Back to Workouts
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
