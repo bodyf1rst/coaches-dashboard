@@ -1,6 +1,152 @@
 // Import shared video tag styles
 @import '../../../styles/video-tags';
 
+// TASK 8: Search & Filter Bar Styling
+.filter-bar {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+
+  .filter-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    label {
+      font-weight: 600;
+      font-size: 14px;
+      color: #495057;
+    }
+
+    &.search-box {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    &.multi-select-box {
+      flex: 1 1 100%;
+    }
+  }
+
+  .search-input {
+    padding: 10px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+  }
+
+  .filter-select {
+    padding: 10px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    min-width: 180px;
+    transition: border-color 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+  }
+
+  .clear-button {
+    padding: 10px 20px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+    &:hover:not(:disabled) {
+      background: #c82333;
+    }
+
+    &:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+
+  .tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tag-button {
+    padding: 8px 16px;
+    background: white;
+    border: 2px solid #dee2e6;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #495057;
+
+    &:hover {
+      border-color: #3498db;
+      background: #e7f3ff;
+      transform: translateY(-1px);
+    }
+
+    &.selected {
+      background: #3498db;
+      border-color: #3498db;
+      color: white;
+      font-weight: 600;
+
+      &:hover {
+        background: #2980b9;
+        border-color: #2980b9;
+      }
+    }
+  }
+
+  .filter-summary {
+    margin-top: 15px;
+    padding: 12px 20px;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 5px;
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #856404;
+    }
+  }
+}
+
 // Virtual Scroll Viewport Styling
 .viewport {
   height: 80vh; // 80% of viewport height for scrolling

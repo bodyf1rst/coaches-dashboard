@@ -4,6 +4,83 @@
     <p>Testing: {{ allVideos.length }} videos with 4-column responsive grid + virtual scrolling</p>
   </div>
 
+  <!-- TASK 8: Search & Filter Bar -->
+  <div class="filter-bar" *ngIf="!loading && !error && allVideos.length > 0">
+    <div class="filter-row">
+      <!-- Search Input -->
+      <div class="filter-item search-box">
+        <label for="search">🔍 Search by Title:</label>
+        <input
+          id="search"
+          type="text"
+          placeholder="Type to search videos..."
+          [value]="searchQuery"
+          (input)="onSearchInput($event)"
+          class="search-input">
+      </div>
+
+      <!-- Workout Type Filter -->
+      <div class="filter-item">
+        <label for="workoutType">💪 Workout Type:</label>
+        <select
+          id="workoutType"
+          [(ngModel)]="selectedWorkoutType"
+          (change)="applyFilters()"
+          class="filter-select">
+          <option value="">All Types</option>
+          <option *ngFor="let type of workoutTypes" [value]="type">{{ type | titlecase }}</option>
+        </select>
+      </div>
+
+      <!-- Clear Filters Button -->
+      <div class="filter-item">
+        <button
+          class="clear-button"
+          (click)="clearFilters()"
+          [disabled]="!searchQuery && !selectedWorkoutType && selectedMuscleGroups.length === 0 && selectedEquipment.length === 0">
+          ✕ Clear All Filters
+        </button>
+      </div>
+    </div>
+
+    <!-- Muscle Groups Multi-Select -->
+    <div class="filter-row">
+      <div class="filter-item multi-select-box">
+        <label>🎯 Target Muscle Groups:</label>
+        <div class="tag-container">
+          <button
+            *ngFor="let muscle of muscleGroupOptions"
+            class="tag-button"
+            [class.selected]="selectedMuscleGroups.includes(muscle)"
+            (click)="toggleMuscleGroup(muscle)">
+            {{ muscle }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Equipment Multi-Select -->
+    <div class="filter-row">
+      <div class="filter-item multi-select-box">
+        <label>🏋️ Equipment:</label>
+        <div class="tag-container">
+          <button
+            *ngFor="let equip of equipmentOptions"
+            class="tag-button"
+            [class.selected]="selectedEquipment.includes(equip)"
+            (click)="toggleEquipment(equip)">
+            {{ equip }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Results Summary -->
+    <div class="filter-summary" *ngIf="filteredVideos.length !== allVideos.length">
+      <p>Showing {{ filteredVideos.length }} of {{ allVideos.length }} videos</p>
+    </div>
+  </div>
+
   <!-- Loading State -->
   <div class="loading-section" *ngIf="loading">
     <div class="spinner"></div>

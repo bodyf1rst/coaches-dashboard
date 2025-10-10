@@ -1,24 +1,39 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment.prod';
 import { VideoData, VideoApiResponse } from '../../models/video.model';
 import { VideoTagsValidatorService } from '../../services/video-tags-validator.service';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-nutrition-video-test',
   templateUrl: './nutrition-video-test.component.html',
   styleUrls: ['./nutrition-video-test.component.scss']
 })
-export class NutritionVideoTestComponent implements OnInit {
+export class NutritionVideoTestComponent implements OnInit, OnDestroy {
   // PHASE 7: Side-by-side video display
   loading = true;
   error: string | null = null;
 
   // Video library and playback states
   allVideos: VideoData[] = [];
+  filteredVideos: VideoData[] = []; // TASK 8: Filtered results
   videoRows: VideoData[][] = []; // Grouped into rows of 4 for grid display
   playingVideos: boolean[] = [];
   showTranscription: boolean[] = [];
+
+  // TASK 8: Search & Filter UI
+  searchQuery = '';
+  selectedWorkoutType = '';
+  selectedMuscleGroups: string[] = [];
+  selectedEquipment: string[] = [];
+  private searchSubject = new Subject<string>();
+
+  // TASK 8: Filter options (populated from data)
+  workoutTypes: string[] = [];
+  muscleGroupOptions: string[] = [];
+  equipmentOptions: string[] = [];
 
   constructor(
     private http: HttpClient,
@@ -27,6 +42,21 @@ export class NutritionVideoTestComponent implements OnInit {
 
   ngOnInit() {
     this.loadVideos();
+
+    // TASK 8: Set up search debouncing (300ms delay)
+    this.searchSubject
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      )
+      .subscribe(searchText => {
+        this.searchQuery = searchText;
+        this.applyFilters();
+      });
+  }
+
+  ngOnDestroy() {
+    this.searchSubject.complete();
   }
 
   loadVideos() {
@@ -90,9 +120,6 @@ export class NutritionVideoTestComponent implements OnInit {
           this.playingVideos = new Array(this.allVideos.length).fill(false);
           this.showTranscription = new Array(this.allVideos.length).fill(false);
 
-          // Group videos into rows of 4 for grid display
-          this.videoRows = this.chunkVideos(this.allVideos, 4);
-
           this.loading = false;
 
           // Log validation summary
@@ -101,6 +128,13 @@ export class NutritionVideoTestComponent implements OnInit {
           if (invalidVideos.length > 0) {
             console.warn(`⚠️ Filtered out ${invalidVideos.length} invalid videos`);
           }
+
+          // TASK 8: Extract unique filter options from data
+          this.extractFilterOptions();
+
+          // TASK 8: Initially show all videos
+          this.filteredVideos = [...this.allVideos];
+          this.updateVideoRows();
         } catch (processingError) {
           console.error('❌ Error processing API response:', processingError);
           this.error = 'Error processing video data. Please contact support.';
@@ -197,6 +231,159 @@ export class NutritionVideoTestComponent implements OnInit {
       isValid: true,
       errorMessage: ''
     };
+  }
+
+  /**
+   * TASK 8: Extract unique filter options from video data
+   */
+  private extractFilterOptions() {
+    const workoutTypeSet = new Set<string>();
+    const muscleGroupSet = new Set<string>();
+    const equipmentSet = new Set<string>();
+
+    this.allVideos.forEach(video => {
+      // Collect workout types
+      if (video.workout_type) {
+        workoutTypeSet.add(video.workout_type);
+      }
+
+      // Collect muscle groups
+      if (video.workout_tags && Array.isArray(video.workout_tags)) {
+        video.workout_tags.forEach(tag => {
+          if (tag && tag.trim()) {
+            muscleGroupSet.add(tag.trim());
+          }
+        });
+      }
+
+      // Collect equipment
+      if (video.equipment_tags && Array.isArray(video.equipment_tags)) {
+        video.equipment_tags.forEach(tag => {
+          if (tag && tag.trim()) {
+            equipmentSet.add(tag.trim());
+          }
+        });
+      }
+    });
+
+    // Convert sets to sorted arrays
+    this.workoutTypes = Array.from(workoutTypeSet).sort();
+    this.muscleGroupOptions = Array.from(muscleGroupSet).sort();
+    this.equipmentOptions = Array.from(equipmentSet).sort();
+
+    console.log(`🔍 Filter Options Extracted:`, {
+      workoutTypes: this.workoutTypes.length,
+      muscleGroups: this.muscleGroupOptions.length,
+      equipment: this.equipmentOptions.length
+    });
+  }
+
+  /**
+   * TASK 8: Handle search input with debouncing
+   */
+  onSearchInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.searchSubject.next(input.value);
+  }
+
+  /**
+   * TASK 8: Apply all active filters
+   */
+  applyFilters() {
+    let filtered = [...this.allVideos];
+
+    // Filter by search query (title)
+    if (this.searchQuery && this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(video =>
+        video.video_title.toLowerCase().includes(query)
+      );
+    }
+
+    // Filter by workout type
+    if (this.selectedWorkoutType) {
+      filtered = filtered.filter(video =>
+        video.workout_type === this.selectedWorkoutType
+      );
+    }
+
+    // Filter by muscle groups (must have ALL selected)
+    if (this.selectedMuscleGroups.length > 0) {
+      filtered = filtered.filter(video => {
+        if (!video.workout_tags || !Array.isArray(video.workout_tags)) {
+          return false;
+        }
+        return this.selectedMuscleGroups.every(selected =>
+          video.workout_tags?.includes(selected) || false
+        );
+      });
+    }
+
+    // Filter by equipment (must have ALL selected)
+    if (this.selectedEquipment.length > 0) {
+      filtered = filtered.filter(video => {
+        if (!video.equipment_tags || !Array.isArray(video.equipment_tags)) {
+          return false;
+        }
+        return this.selectedEquipment.every(selected =>
+          video.equipment_tags?.includes(selected) || false
+        );
+      });
+    }
+
+    this.filteredVideos = filtered;
+    this.updateVideoRows();
+
+    console.log(`🔍 Filters Applied: ${filtered.length} of ${this.allVideos.length} videos`);
+  }
+
+  /**
+   * TASK 8: Update video rows after filtering
+   */
+  private updateVideoRows() {
+    this.videoRows = this.chunkVideos(this.filteredVideos, 4);
+    // Reset playback states for filtered videos
+    this.playingVideos = new Array(this.filteredVideos.length).fill(false);
+    this.showTranscription = new Array(this.filteredVideos.length).fill(false);
+  }
+
+  /**
+   * TASK 8: Toggle muscle group selection
+   */
+  toggleMuscleGroup(muscleGroup: string) {
+    const index = this.selectedMuscleGroups.indexOf(muscleGroup);
+    if (index > -1) {
+      this.selectedMuscleGroups.splice(index, 1);
+    } else {
+      this.selectedMuscleGroups.push(muscleGroup);
+    }
+    this.applyFilters();
+  }
+
+  /**
+   * TASK 8: Toggle equipment selection
+   */
+  toggleEquipment(equipment: string) {
+    const index = this.selectedEquipment.indexOf(equipment);
+    if (index > -1) {
+      this.selectedEquipment.splice(index, 1);
+    } else {
+      this.selectedEquipment.push(equipment);
+    }
+    this.applyFilters();
+  }
+
+  /**
+   * TASK 8: Clear all filters
+   */
+  clearFilters() {
+    this.searchQuery = '';
+    this.selectedWorkoutType = '';
+    this.selectedMuscleGroups = [];
+    this.selectedEquipment = [];
+    this.filteredVideos = [...this.allVideos];
+    this.updateVideoRows();
+    console.log('🔍 All filters cleared');
   }
 
   toggleVideo(index: number) {
