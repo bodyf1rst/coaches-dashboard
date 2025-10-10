@@ -22,6 +22,7 @@ import { AddClientComponent } from './pages/clients/add-client/add-client.compon
 import { TooltipDirective } from './tooltip.directive';
 import { ManagePreferencesComponent } from './pages/manage-preferences/manage-preferences.component';
 import { HttpClientModule } from '@angular/common/http';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ManageCoachesComponent } from './pages/manage-coaches/manage-coaches.component';
 import { AddCoachComponent } from './pages/manage-coaches/add-coach/add-coach.component';
 import { CoachTabComponent } from './components/coach-tab/coach-tab.component';
@@ -118,6 +119,7 @@ import { NutritionVideoTestComponent } from './pages/nutrition-video-test/nutrit
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    ScrollingModule,
     NgxSortableModule,
     DragulaModule.forRoot(),
     QuillModule.forRoot({

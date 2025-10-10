@@ -16,96 +16,101 @@
     <button class="retry-button" (click)="loadVideos()">Try Again</button>
   </div>
 
-  <!-- Side-by-Side Video Display -->
-  <div class="two-video-container" *ngIf="!loading && !error && allVideos.length > 0">
+  <!-- Virtual Scroll Container for Performance with 500+ Videos -->
+  <cdk-virtual-scroll-viewport
+    itemSize="550"
+    class="viewport"
+    *ngIf="!loading && !error && allVideos.length > 0">
 
-    <!-- Loop through each video (should be 2) -->
-    <div class="video-card" *ngFor="let video of allVideos; let i = index">
+    <div class="two-video-container">
+      <!-- Loop through each video with virtual scrolling -->
+      <div class="video-card" *cdkVirtualFor="let video of allVideos; let i = index">
 
-      <!-- Thumbnail or Video Player Container -->
-      <div class="media-container">
+        <!-- Thumbnail or Video Player Container -->
+        <div class="media-container">
 
-        <!-- Show Thumbnail when not playing -->
-        <div class="thumbnail-wrapper" *ngIf="!playingVideos[i]" (click)="toggleVideo(i)">
-          <img
-            [src]="video.thumbnailUrl"
-            [alt]="video.video_title"
-            class="video-thumbnail"
-            loading="lazy">
-          <div class="play-button-overlay">
-            <div class="play-icon">▶</div>
+          <!-- Show Thumbnail when not playing -->
+          <div class="thumbnail-wrapper" *ngIf="!playingVideos[i]" (click)="toggleVideo(i)">
+            <img
+              [src]="video.thumbnailUrl"
+              [alt]="video.video_title"
+              class="video-thumbnail"
+              loading="lazy">
+            <div class="play-button-overlay">
+              <div class="play-icon">▶</div>
+            </div>
           </div>
+
+          <!-- Show Video Player when playing -->
+          <div class="video-wrapper" *ngIf="playingVideos[i]">
+            <video
+              controls
+              crossorigin="anonymous"
+              autoplay
+              class="video-player"
+              [src]="video.videoUrl">
+              Your browser does not support the video tag.
+            </video>
+            <button class="close-video" (click)="toggleVideo(i)">✕ Close Video</button>
+          </div>
+
         </div>
 
-        <!-- Show Video Player when playing -->
-        <div class="video-wrapper" *ngIf="playingVideos[i]">
-          <video
-            controls
-            crossorigin="anonymous"
-            autoplay
-            class="video-player"
-            [src]="video.videoUrl">
-            Your browser does not support the video tag.
-          </video>
-          <button class="close-video" (click)="toggleVideo(i)">✕ Close Video</button>
-        </div>
+        <!-- Video Information Below -->
+        <div class="video-info">
 
-      </div>
+          <!-- Title -->
+          <h2 class="video-title">{{ video.video_title }}</h2>
 
-      <!-- Video Information Below -->
-      <div class="video-info">
-
-        <!-- Title -->
-        <h2 class="video-title">{{ video.video_title }}</h2>
-
-        <!-- Metadata -->
-        <div class="video-meta">
-          <span class="meta-item">
-            <strong>Duration:</strong> {{ video.duration || '1:00' }}
-          </span>
-          <span class="meta-item">
-            <strong>Category:</strong> {{ video.category || 'Workout' }}
-          </span>
-        </div>
-
-        <!-- Tags - Phase 6: Three separate tag groups with color coding -->
-        <div class="tags-section">
-          <!-- Workout Type (Orange) - Single value from Phase 4 classification -->
-          <div class="tag-group" *ngIf="video.workout_type">
-            <strong>Workout Type:</strong>
-            <span class="tag workout-type-tag">{{ video.workout_type | titlecase }}</span>
+          <!-- Metadata -->
+          <div class="video-meta">
+            <span class="meta-item">
+              <strong>Duration:</strong> {{ video.duration || '1:00' }}
+            </span>
+            <span class="meta-item">
+              <strong>Category:</strong> {{ video.category || 'Workout' }}
+            </span>
           </div>
-          <!-- Equipment (Green) - Array of equipment used -->
-          <div class="tag-group" *ngIf="video.equipment_tags && video.equipment_tags.length > 0">
-            <strong>Equipment:</strong>
-            <span class="tag equipment-tag" *ngFor="let tag of video.equipment_tags">{{ tag }}</span>
+
+          <!-- Tags - Phase 6: Three separate tag groups with color coding -->
+          <div class="tags-section">
+            <!-- Workout Type (Orange) - Single value from Phase 4 classification -->
+            <div class="tag-group" *ngIf="video.workout_type">
+              <strong>Workout Type:</strong>
+              <span class="tag workout-type-tag">{{ video.workout_type | titlecase }}</span>
+            </div>
+            <!-- Equipment (Green) - Array of equipment used -->
+            <div class="tag-group" *ngIf="video.equipment_tags && video.equipment_tags.length > 0">
+              <strong>Equipment:</strong>
+              <span class="tag equipment-tag" *ngFor="let tag of video.equipment_tags">{{ tag }}</span>
+            </div>
+            <!-- Muscle Group (Red) - Array of muscles targeted -->
+            <div class="tag-group" *ngIf="video.workout_tags && video.workout_tags.length > 0">
+              <strong>Muscle Group:</strong>
+              <span class="tag muscle-group-tag" *ngFor="let tag of video.workout_tags">{{ tag }}</span>
+            </div>
           </div>
-          <!-- Muscle Group (Red) - Array of muscles targeted -->
-          <div class="tag-group" *ngIf="video.workout_tags && video.workout_tags.length > 0">
-            <strong>Muscle Group:</strong>
-            <span class="tag muscle-group-tag" *ngFor="let tag of video.workout_tags">{{ tag }}</span>
+
+          <!-- Transcription (Collapsible) -->
+          <div class="transcription-section">
+            <button
+              class="transcription-toggle"
+              (click)="toggleTranscriptionForVideo(i)"
+              [attr.aria-expanded]="showTranscription[i]">
+              <span class="toggle-label">📝 Transcription</span>
+              <span class="toggle-icon">{{ showTranscription[i] ? '▲' : '▼' }}</span>
+            </button>
+
+            <div class="transcription-content" *ngIf="showTranscription[i]">
+              <p class="transcription-text">{{ video.transcription || 'No transcription available' }}</p>
+            </div>
           </div>
+
         </div>
-
-        <!-- Transcription (Collapsible) -->
-        <div class="transcription-section">
-          <button
-            class="transcription-toggle"
-            (click)="toggleTranscriptionForVideo(i)"
-            [attr.aria-expanded]="showTranscription[i]">
-            <span class="toggle-label">📝 Transcription</span>
-            <span class="toggle-icon">{{ showTranscription[i] ? '▲' : '▼' }}</span>
-          </button>
-
-          <div class="transcription-content" *ngIf="showTranscription[i]">
-            <p class="transcription-text">{{ video.transcription || 'No transcription available' }}</p>
-          </div>
-        </div>
-
       </div>
     </div>
 
-  </div>
+  </cdk-virtual-scroll-viewport>
 
   <!-- Info Section -->
   <div class="test-info" *ngIf="!loading && !error">

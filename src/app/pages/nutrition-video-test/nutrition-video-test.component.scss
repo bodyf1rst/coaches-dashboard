@@ -1,6 +1,12 @@
 // Import shared video tag styles
 @import '../../../styles/video-tags';
 
+// Virtual Scroll Viewport Styling
+.viewport {
+  height: 80vh; // 80% of viewport height for scrolling
+  width: 100%;
+}
+
 .test-container {
   max-width: 1400px;
   margin: 0 auto;
