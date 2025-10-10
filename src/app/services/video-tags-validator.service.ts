@@ -31,11 +31,7 @@ export class VideoTagsValidatorService {
     const warnings: string[] = [];
     const errors: string[] = [];
 
-    // Check required fields
-    if (!video.video_id) {
-      errors.push('Missing video_id');
-    }
-
+    // Check critical fields only (video_id is optional for display)
     if (!video.video_title || video.video_title.trim() === '') {
       errors.push('Missing or empty video_title');
     }
