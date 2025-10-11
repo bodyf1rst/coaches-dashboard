@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { S3VideoService, VideoMetadata } from '../../service/s3-video.service';
 import { DataService } from '../../service/data.service';
 
@@ -18,6 +19,16 @@ export class VideoLibraryComponent implements OnInit {
   selectedVideo: VideoMetadata | null = null;
   showVideoModal: boolean = false;
 
+  // Multi-select functionality
+  multiSelectMode: boolean = false;
+  selectedVideoIds: Set<string> = new Set();
+
+  // 4 Filter dropdowns
+  selectedMuscleGroup: string = 'all';
+  selectedEquipment: string = 'all';
+  selectedDifficulty: string = 'all';
+  selectedBodyArea: string = 'all';
+
   categories = [
     { value: 'all', label: 'All Videos', icon: '🎬' },
     { value: 'workout', label: 'Workout', icon: '🏋️' },
@@ -26,9 +37,48 @@ export class VideoLibraryComponent implements OnInit {
     { value: 'notification', label: 'Notifications', icon: '📣' }
   ];
 
+  // Filter dropdown options
+  muscleGroups = [
+    { value: 'all', label: 'All Muscle Groups' },
+    { value: 'chest', label: 'Chest' },
+    { value: 'back', label: 'Back' },
+    { value: 'legs', label: 'Legs' },
+    { value: 'shoulders', label: 'Shoulders' },
+    { value: 'arms', label: 'Arms' },
+    { value: 'core', label: 'Core' },
+    { value: 'glutes', label: 'Glutes' }
+  ];
+
+  equipmentOptions = [
+    { value: 'all', label: 'All Equipment' },
+    { value: 'bodyweight', label: 'Bodyweight' },
+    { value: 'dumbbells', label: 'Dumbbells' },
+    { value: 'barbell', label: 'Barbell' },
+    { value: 'kettlebell', label: 'Kettlebell' },
+    { value: 'resistance band', label: 'Resistance Bands' },
+    { value: 'cable', label: 'Cable' },
+    { value: 'machine', label: 'Machine' }
+  ];
+
+  difficultyLevels = [
+    { value: 'all', label: 'All Levels' },
+    { value: 'beginner', label: 'Beginner' },
+    { value: 'intermediate', label: 'Intermediate' },
+    { value: 'advanced', label: 'Advanced' }
+  ];
+
+  bodyAreas = [
+    { value: 'all', label: 'All Body Areas' },
+    { value: 'upper body', label: 'Upper Body' },
+    { value: 'lower body', label: 'Lower Body' },
+    { value: 'full body', label: 'Full Body' },
+    { value: 'core', label: 'Core' }
+  ];
+
   constructor(
     private s3VideoService: S3VideoService,
-    public dataService: DataService
+    public dataService: DataService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -90,6 +140,42 @@ export class VideoLibraryComponent implements OnInit {
     // Filter by category
     if (this.selectedCategory !== 'all') {
       filtered = filtered.filter(v => v.category === this.selectedCategory);
+    }
+
+    // Filter by muscle group
+    if (this.selectedMuscleGroup !== 'all') {
+      filtered = filtered.filter(v =>
+        v.tags && v.tags.some(tag =>
+          tag.toLowerCase().includes(this.selectedMuscleGroup.toLowerCase())
+        )
+      );
+    }
+
+    // Filter by equipment
+    if (this.selectedEquipment !== 'all') {
+      filtered = filtered.filter(v =>
+        v.tags && v.tags.some(tag =>
+          tag.toLowerCase().includes(this.selectedEquipment.toLowerCase())
+        )
+      );
+    }
+
+    // Filter by difficulty
+    if (this.selectedDifficulty !== 'all') {
+      filtered = filtered.filter(v =>
+        v.tags && v.tags.some(tag =>
+          tag.toLowerCase().includes(this.selectedDifficulty.toLowerCase())
+        )
+      );
+    }
+
+    // Filter by body area
+    if (this.selectedBodyArea !== 'all') {
+      filtered = filtered.filter(v =>
+        v.tags && v.tags.some(tag =>
+          tag.toLowerCase().includes(this.selectedBodyArea.toLowerCase())
+        )
+      );
     }
 
     // Filter by tags
@@ -197,8 +283,51 @@ export class VideoLibraryComponent implements OnInit {
 
   clearFilters(): void {
     this.selectedCategory = 'all';
+    this.selectedMuscleGroup = 'all';
+    this.selectedEquipment = 'all';
+    this.selectedDifficulty = 'all';
+    this.selectedBodyArea = 'all';
     this.selectedTags = [];
     this.searchQuery = '';
+    this.applyFilters();
+  }
+
+  // Multi-select functionality
+  toggleMultiSelectMode(): void {
+    this.multiSelectMode = !this.multiSelectMode;
+    if (!this.multiSelectMode) {
+      this.selectedVideoIds.clear();
+    }
+  }
+
+  toggleVideoSelection(videoId: string): void {
+    if (this.selectedVideoIds.has(videoId)) {
+      this.selectedVideoIds.delete(videoId);
+    } else {
+      this.selectedVideoIds.add(videoId);
+    }
+  }
+
+  isVideoSelected(videoId: string): boolean {
+    return this.selectedVideoIds.has(videoId);
+  }
+
+  addSelectedToWorkout(): void {
+    if (this.selectedVideoIds.size === 0) {
+      if (this.dataService.utils && typeof this.dataService.utils.showToast === 'function') {
+        this.dataService.utils.showToast('warning', 'Please select at least one video');
+      }
+      return;
+    }
+
+    // Navigate to workout builder with selected video IDs
+    const videoIds = Array.from(this.selectedVideoIds);
+    this.router.navigate(['/workout-builder'], {
+      queryParams: { videoIds: videoIds.join(',') }
+    });
+  }
+
+  onFilterChange(): void {
     this.applyFilters();
   }
 

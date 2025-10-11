@@ -17,6 +17,37 @@
     </button>
   </div>
 
+  <!-- 4 Filter Dropdowns -->
+  <div class="filters-dropdowns">
+    <div class="dropdown-group">
+      <label for="muscleGroupFilter">Muscle Group</label>
+      <select id="muscleGroupFilter" [(ngModel)]="selectedMuscleGroup" (ngModelChange)="onFilterChange()" class="filter-dropdown">
+        <option *ngFor="let group of muscleGroups" [value]="group.value">{{group.label}}</option>
+      </select>
+    </div>
+
+    <div class="dropdown-group">
+      <label for="equipmentFilter">Equipment</label>
+      <select id="equipmentFilter" [(ngModel)]="selectedEquipment" (ngModelChange)="onFilterChange()" class="filter-dropdown">
+        <option *ngFor="let equip of equipmentOptions" [value]="equip.value">{{equip.label}}</option>
+      </select>
+    </div>
+
+    <div class="dropdown-group">
+      <label for="difficultyFilter">Difficulty</label>
+      <select id="difficultyFilter" [(ngModel)]="selectedDifficulty" (ngModelChange)="onFilterChange()" class="filter-dropdown">
+        <option *ngFor="let level of difficultyLevels" [value]="level.value">{{level.label}}</option>
+      </select>
+    </div>
+
+    <div class="dropdown-group">
+      <label for="bodyAreaFilter">Body Area</label>
+      <select id="bodyAreaFilter" [(ngModel)]="selectedBodyArea" (ngModelChange)="onFilterChange()" class="filter-dropdown">
+        <option *ngFor="let area of bodyAreas" [value]="area.value">{{area.label}}</option>
+      </select>
+    </div>
+  </div>
+
   <!-- Search and Filters Bar -->
   <div class="filters-bar">
     <div class="search-box">
@@ -30,9 +61,18 @@
         <i class="fa fa-times"></i>
       </button>
     </div>
-    <button class="clear-filters-btn" *ngIf="selectedCategory !== 'all' || selectedTags.length > 0 || searchQuery" (click)="clearFilters()">
-      <i class="fa fa-times-circle"></i> Clear All Filters
-    </button>
+    <div class="filter-actions">
+      <button class="multi-select-btn" [class.active]="multiSelectMode" (click)="toggleMultiSelectMode()">
+        <i class="fa" [class.fa-check-square]="multiSelectMode" [class.fa-square-o]="!multiSelectMode"></i>
+        {{ multiSelectMode ? 'Exit Selection' : 'Select Multiple' }}
+      </button>
+      <button class="add-to-workout-btn" *ngIf="multiSelectMode && selectedVideoIds.size > 0" (click)="addSelectedToWorkout()">
+        <i class="fa fa-plus-circle"></i> Add to Workout ({{selectedVideoIds.size}})
+      </button>
+      <button class="clear-filters-btn" *ngIf="selectedCategory !== 'all' || selectedMuscleGroup !== 'all' || selectedEquipment !== 'all' || selectedDifficulty !== 'all' || selectedBodyArea !== 'all' || selectedTags.length > 0 || searchQuery" (click)="clearFilters()">
+        <i class="fa fa-times-circle"></i> Clear All Filters
+      </button>
+    </div>
   </div>
 
   <!-- Tags Filter -->
@@ -71,10 +111,19 @@
     <div
       *ngFor="let video of filteredVideos"
       class="video-card"
-      (click)="openVideoModal(video)">
+      [class.multi-select-mode]="multiSelectMode"
+      [class.selected]="isVideoSelected(video.id)"
+      (click)="multiSelectMode ? toggleVideoSelection(video.id) : openVideoModal(video)">
+
+      <!-- Selection Checkbox (visible in multi-select mode) -->
+      <div class="selection-checkbox" *ngIf="multiSelectMode" (click)="$event.stopPropagation(); toggleVideoSelection(video.id)">
+        <input type="checkbox" [checked]="isVideoSelected(video.id)" readonly>
+        <i class="fa fa-check-circle" *ngIf="isVideoSelected(video.id)"></i>
+      </div>
+
       <div class="video-thumbnail">
         <img [src]="getThumbnailUrl(video)" [alt]="video.title" crossorigin="anonymous" (error)="onImageError($event, video)">
-        <div class="play-button-overlay">
+        <div class="play-button-overlay" *ngIf="!multiSelectMode">
           <i class="fa fa-play"></i>
         </div>
         <div class="video-duration">{{formatDuration(video.duration)}}</div>

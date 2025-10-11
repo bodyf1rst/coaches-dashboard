@@ -1,72 +1,34 @@
-# CHI-AWARENESS.md
+# CHI-AWARENESS.md (Pointer File)
 
-## **Purpose**
+## **⚠️ IMPORTANT: This is a reference pointer**
 
-This file defines Kai's startup and operational sequence for the **BodyF1rst Coaches Dashboard** repository. It ensures Kai always operates from the correct context, with consistent logic, updated infrastructure knowledge, and the BodyF1rst visual communication style.
+**The master copies of CHI-AWARENESS files are centralized in `BodyF1rst-APIs/` repository.**
 
----
-
-## 📜 **Initialization Sequence**
-
-Read these files in this exact order:
-
-1. **../BodyF1rst-APIs/AWS-INFRASTRUCTURE-SUMMARY.md** (global infrastructure reference)
-2. **../BodyF1rst-APIs/PROMPT-CONTROL-GUIDE.md** (rules for style, prompts, and tone)
-3. **REPO-ACTIVITY-COACHES.md** (repo-specific running log for coaches dashboard)
-
-**Load their contents fully** — not summarized. These provide Kai's context and anchor points for all reasoning and actions.
-
-**Maintain these references in memory during the entire session.**
+**To access the actual files, go to:**
+- `../BodyF1rst-APIs/CHI-AWARENESS.md`
+- `../BodyF1rst-APIs/CHI-AWARENESS-POST.md`
+- `../BodyF1rst-APIs/AWS-INFRASTRUCTURE-SUMMARY.md`
 
 ---
 
-## ⚙️ **Execution Protocol**
+## 📍 **Why Centralized?**
 
-- Use the knowledge from the loaded files to guide all actions
-- Validate architecture, AWS profiles, and dependencies before writing or deploying
-- Maintain token efficiency by referencing context instead of re-rendering it in full during reasoning
-- **Default AWS profile:** `codex-admin`
-- Keep full awareness of Angular 17+, Amplify deployment, and API integration
-
----
-
-## 🧩 **Post-Action Workflow**
-
-After completing any task:
-
-1. **Update** the `../BodyF1rst-APIs/AWS-INFRASTRUCTURE-SUMMARY.md` file with new components, configs, or relationships
-2. **Append** a summary of relevant changes to the `REPO-ACTIVITY-COACHES.md` file
-3. If uncertain, leave a Windsurf comment:
-   ```markdown
-   <!-- TODO: Kai confirm/update -->
-   ```
-4. **Verify** synchronization between AWS reality and documented state before task closure
+Instead of maintaining 9 files (3 files × 3 repos), we maintain only 3 files in one location. This prevents:
+- ❌ Duplicate updates across multiple repos
+- ❌ Version inconsistencies
+- ❌ Outdated information in different repos
 
 ---
 
-## 🧠 **Visual Format Directive**
+## 🔄 **How Kai Uses This**
 
-Always respond using the **BodyF1rst Visual Format:**
-
-- **Emoji + bold** section headers
-- Use **🟩Success🟩** **🟥Error🟥** **🟨Warning🟨** color cues
-- Label all command bins clearly: **💻 Local**, **🧭 AWS**, **🖧 EC2**
-- Each task: **3–5 concise steps**, each with **Good / Bad / Pause**
-- **Always end with:** "**Run this now or move on?**"
+At the start of each session, Kai reads the master files from `BodyF1rst-APIs/`:
+1. **CHI-AWARENESS.md** - Startup and operational sequence
+2. **AWS-INFRASTRUCTURE-SUMMARY.md** - Infrastructure reference + Master Task List
+3. **REPO-ACTIVITY-COACHES.md** - This repo's specific activity log
 
 ---
 
-## 🚀 **Activation Command**
-
-At the beginning of every session or task, run:
-
-```
-Access CHI-AWARENESS.md in the active repo and follow its instructions.
-```
-
-This loads all necessary files, initializes Kai's context, and ensures the session begins with total awareness of infrastructure, prompts, and style.
-
----
-
-**Maintainer:** Atlas + Kai
-**Last Updated:** October 2025
+**Maintained By:** Kai (Windsurf)
+**Master Location:** `BodyF1rst-APIs/`
+**Last Updated:** October 10, 2025

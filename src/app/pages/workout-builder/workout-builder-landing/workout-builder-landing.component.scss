@@ -1,3 +1,395 @@
+.landing-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  // Header with Action Buttons
+  .header {
+    margin-bottom: 2rem;
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 2rem;
+
+      .title-section {
+        flex: 1;
+
+        h1 {
+          font-size: 2.5rem;
+          font-weight: 700;
+          color: #2d3748;
+          margin: 0 0 0.5rem 0;
+        }
+
+        .subtitle {
+          font-size: 1.1rem;
+          color: #718096;
+          margin: 0;
+        }
+      }
+
+      .action-buttons-top {
+        display: flex;
+        gap: 1rem;
+        flex-shrink: 0;
+
+        .btn-action {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1.5rem;
+          border: none;
+          border-radius: 8px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+          .btn-icon {
+            font-size: 1.25rem;
+          }
+
+          .btn-text {
+            white-space: nowrap;
+          }
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+          }
+
+          &:active {
+            transform: translateY(0);
+          }
+
+          &.btn-create-workout {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+
+            &:hover {
+              background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+            }
+          }
+
+          &.btn-create-plan {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+
+            &:hover {
+              background: linear-gradient(135deg, #e084ea 0%, #e04858 100%);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Main Content
+  .main-content {
+    // Stats Section
+    .stats-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+
+      .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-icon {
+          width: 48px;
+          height: 48px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5rem;
+          flex-shrink: 0;
+        }
+
+        &.workouts-card .stat-icon {
+          background: #e6f2ff;
+        }
+
+        &.plans-card .stat-icon {
+          background: #ffe6f7;
+        }
+
+        .stat-content {
+          h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin: 0 0 0.25rem 0;
+          }
+
+          p {
+            font-size: 0.9rem;
+            color: #718096;
+            margin: 0;
+          }
+        }
+      }
+    }
+
+    // Quick Links
+    .quick-links {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      margin-bottom: 2.5rem;
+
+      h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin: 0 0 1.5rem 0;
+      }
+
+      .links-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+
+        .link-card {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding: 1rem;
+          background: white;
+          border: 2px solid #e2e8f0;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-size: 1rem;
+          font-weight: 500;
+          color: #2d3748;
+
+          &:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+            transform: translateX(4px);
+          }
+
+          .link-icon {
+            font-size: 1.5rem;
+          }
+
+          .link-count {
+            margin-left: auto;
+            color: #718096;
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
+
+    // Recent Activity
+    .recent-activity {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      margin-bottom: 2.5rem;
+
+      h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin: 0 0 1.5rem 0;
+      }
+
+      .activity-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+
+        .activity-section {
+          h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #4a5568;
+            margin: 0 0 1rem 0;
+          }
+
+          .activity-list {
+            .activity-item {
+              display: flex;
+              align-items: center;
+              gap: 0.75rem;
+              padding: 0.75rem;
+              border-bottom: 1px solid #e2e8f0;
+              transition: background 0.2s ease;
+
+              &:last-child {
+                border-bottom: none;
+              }
+
+              &:hover {
+                background: #f7fafc;
+              }
+
+              .activity-icon {
+                font-size: 1.25rem;
+              }
+
+              .activity-name {
+                flex: 1;
+                font-weight: 500;
+                color: #2d3748;
+              }
+
+              .activity-meta {
+                font-size: 0.85rem;
+                color: #a0aec0;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Help Section
+    .help-section {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+      h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin: 0 0 1rem 0;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+          padding: 0.75rem 0;
+          color: #4a5568;
+          line-height: 1.6;
+
+          strong {
+            color: #2d3748;
+          }
+        }
+      }
+    }
+  }
+
+  // Loading State
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem 2rem;
+    text-align: center;
+
+    p {
+      color: #718096;
+      font-size: 1rem;
+    }
+  }
+
+  // Error Message
+  .error-message {
+    background: #fff5f5;
+    border: 2px solid #fc8181;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    margin: 2rem 0;
+
+    p {
+      color: #c53030;
+      margin: 0 0 1rem 0;
+    }
+
+    button {
+      padding: 0.75rem 1.5rem;
+      background: #f56565;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: #e53e3e;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .landing-container {
+    padding: 1rem;
+
+    .header .header-content {
+      flex-direction: column;
+      align-items: stretch;
+
+      .action-buttons-top {
+        width: 100%;
+
+        .btn-action {
+          flex: 1;
+          justify-content: center;
+        }
+      }
+    }
+
+    .main-content {
+      .stats-section,
+      .quick-links .links-grid,
+      .recent-activity .activity-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-container {
+    .header .header-content {
+      .title-section h1 {
+        font-size: 1.75rem;
+      }
+
+      .action-buttons-top {
+        flex-direction: column;
+
+        .btn-action {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+// Old Styles (Remove after confirming new design works)
 .workout-builder-landing {
   padding: 2rem;
   max-width: 1400px;

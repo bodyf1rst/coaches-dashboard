@@ -1,8 +1,22 @@
 <div class="landing-container">
-  <!-- Header -->
+  <!-- Header with Action Buttons -->
   <div class="header">
-    <h1>🎯 Workout Builder</h1>
-    <p class="subtitle">Create custom workouts and build comprehensive workout plans</p>
+    <div class="header-content">
+      <div class="title-section">
+        <h1>🎯 Workout Builder</h1>
+        <p class="subtitle">Create custom workouts and build comprehensive workout plans</p>
+      </div>
+      <div class="action-buttons-top">
+        <button class="btn-action btn-create-workout" (click)="navigateToCreateWorkout()">
+          <span class="btn-icon">🏋️</span>
+          <span class="btn-text">Create Workout</span>
+        </button>
+        <button class="btn-action btn-create-plan" (click)="navigateToCreatePlan()">
+          <span class="btn-icon">📋</span>
+          <span class="btn-text">Create Plan</span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Loading State -->
@@ -35,27 +49,6 @@
           <p>Plans Created</p>
         </div>
       </div>
-    </div>
-
-    <!-- Primary Action Buttons -->
-    <div class="action-buttons">
-      <button class="btn-primary btn-create-workout" (click)="navigateToCreateWorkout()">
-        <div class="btn-icon">🏋️</div>
-        <div class="btn-content">
-          <h2>Create New Workout</h2>
-          <p>Build a custom workout with exercises, sets, reps, and rest timers</p>
-        </div>
-        <div class="btn-arrow">→</div>
-      </button>
-
-      <button class="btn-primary btn-create-plan" (click)="navigateToCreatePlan()">
-        <div class="btn-icon">📋</div>
-        <div class="btn-content">
-          <h2>Create New Plan</h2>
-          <p>Select 2-7 workouts and build a comprehensive training plan</p>
-        </div>
-        <div class="btn-arrow">→</div>
-      </button>
     </div>
 
     <!-- Quick Links -->

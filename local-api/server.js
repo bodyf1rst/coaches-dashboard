@@ -20,9 +20,9 @@ app.use(express.json());
 // Database connection pool
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'bodyf1rst-db.c4rsccauwjin.us-east-1.rds.amazonaws.com',
-  user: process.env.DB_USER || 'dbadmin',
-  password: process.env.DB_PASSWORD || 'adminbodyf1rst2023',
-  database: process.env.DB_NAME || 'bodyf1rst_db',
+  user: process.env.DB_USER || 'Charley',
+  password: process.env.DB_PASSWORD || 'Ryan$5889!',
+  database: process.env.DB_NAME || 'bodyf1rst',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
@@ -30,8 +30,8 @@ const pool = mysql.createPool({
 
 // AWS S3 configuration
 const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'AKIAZI4NO3NXWHOWXDCT',
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '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',
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: process.env.AWS_REGION || 'us-east-1'
 });
 
