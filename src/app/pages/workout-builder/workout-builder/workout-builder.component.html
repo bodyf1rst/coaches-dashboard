@@ -314,6 +314,14 @@
                   <div class="exercises-header">
                     <h4>Exercises</h4>
                     <span class="exercise-count">{{ block.exercises.length }}</span>
+                    <button
+                      *ngIf="selectedVideos.size > 0"
+                      class="btn-add-selected-small"
+                      (click)="addSelectedVideosToBlock(blockIndex)"
+                      type="button"
+                    >
+                      ➕ Add {{ selectedVideos.size }}
+                    </button>
                   </div>
 
                   <!-- Drop Zone -->
@@ -361,8 +369,19 @@
         <!-- RIGHT: Video Library (Same as Traditional) -->
         <div class="video-library-panel">
           <div class="panel-header">
-            <h2>📹 Video Library</h2>
-            <p class="panel-subtitle">Drag videos into blocks</p>
+            <div class="header-left">
+              <h2>📹 Video Library</h2>
+              <p class="panel-subtitle">Drag videos into blocks</p>
+            </div>
+            <button
+              class="btn-multi-select"
+              [class.active]="multiSelectMode"
+              (click)="toggleMultiSelectMode()"
+              type="button"
+            >
+              <span *ngIf="!multiSelectMode">☑️ Multi-Select</span>
+              <span *ngIf="multiSelectMode">✕ Cancel ({{ selectedVideos.size }}/{{ MAX_SELECTION }})</span>
+            </button>
           </div>
 
           <!-- Search -->
@@ -417,6 +436,9 @@
             <div
               *ngFor="let video of filteredVideos"
               class="video-card"
+              [class.selected]="isVideoSelected(video.video_id)"
+              [class.clickable]="multiSelectMode"
+              (click)="multiSelectMode ? toggleVideoSelection(video.video_id) : null"
               cdkDrag
             >
               <img
@@ -450,10 +472,20 @@
       <!-- LEFT PANEL: Workout Builder -->
       <div class="workout-builder-panel">
         <div class="panel-header">
-          <h2>💪 Workout Exercises</h2>
-          <p class="panel-subtitle">
-            {{ workoutExercises.length }} exercise{{ workoutExercises.length !== 1 ? 's' : '' }}
-          </p>
+          <div class="header-left">
+            <h2>💪 Workout Exercises</h2>
+            <p class="panel-subtitle">
+              {{ workoutExercises.length }} exercise{{ workoutExercises.length !== 1 ? 's' : '' }}
+            </p>
+          </div>
+          <button
+            *ngIf="selectedVideos.size > 0"
+            class="btn-add-selected"
+            (click)="addSelectedVideosToWorkout()"
+            type="button"
+          >
+            ➕ Add {{ selectedVideos.size }} Selected
+          </button>
         </div>
 
         <!-- Drop Zone -->
@@ -572,8 +604,19 @@
       <!-- RIGHT PANEL: Video Library -->
       <div class="video-library-panel">
         <div class="panel-header">
-          <h2>📹 Video Library</h2>
-          <p class="panel-subtitle">Drag videos to add exercises</p>
+          <div class="header-left">
+            <h2>📹 Video Library</h2>
+            <p class="panel-subtitle">Drag videos to add exercises</p>
+          </div>
+          <button
+            class="btn-multi-select"
+            [class.active]="multiSelectMode"
+            (click)="toggleMultiSelectMode()"
+            type="button"
+          >
+            <span *ngIf="!multiSelectMode">☑️ Multi-Select</span>
+            <span *ngIf="multiSelectMode">✕ Cancel ({{ selectedVideos.size }}/{{ MAX_SELECTION }})</span>
+          </button>
         </div>
 
         <!-- Search -->
@@ -603,6 +646,9 @@
           <div
             *ngFor="let video of filteredVideos"
             class="video-card"
+            [class.selected]="isVideoSelected(video.video_id)"
+            [class.clickable]="multiSelectMode"
+            (click)="multiSelectMode ? toggleVideoSelection(video.video_id) : null"
             cdkDrag
           >
             <img

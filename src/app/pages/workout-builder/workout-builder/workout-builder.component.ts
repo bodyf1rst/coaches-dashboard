@@ -55,6 +55,11 @@ export class WorkoutBuilderComponent implements OnInit {
   muscleGroupOptions = ['All', 'Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core', 'Full Body'];
   workoutTypeOptions = ['All', 'Strength', 'Cardio', 'HIIT', 'Mobility', 'Recovery'];
 
+  // Multi-select mode
+  multiSelectMode = false;
+  selectedVideos: Set<number> = new Set();
+  MAX_SELECTION = 10;
+
   // Workout exercises
   workoutExercises: ExerciseConfig[] = [];
 
@@ -409,6 +414,97 @@ export class WorkoutBuilderComponent implements OnInit {
     }
     // For traditional types, just connect to workout list
     return ['workoutList'];
+  }
+
+  // Multi-select methods
+  toggleMultiSelectMode(): void {
+    this.multiSelectMode = !this.multiSelectMode;
+    if (!this.multiSelectMode) {
+      this.clearSelection();
+    }
+  }
+
+  toggleVideoSelection(videoId: number): void {
+    if (!this.multiSelectMode) return;
+
+    if (this.selectedVideos.has(videoId)) {
+      this.selectedVideos.delete(videoId);
+    } else {
+      if (this.selectedVideos.size >= this.MAX_SELECTION) {
+        alert(`Maximum ${this.MAX_SELECTION} videos can be selected at once`);
+        return;
+      }
+      this.selectedVideos.add(videoId);
+    }
+  }
+
+  isVideoSelected(videoId: number): boolean {
+    return this.selectedVideos.has(videoId);
+  }
+
+  addSelectedVideosToWorkout(): void {
+    if (this.selectedVideos.size === 0) {
+      alert('Please select at least one video');
+      return;
+    }
+
+    const selectedVideoIds = Array.from(this.selectedVideos);
+    const videosToAdd = this.videos.filter(v => selectedVideoIds.includes(v.video_id));
+
+    for (const video of videosToAdd) {
+      const newExercise: ExerciseConfig = {
+        exercise_id: video.video_id,
+        workout_id: this.workout?.id || 0,
+        sets: 3,
+        reps: 10,
+        duration_seconds: video.video_duration || 60,
+        rest_timer_seconds: 60,
+        timer_beep_enabled: true,
+        notes: '',
+        exercise_order: this.workoutExercises.length + 1,
+        video: video,
+        isExpanded: false
+      };
+      this.workoutExercises.push(newExercise);
+    }
+
+    this.updateExerciseOrders();
+    this.clearSelection();
+    this.multiSelectMode = false;
+  }
+
+  addSelectedVideosToBlock(blockIndex: number): void {
+    if (this.selectedVideos.size === 0) {
+      alert('Please select at least one video');
+      return;
+    }
+
+    const selectedVideoIds = Array.from(this.selectedVideos);
+    const videosToAdd = this.videos.filter(v => selectedVideoIds.includes(v.video_id));
+
+    for (const video of videosToAdd) {
+      const newExercise: ExerciseConfig = {
+        exercise_id: video.video_id,
+        workout_id: 0,
+        sets: 3,
+        reps: 10,
+        duration_seconds: video.video_duration || 60,
+        rest_timer_seconds: 60,
+        timer_beep_enabled: true,
+        notes: '',
+        exercise_order: this.templateBlocks[blockIndex].exercises.length + 1,
+        video: video,
+        isExpanded: false
+      };
+      this.templateBlocks[blockIndex].exercises.push(newExercise);
+    }
+
+    this.clearSelection();
+    this.multiSelectMode = false;
+  }
+
+  clearSelection(): void {
+    this.selectedVideos.clear();
   }
 
   goBack(): void {
