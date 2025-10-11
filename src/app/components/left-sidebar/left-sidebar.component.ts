@@ -19,8 +19,7 @@ export class LeftSidebarComponent implements OnInit {
     { route: '/fitness-hub', label: 'Fitness Hub', emoji: '🏋️', color: '#FFB6C1', hasDropdown: true,
       subItems: [
         { route: '/fitness-videos', label: 'Fitness Videos', emoji: '💪' },
-        { route: '/workout-builder', label: 'Workout Builder', emoji: '🎯' },
-        { route: '/workout-builder/workouts-list', label: 'Workout Plans', emoji: '📋' }
+        { route: '/workout-builder', label: 'Workout Builder', emoji: '🎯' }
       ]
     },
 

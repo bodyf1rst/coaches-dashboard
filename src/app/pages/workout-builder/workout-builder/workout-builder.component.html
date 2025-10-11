@@ -433,14 +433,15 @@
             [cdkDropListData]="filteredVideos"
             [cdkDropListConnectedTo]="getDropListIds()"
           >
-            <div
-              *ngFor="let video of filteredVideos"
-              class="video-card"
-              [class.selected]="isVideoSelected(video.video_id)"
-              [class.clickable]="multiSelectMode"
-              (click)="multiSelectMode ? toggleVideoSelection(video.video_id) : null"
-              cdkDrag
-            >
+          <div
+            *ngFor="let video of filteredVideos"
+            class="video-card"
+            [class.selected]="isVideoSelected(video.video_id)"
+            [class.clickable]="multiSelectMode"
+            (click)="multiSelectMode ? toggleVideoSelection(video.video_id) : $event.stopPropagation()"
+            [cdkDragDisabled]="multiSelectMode"
+            cdkDrag
+          >
               <img
                 [src]="video.thumbnail_url"
                 [alt]="video.video_title"
@@ -668,14 +669,15 @@
           [cdkDropListData]="filteredVideos"
           [cdkDropListConnectedTo]="['workoutList']"
         >
-          <div
-            *ngFor="let video of filteredVideos"
-            class="video-card"
-            [class.selected]="isVideoSelected(video.video_id)"
-            [class.clickable]="multiSelectMode"
-            (click)="multiSelectMode ? toggleVideoSelection(video.video_id) : null"
-            cdkDrag
-          >
+            <div
+              *ngFor="let video of filteredVideos"
+              class="video-card"
+              [class.selected]="isVideoSelected(video.video_id)"
+              [class.clickable]="multiSelectMode"
+              (click)="multiSelectMode ? toggleVideoSelection(video.video_id) : $event.stopPropagation()"
+              [cdkDragDisabled]="multiSelectMode"
+              cdkDrag
+            >
             <img
               [src]="video.thumbnail_url"
               [alt]="video.video_title"

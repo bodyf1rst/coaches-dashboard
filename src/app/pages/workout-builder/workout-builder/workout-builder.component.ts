@@ -77,7 +77,7 @@ export class WorkoutBuilderComponent implements OnInit {
 
   // Workout configuration
   workoutName = '';
-  workoutType: 'traditional' | 'emom' | 'amrap' | 'circuit' | 'tabata' | 'superset' | 'custom' = 'traditional';
+  workoutType: 'traditional' | 'emom' | 'amrap' | 'circuit' | 'tabata' | 'superset' | 'custom' = 'custom';
   workoutTypes = [
     { value: 'traditional', label: '🏋️ Traditional', description: 'Standard sets and reps' },
     { value: 'emom', label: '⏱️ EMOM', description: 'Every Minute On the Minute' },

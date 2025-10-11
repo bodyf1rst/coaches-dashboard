@@ -331,27 +331,34 @@
       font-weight: 600;
     }
 
-    .btn-multi-select {
-      padding: 0.625rem 1.25rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
+.btn-multi-select {
+  padding: 0.75rem 1.5rem;
+  background: #4a5568;
+  color: white;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
-      }
+  &:hover {
+    background: #2d3748;
+    border-color: #667eea;
+  }
 
-      &.active {
-        background: linear-gradient(135deg, #ff9a56 0%, #ff7e2e 100%);
-      }
+  &.active {
+    background: #667eea;
+    border-color: #667eea;
+
+    &:hover {
+      background: #5568d3;
     }
+  }
+}
 
     .btn-add-selected {
       padding: 0.625rem 1.25rem;
