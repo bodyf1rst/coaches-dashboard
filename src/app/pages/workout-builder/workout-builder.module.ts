@@ -8,13 +8,15 @@ import { WorkoutPlansListComponent } from './workout-plans-list/workout-plans-li
 import { WorkoutBuilderComponent } from './workout-builder/workout-builder.component';
 import { WorkoutExecutionComponent } from './workout-execution/workout-execution.component';
 import { RestTimerComponent } from '../../components/rest-timer/rest-timer.component';
+import { TemplateSelectorComponent } from '../../components/template-selector/template-selector.component';
 
 @NgModule({
   declarations: [
     WorkoutPlansListComponent,
     WorkoutBuilderComponent,
     WorkoutExecutionComponent,
-    RestTimerComponent
+    RestTimerComponent,
+    TemplateSelectorComponent
   ],
   imports: [
     CommonModule,

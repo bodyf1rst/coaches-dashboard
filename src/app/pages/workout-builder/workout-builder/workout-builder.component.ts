@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { WorkoutService } from '../../../services/workout.service';
+import { WorkoutBuilderService } from '../../../services/workout-builder.service';
 import { HttpService } from '../../../service/http.service';
 import { WorkoutPlan, Workout, WorkoutExercise } from '../../../models/workout.model';
+import { WorkoutTemplate, WorkoutBodyPoints } from '../../../models/workout-builder.model';
 
 interface Video {
   video_id: number;
@@ -51,6 +53,18 @@ export class WorkoutBuilderComponent implements OnInit {
   // Workout exercises
   workoutExercises: ExerciseConfig[] = [];
 
+  // Template selection
+  showTemplateSelector = false;
+  selectedTemplate: WorkoutTemplate | null = null;
+  coachId = 1; // TODO: Get from auth service
+
+  // BodyPoints configuration
+  bodyPoints: WorkoutBodyPoints = {
+    points_per_video: 15,
+    completion_bonus: 75
+  };
+  showBodyPointsConfig = false;
+
   // Workout configuration
   workoutName = '';
   workoutType: 'traditional' | 'emom' | 'amrap' | 'circuit' | 'tabata' | 'superset' | 'custom' = 'traditional';
@@ -75,6 +89,7 @@ export class WorkoutBuilderComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private workoutService: WorkoutService,
+    private workoutBuilderService: WorkoutBuilderService,
     private httpService: HttpService
   ) {}
 
@@ -126,6 +141,45 @@ export class WorkoutBuilderComponent implements OnInit {
       (video.muscle_groups && video.muscle_groups.toLowerCase().includes(term)) ||
       (video.workout_type && video.workout_type.toLowerCase().includes(term))
     );
+  }
+
+  // Template Selection Methods
+  openTemplateSelector(): void {
+    this.showTemplateSelector = true;
+  }
+
+  closeTemplateSelector(): void {
+    this.showTemplateSelector = false;
+  }
+
+  onTemplateSelected(template: WorkoutTemplate): void {
+    this.selectedTemplate = template;
+    this.workoutName = `${template.name} Workout`;
+    this.showTemplateSelector = false;
+  }
+
+  clearTemplate(): void {
+    this.selectedTemplate = null;
+  }
+
+  // BodyPoints Configuration Methods
+  toggleBodyPointsConfig(): void {
+    this.showBodyPointsConfig = !this.showBodyPointsConfig;
+  }
+
+  calculateTotalBodyPoints(): number {
+    const videoPoints = this.workoutExercises.length * this.bodyPoints.points_per_video;
+    return videoPoints + this.bodyPoints.completion_bonus;
+  }
+
+  calculateEstimatedDuration(): number {
+    let totalSeconds = 0;
+    for (const exercise of this.workoutExercises) {
+      // Duration per set + rest time
+      const setDuration = (exercise.duration_seconds || 60) + (exercise.rest_timer_seconds || 60);
+      totalSeconds += setDuration * (exercise.sets || 3);
+    }
+    return Math.round(totalSeconds / 60); // Return minutes
   }
 
   // Custom Template Methods

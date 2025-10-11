@@ -1,0 +1,187 @@
+<div class="template-selector-modal" *ngIf="!showCreateModal">
+  <div class="modal-header">
+    <h2>Select Workout Template</h2>
+    <button class="close-btn" (click)="close()" aria-label="Close">
+      <span>&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="error">
+      {{ error }}
+    </div>
+
+    <!-- Loading Indicator -->
+    <div class="loading-container" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p>Loading templates...</p>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tabs" *ngIf="!isLoading">
+      <button
+        class="tab-btn"
+        [class.active]="activeTab === 'system'"
+        (click)="switchTab('system')"
+      >
+        System Templates
+      </button>
+      <button
+        class="tab-btn"
+        [class.active]="activeTab === 'custom'"
+        (click)="switchTab('custom')"
+      >
+        Custom Templates
+      </button>
+    </div>
+
+    <!-- Filter Dropdown -->
+    <div class="filter-container" *ngIf="!isLoading">
+      <label for="template-filter">Filter by type:</label>
+      <select
+        id="template-filter"
+        [(ngModel)]="filterType"
+        (change)="onFilterChange(filterType)"
+        class="filter-select"
+      >
+        <option value="all">All Types</option>
+        <option value="strength">Strength</option>
+        <option value="cardio">Cardio</option>
+        <option value="hiit">HIIT</option>
+        <option value="mobility">Mobility</option>
+        <option value="recovery">Recovery</option>
+        <option value="custom">Custom</option>
+      </select>
+    </div>
+
+    <!-- System Templates Tab -->
+    <div class="templates-grid" *ngIf="activeTab === 'system' && !isLoading">
+      <div
+        *ngFor="let template of filteredSystemTemplates"
+        class="template-card"
+        [class.selected]="selectedTemplate?.id === template.id"
+        (click)="selectTemplate(template)"
+      >
+        <div class="template-icon" [style.background-color]="getCategoryInfo(template.type)?.color">
+          {{ getCategoryInfo(template.type)?.icon }}
+        </div>
+        <div class="template-info">
+          <h3>{{ template.name }}</h3>
+          <p class="template-type">{{ getCategoryInfo(template.type)?.name }}</p>
+          <p class="template-description">{{ template.description || getCategoryInfo(template.type)?.description }}</p>
+        </div>
+        <div class="template-badge">
+          <span class="system-badge">System</span>
+        </div>
+      </div>
+
+      <div *ngIf="filteredSystemTemplates.length === 0" class="no-templates">
+        <p>No system templates match your filter.</p>
+      </div>
+    </div>
+
+    <!-- Custom Templates Tab -->
+    <div class="templates-grid" *ngIf="activeTab === 'custom' && !isLoading">
+      <div
+        *ngFor="let template of filteredCustomTemplates"
+        class="template-card"
+        [class.selected]="selectedTemplate?.id === template.id"
+        (click)="selectTemplate(template)"
+      >
+        <div class="template-icon" [style.background-color]="getCategoryInfo(template.type)?.color">
+          {{ getCategoryInfo(template.type)?.icon }}
+        </div>
+        <div class="template-info">
+          <h3>{{ template.name }}</h3>
+          <p class="template-type">{{ getCategoryInfo(template.type)?.name }}</p>
+          <p class="template-description">{{ template.description }}</p>
+        </div>
+        <div class="template-badge">
+          <span class="custom-badge">Custom</span>
+        </div>
+      </div>
+
+      <div class="create-template-card" (click)="openCreateModal()">
+        <div class="create-icon">+</div>
+        <p>Create Custom Template</p>
+      </div>
+
+      <div *ngIf="filteredCustomTemplates.length === 0 && !isLoading" class="no-templates">
+        <p>No custom templates yet. Create your first one!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create Custom Template Modal -->
+<div class="create-modal" *ngIf="showCreateModal">
+  <div class="modal-header">
+    <h2>Create Custom Template</h2>
+    <button class="close-btn" (click)="closeCreateModal()" aria-label="Close">
+      <span>&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="error">
+      {{ error }}
+    </div>
+
+    <form (ngSubmit)="createCustomTemplate()" class="create-form">
+      <div class="form-group">
+        <label for="template-name">Template Name *</label>
+        <input
+          type="text"
+          id="template-name"
+          [(ngModel)]="newTemplate.name"
+          name="name"
+          placeholder="e.g., Upper Body Strength"
+          required
+          class="form-control"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="template-type">Template Type *</label>
+        <select
+          id="template-type"
+          [(ngModel)]="newTemplate.type"
+          name="type"
+          class="form-control"
+          required
+        >
+          <option value="strength">Strength</option>
+          <option value="cardio">Cardio</option>
+          <option value="hiit">HIIT</option>
+          <option value="mobility">Mobility</option>
+          <option value="recovery">Recovery</option>
+          <option value="custom">Custom</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="template-description">Description (Optional)</label>
+        <textarea
+          id="template-description"
+          [(ngModel)]="newTemplate.description"
+          name="description"
+          placeholder="Describe your template..."
+          rows="3"
+          class="form-control"
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeCreateModal()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="isLoading || !newTemplate.name.trim()">
+          <span *ngIf="isLoading" class="spinner-small"></span>
+          {{ isLoading ? 'Creating...' : 'Create Template' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

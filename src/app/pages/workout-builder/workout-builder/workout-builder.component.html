@@ -23,6 +23,26 @@
 
     <!-- Workout Configuration -->
     <div class="workout-config">
+      <!-- Template Selection Row -->
+      <div class="config-row template-row">
+        <div class="template-section">
+          <label>📋 Workout Template</label>
+          <button
+            *ngIf="!selectedTemplate"
+            class="btn-select-template"
+            (click)="openTemplateSelector()"
+            type="button"
+          >
+            ➕ Select Template
+          </button>
+          <div *ngIf="selectedTemplate" class="selected-template-badge">
+            <span class="template-icon">{{ selectedTemplate.type === 'strength' ? '💪' : selectedTemplate.type === 'cardio' ? '🏃' : selectedTemplate.type === 'hiit' ? '⚡' : selectedTemplate.type === 'mobility' ? '🧘' : selectedTemplate.type === 'recovery' ? '💆' : '⚙️' }}</span>
+            <span class="template-name">{{ selectedTemplate.name }}</span>
+            <button class="btn-clear-template" (click)="clearTemplate()" type="button">✕</button>
+          </div>
+        </div>
+      </div>
+
       <div class="config-row">
         <div class="config-item">
           <label>Workout Name *</label>
@@ -43,7 +63,66 @@
           </select>
         </div>
       </div>
+
+      <!-- BodyPoints Configuration Row -->
+      <div class="config-row bodypoints-row">
+        <div class="bodypoints-section">
+          <button
+            class="btn-toggle-bodypoints"
+            (click)="toggleBodyPointsConfig()"
+            type="button"
+          >
+            <span class="bodypoints-icon">⭐</span>
+            BodyPoints Configuration
+            <span class="toggle-arrow">{{ showBodyPointsConfig ? '▼' : '▶' }}</span>
+          </button>
+
+          <div *ngIf="showBodyPointsConfig" class="bodypoints-config-panel">
+            <div class="bodypoints-grid">
+              <div class="config-field">
+                <label>Points Per Video</label>
+                <input
+                  type="number"
+                  [(ngModel)]="bodyPoints.points_per_video"
+                  min="1"
+                  max="100"
+                  placeholder="15"
+                />
+              </div>
+              <div class="config-field">
+                <label>Completion Bonus</label>
+                <input
+                  type="number"
+                  [(ngModel)]="bodyPoints.completion_bonus"
+                  min="0"
+                  max="500"
+                  placeholder="75"
+                />
+              </div>
+            </div>
+
+            <div class="bodypoints-summary">
+              <div class="summary-item">
+                <span class="summary-label">📊 Total Points:</span>
+                <span class="summary-value">{{ calculateTotalBodyPoints() }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">⏱️ Est. Duration:</span>
+                <span class="summary-value">{{ calculateEstimatedDuration() }} min</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Template Selector Modal -->
+    <app-template-selector
+      *ngIf="showTemplateSelector"
+      [coachId]="coachId"
+      (templateSelected)="onTemplateSelected($event)"
+      (closeModal)="closeTemplateSelector()"
+    ></app-template-selector>
 
     <!-- CUSTOM TEMPLATE BUILDER (Only for Custom Type) -->
     <div *ngIf="workoutType === 'custom'" class="custom-template-builder">
