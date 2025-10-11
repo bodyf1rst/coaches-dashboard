@@ -12,6 +12,7 @@ interface Video {
   video_title: string;
   thumbnail_url: string;
   video_duration: number;
+  duration?: string;
   muscle_groups?: string;
   workout_type?: string;
 }
@@ -47,6 +48,12 @@ export class WorkoutBuilderComponent implements OnInit {
   filteredVideos: Video[] = [];
   searchTerm = '';
   loadingVideos = false;
+
+  // Filter options
+  selectedMuscleGroup = '';
+  selectedWorkoutType = '';
+  muscleGroupOptions = ['All', 'Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core', 'Full Body'];
+  workoutTypeOptions = ['All', 'Strength', 'Cardio', 'HIIT', 'Mobility', 'Recovery'];
 
   // Workout exercises
   workoutExercises: ExerciseConfig[] = [];
@@ -112,11 +119,25 @@ export class WorkoutBuilderComponent implements OnInit {
 
   filterVideos(): void {
     const term = this.searchTerm.toLowerCase();
-    this.filteredVideos = this.videos.filter(video =>
-      video.video_title.toLowerCase().includes(term) ||
-      (video.muscle_groups && video.muscle_groups.toLowerCase().includes(term)) ||
-      (video.workout_type && video.workout_type.toLowerCase().includes(term))
-    );
+    this.filteredVideos = this.videos.filter(video => {
+      // Text search filter
+      const matchesSearch = !term ||
+        video.video_title.toLowerCase().includes(term) ||
+        (video.muscle_groups && video.muscle_groups.toLowerCase().includes(term)) ||
+        (video.workout_type && video.workout_type.toLowerCase().includes(term));
+
+      // Muscle group filter
+      const matchesMuscleGroup = !this.selectedMuscleGroup ||
+        this.selectedMuscleGroup === 'All' ||
+        (video.muscle_groups && video.muscle_groups.toLowerCase().includes(this.selectedMuscleGroup.toLowerCase()));
+
+      // Workout type filter
+      const matchesWorkoutType = !this.selectedWorkoutType ||
+        this.selectedWorkoutType === 'All' ||
+        (video.workout_type && video.workout_type.toLowerCase().includes(this.selectedWorkoutType.toLowerCase()));
+
+      return matchesSearch && matchesMuscleGroup && matchesWorkoutType;
+    });
   }
 
   // Template Selection Methods

@@ -376,6 +376,31 @@
             />
           </div>
 
+          <!-- Filter Dropdowns -->
+          <div class="filter-dropdowns">
+            <select
+              [(ngModel)]="selectedMuscleGroup"
+              (change)="filterVideos()"
+              class="filter-select"
+            >
+              <option value="">💪 All Muscles</option>
+              <option *ngFor="let muscle of muscleGroupOptions" [value]="muscle">
+                {{ muscle }}
+              </option>
+            </select>
+
+            <select
+              [(ngModel)]="selectedWorkoutType"
+              (change)="filterVideos()"
+              class="filter-select"
+            >
+              <option value="">🏋️ All Types</option>
+              <option *ngFor="let type of workoutTypeOptions" [value]="type">
+                {{ type }}
+              </option>
+            </select>
+          </div>
+
           <!-- Videos -->
           <div *ngIf="loadingVideos" class="loading-videos">
             <p>Loading videos...</p>
@@ -405,6 +430,7 @@
                 <p class="video-meta">
                   <span *ngIf="video.muscle_groups">💪 {{ video.muscle_groups }}</span>
                   <span *ngIf="video.workout_type">🏋️ {{ video.workout_type }}</span>
+                  <span *ngIf="video.duration">⏱️ {{ video.duration }}</span>
                 </p>
               </div>
               <div class="drag-handle" cdkDragHandle>⋮⋮</div>
@@ -421,65 +447,7 @@
     <!-- Two Panel Layout (Traditional Types) -->
     <div *ngIf="workoutType !== 'custom'" class="builder-panels">
 
-      <!-- LEFT PANEL: Video Library -->
-      <div class="video-library-panel">
-        <div class="panel-header">
-          <h2>📹 Video Library</h2>
-          <p class="panel-subtitle">Drag videos to add exercises</p>
-        </div>
-
-        <!-- Search -->
-        <div class="search-box">
-          <input
-            type="text"
-            [(ngModel)]="searchTerm"
-            (input)="filterVideos()"
-            placeholder="🔍 Search by title, muscle group, or type..."
-            class="search-input"
-          />
-        </div>
-
-        <!-- Videos -->
-        <div *ngIf="loadingVideos" class="loading-videos">
-          <p>Loading videos...</p>
-        </div>
-
-        <div
-          *ngIf="!loadingVideos"
-          class="video-list"
-          cdkDropList
-          id="videoList"
-          [cdkDropListData]="filteredVideos"
-          [cdkDropListConnectedTo]="['workoutList']"
-        >
-          <div
-            *ngFor="let video of filteredVideos"
-            class="video-card"
-            cdkDrag
-          >
-            <img
-              [src]="video.thumbnail_url"
-              [alt]="video.video_title"
-              class="video-thumbnail"
-              onerror="this.src='assets/images/placeholder.png'"
-            />
-            <div class="video-info">
-              <h4>{{ video.video_title }}</h4>
-              <p class="video-meta">
-                <span *ngIf="video.muscle_groups">💪 {{ video.muscle_groups }}</span>
-                <span *ngIf="video.workout_type">🏋️ {{ video.workout_type }}</span>
-              </p>
-            </div>
-            <div class="drag-handle" cdkDragHandle>⋮⋮</div>
-          </div>
-
-          <div *ngIf="filteredVideos.length === 0" class="no-videos">
-            <p>No videos found</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT PANEL: Workout Builder -->
+      <!-- LEFT PANEL: Workout Builder -->
       <div class="workout-builder-panel">
         <div class="panel-header">
           <h2>💪 Workout Exercises</h2>
@@ -597,6 +565,64 @@
                 ></textarea>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL: Video Library -->
+      <div class="video-library-panel">
+        <div class="panel-header">
+          <h2>📹 Video Library</h2>
+          <p class="panel-subtitle">Drag videos to add exercises</p>
+        </div>
+
+        <!-- Search -->
+        <div class="search-box">
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            (input)="filterVideos()"
+            placeholder="🔍 Search by title, muscle group, or type..."
+            class="search-input"
+          />
+        </div>
+
+        <!-- Videos -->
+        <div *ngIf="loadingVideos" class="loading-videos">
+          <p>Loading videos...</p>
+        </div>
+
+        <div
+          *ngIf="!loadingVideos"
+          class="video-list"
+          cdkDropList
+          id="videoList"
+          [cdkDropListData]="filteredVideos"
+          [cdkDropListConnectedTo]="['workoutList']"
+        >
+          <div
+            *ngFor="let video of filteredVideos"
+            class="video-card"
+            cdkDrag
+          >
+            <img
+              [src]="video.thumbnail_url"
+              [alt]="video.video_title"
+              class="video-thumbnail"
+              onerror="this.src='assets/images/placeholder.png'"
+            />
+            <div class="video-info">
+              <h4>{{ video.video_title }}</h4>
+              <p class="video-meta">
+                <span *ngIf="video.muscle_groups">💪 {{ video.muscle_groups }}</span>
+                <span *ngIf="video.workout_type">🏋️ {{ video.workout_type }}</span>
+              </p>
+            </div>
+            <div class="drag-handle" cdkDragHandle>⋮⋮</div>
+          </div>
+
+          <div *ngIf="filteredVideos.length === 0" class="no-videos">
+            <p>No videos found</p>
           </div>
         </div>
       </div>
