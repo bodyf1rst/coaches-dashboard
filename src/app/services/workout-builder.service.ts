@@ -99,6 +99,22 @@ export class WorkoutBuilderService {
     );
   }
 
+  /**
+   * List all workouts for a coach
+   * @param coachId - The coach's ID
+   * @returns Promise of workouts list response
+   */
+  async listWorkouts(coachId: number): Promise<{success: boolean, workouts: any[]}> {
+    const url = `${this.apiUrl}/workouts/list.php?coach_id=${coachId}`;
+    return this.http.get<{success: boolean, workouts: any[]}>(url).toPromise().then(
+      response => response || {success: false, workouts: []},
+      error => {
+        console.error('Error listing workouts:', error);
+        return {success: false, workouts: []};
+      }
+    );
+  }
+
   // ============================================================================
   // CATEGORY 3: WORKOUT PLAN MANAGEMENT
   // ============================================================================

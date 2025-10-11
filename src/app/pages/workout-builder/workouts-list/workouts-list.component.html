@@ -1,0 +1,227 @@
+<!-- Workouts List Component Template -->
+<div class="workouts-list-container">
+
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1>My Workouts</h1>
+      <p class="subtitle">Manage and organize your workout library</p>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-primary" (click)="createNewWorkout()">
+        <i class="fas fa-plus"></i>
+        Create New Workout
+      </button>
+    </div>
+  </div>
+
+  <!-- Toolbar Section -->
+  <div class="toolbar">
+    <!-- Search -->
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input
+        type="text"
+        placeholder="Search workouts..."
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange()"
+      />
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <!-- Type Filter -->
+      <select
+        class="filter-select"
+        [(ngModel)]="filterType"
+        (ngModelChange)="onFilterChange()"
+      >
+        <option value="all">All Types</option>
+        <option *ngFor="let category of templateCategories" [value]="category.type">
+          {{ category.icon }} {{ category.label }}
+        </option>
+      </select>
+
+      <!-- Muscle Group Filter -->
+      <select
+        class="filter-select"
+        [(ngModel)]="filterMuscleGroup"
+        (ngModelChange)="onFilterChange()"
+      >
+        <option *ngFor="let group of muscleGroups" [value]="group.value">
+          {{ group.label }}
+        </option>
+      </select>
+
+      <!-- Duration Filter -->
+      <select
+        class="filter-select"
+        [(ngModel)]="filterDuration"
+        (ngModelChange)="onFilterChange()"
+      >
+        <option *ngFor="let range of durationRanges" [value]="range.value">
+          {{ range.label }}
+        </option>
+      </select>
+
+      <!-- Sort -->
+      <select
+        class="filter-select"
+        [(ngModel)]="sortBy"
+        (ngModelChange)="onSortChange()"
+      >
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+        <option value="name">Name (A-Z)</option>
+        <option value="exercises">Most Exercises</option>
+      </select>
+    </div>
+
+    <!-- Bulk Actions -->
+    <div class="bulk-actions" *ngIf="selectedWorkouts.size > 0">
+      <span class="selection-count">
+        {{ selectedWorkouts.size }} selected
+      </span>
+      <button
+        class="btn btn-secondary"
+        (click)="createPlanFromSelected()"
+        [disabled]="selectedWorkouts.size < 2 || selectedWorkouts.size > 7"
+      >
+        <i class="fas fa-layer-group"></i>
+        Create Plan
+      </button>
+      <button class="btn btn-ghost" (click)="deselectAll()">
+        Clear Selection
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading workouts...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && errorMessage" class="error-state">
+    <i class="fas fa-exclamation-circle"></i>
+    <p>{{ errorMessage }}</p>
+    <button class="btn btn-secondary" (click)="loadWorkouts()">
+      Try Again
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && !errorMessage && filteredWorkouts.length === 0 && workouts.length === 0" class="empty-state">
+    <i class="fas fa-dumbbell"></i>
+    <h3>No Workouts Yet</h3>
+    <p>Create your first workout to get started!</p>
+    <button class="btn btn-primary" (click)="createNewWorkout()">
+      <i class="fas fa-plus"></i>
+      Create Workout
+    </button>
+  </div>
+
+  <!-- No Results State -->
+  <div *ngIf="!isLoading && !errorMessage && filteredWorkouts.length === 0 && workouts.length > 0" class="empty-state">
+    <i class="fas fa-search"></i>
+    <h3>No Workouts Found</h3>
+    <p>Try adjusting your search or filters</p>
+  </div>
+
+  <!-- Workouts Grid -->
+  <div *ngIf="!isLoading && !errorMessage && filteredWorkouts.length > 0" class="workouts-grid">
+
+    <!-- Select All Checkbox -->
+    <div class="select-all-bar">
+      <label class="checkbox-container">
+        <input
+          type="checkbox"
+          [checked]="allVisibleSelected"
+          (change)="toggleSelectAll()"
+        />
+        <span class="checkmark"></span>
+        <span class="label-text">Select All ({{ filteredWorkouts.length }})</span>
+      </label>
+    </div>
+
+    <!-- Workout Cards -->
+    <div class="workout-card" *ngFor="let workout of filteredWorkouts">
+
+      <!-- Selection Checkbox -->
+      <div class="card-checkbox">
+        <label class="checkbox-container" (click)="$event.stopPropagation()">
+          <input
+            type="checkbox"
+            [checked]="isSelected(workout.id)"
+            (change)="toggleSelection(workout.id)"
+          />
+          <span class="checkmark"></span>
+        </label>
+      </div>
+
+      <!-- Card Content (Clickable) -->
+      <div class="card-content" (click)="viewWorkout(workout.id)">
+
+        <!-- Category Badge -->
+        <div class="category-badge" [style.background-color]="getTemplateCategory(workout)?.color">
+          <span>{{ getTemplateCategory(workout)?.icon }}</span>
+          <span>{{ getTemplateCategory(workout)?.label }}</span>
+        </div>
+
+        <!-- Workout Name -->
+        <h3 class="workout-name">{{ workout.name }}</h3>
+
+        <!-- Workout Stats -->
+        <div class="workout-stats">
+          <div class="stat">
+            <i class="fas fa-video"></i>
+            <span>{{ workout.exercises?.length || 0 }} exercises</span>
+          </div>
+          <div class="stat" *ngIf="workout.template">
+            <i class="fas fa-file-alt"></i>
+            <span>{{ workout.template.name }}</span>
+          </div>
+          <div class="stat" *ngIf="getEstimatedDuration(workout) > 0">
+            <i class="fas fa-clock"></i>
+            <span>~{{ getEstimatedDuration(workout) }} min</span>
+          </div>
+        </div>
+
+        <!-- BodyPoints Config -->
+        <div class="bodypoints-info" *ngIf="workout.bodypoints">
+          <i class="fas fa-star"></i>
+          <span>{{ workout.bodypoints.points_per_video }} pts/video + {{ workout.bodypoints.completion_bonus }} bonus</span>
+        </div>
+
+        <!-- Date -->
+        <div class="workout-date">
+          <i class="fas fa-calendar"></i>
+          <span>Created {{ formatDate(workout.created_at) }}</span>
+        </div>
+      </div>
+
+      <!-- Card Actions -->
+      <div class="card-actions">
+        <button
+          class="btn-icon"
+          (click)="viewWorkout(workout.id)"
+          title="Edit Workout"
+        >
+          <i class="fas fa-edit"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Info -->
+  <div *ngIf="!isLoading && filteredWorkouts.length > 0" class="footer-info">
+    <p>
+      Showing {{ filteredWorkouts.length }} of {{ workouts.length }} workouts
+      <span *ngIf="selectedWorkouts.size > 0">
+        • {{ selectedWorkouts.size }} selected
+      </span>
+    </p>
+  </div>
+
+</div>

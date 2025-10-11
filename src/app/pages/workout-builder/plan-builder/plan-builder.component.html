@@ -1,0 +1,295 @@
+<!-- Plan Builder Component Template -->
+<div class="plan-builder-container">
+
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1>Create Workout Plan</h1>
+      <p class="subtitle">Organize workouts into a structured training plan</p>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-ghost" (click)="cancel()" [disabled]="isSaving">
+        Cancel
+      </button>
+      <button
+        class="btn btn-primary"
+        (click)="savePlan()"
+        [disabled]="!canSave()"
+      >
+        <i class="fas fa-save"></i>
+        {{ isSaving ? 'Saving...' : 'Save Plan' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading workouts...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && errorMessage && workouts.length === 0" class="error-state">
+    <i class="fas fa-exclamation-circle"></i>
+    <p>{{ errorMessage }}</p>
+    <button class="btn btn-secondary" (click)="cancel()">
+      Back to Workouts
+    </button>
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="success-message">
+    <i class="fas fa-check-circle"></i>
+    <p>{{ successMessage }}</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading && workouts.length > 0" class="plan-content">
+
+    <!-- Plan Configuration Section -->
+    <div class="config-section">
+      <div class="section-header">
+        <h2>Plan Details</h2>
+      </div>
+
+      <div class="config-form">
+        <!-- Plan Name -->
+        <div class="form-group">
+          <label for="planName">Plan Name *</label>
+          <input
+            type="text"
+            id="planName"
+            [(ngModel)]="planName"
+            placeholder="Enter plan name (e.g., 'Week 1 Strength Training')"
+            class="form-control"
+            [disabled]="isSaving"
+          />
+        </div>
+
+        <!-- Plan Stats -->
+        <div class="plan-stats">
+          <div class="stat-item">
+            <i class="fas fa-dumbbell"></i>
+            <div class="stat-content">
+              <span class="stat-value">{{ workouts.length }}</span>
+              <span class="stat-label">{{ getWorkoutCountStatus() }}</span>
+            </div>
+          </div>
+          <div class="stat-item">
+            <i class="fas fa-clock"></i>
+            <div class="stat-content">
+              <span class="stat-value">~{{ getTotalDuration() }} min</span>
+              <span class="stat-label">Total Duration</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workouts Section (Drag & Drop) -->
+    <div class="workouts-section">
+      <div class="section-header">
+        <h2>Workout Order</h2>
+        <p class="help-text">
+          <i class="fas fa-info-circle"></i>
+          Drag to reorder workouts
+        </p>
+      </div>
+
+      <div
+        cdkDropList
+        class="workout-list"
+        (cdkDropListDropped)="onWorkoutDrop($event)"
+      >
+        <div
+          *ngFor="let workout of workouts; let i = index"
+          class="workout-item"
+          cdkDrag
+        >
+          <!-- Drag Handle -->
+          <div class="drag-handle" cdkDragHandle>
+            <i class="fas fa-grip-vertical"></i>
+          </div>
+
+          <!-- Workout Number -->
+          <div class="workout-number">
+            <span>Day {{ i + 1 }}</span>
+          </div>
+
+          <!-- Workout Info -->
+          <div class="workout-info">
+            <h3>{{ workout.name }}</h3>
+            <div class="workout-meta">
+              <span><i class="fas fa-video"></i> {{ workout.exercises?.length || 0 }} exercises</span>
+              <span *ngIf="workout.template">
+                <i class="fas fa-file-alt"></i> {{ workout.template.name }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Remove Button -->
+          <button
+            class="btn-remove"
+            (click)="removeWorkout(i)"
+            [disabled]="workouts.length <= MIN_WORKOUTS || isSaving"
+            [title]="workouts.length <= MIN_WORKOUTS ? 'Cannot remove - minimum ' + MIN_WORKOUTS + ' workouts required' : 'Remove workout'"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+
+          <!-- Drag Preview -->
+          <div class="workout-drag-preview" *cdkDragPreview>
+            <div class="preview-content">
+              <i class="fas fa-grip-vertical"></i>
+              <span>{{ workout.name }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty placeholder when dragging -->
+        <div class="workout-placeholder" *cdkDragPlaceholder></div>
+      </div>
+    </div>
+
+    <!-- Assignment Section -->
+    <div class="assignment-section">
+      <div class="section-header">
+        <h2>Assignment (Optional)</h2>
+      </div>
+
+      <div class="assignment-form">
+        <!-- Assignment Type Selector -->
+        <div class="form-group">
+          <label>Assign To</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input
+                type="radio"
+                name="assignmentType"
+                value="none"
+                [(ngModel)]="assignmentType"
+                [disabled]="isSaving"
+              />
+              <span>Don't Assign</span>
+            </label>
+            <label class="radio-label">
+              <input
+                type="radio"
+                name="assignmentType"
+                value="client"
+                [(ngModel)]="assignmentType"
+                [disabled]="isSaving"
+              />
+              <span>Single Client</span>
+            </label>
+            <label class="radio-label">
+              <input
+                type="radio"
+                name="assignmentType"
+                value="organization"
+                [(ngModel)]="assignmentType"
+                [disabled]="isSaving"
+              />
+              <span>Organization (All Clients)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Client Selection (if client type) -->
+        <div *ngIf="assignmentType === 'client'" class="form-group">
+          <label for="clientSelect">Select Client *</label>
+          <input
+            type="number"
+            id="clientSelect"
+            [(ngModel)]="selectedClientId"
+            placeholder="Enter client ID"
+            class="form-control"
+            [disabled]="isSaving"
+          />
+          <small class="help-text">TODO: Replace with client dropdown</small>
+        </div>
+
+        <!-- Organization Selection (if organization type) -->
+        <div *ngIf="assignmentType === 'organization'" class="form-group">
+          <label for="organizationSelect">Select Organization *</label>
+          <input
+            type="number"
+            id="organizationSelect"
+            [(ngModel)]="selectedOrganizationId"
+            placeholder="Enter organization ID"
+            class="form-control"
+            [disabled]="isSaving"
+          />
+          <small class="help-text">TODO: Replace with organization dropdown</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Schedule Section -->
+    <div class="schedule-section">
+      <div class="section-header">
+        <h2>Schedule (Optional)</h2>
+      </div>
+
+      <div class="schedule-form">
+        <!-- Enable Scheduling Toggle -->
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              [(ngModel)]="enableScheduling"
+              [disabled]="assignmentType === 'none' || isSaving"
+            />
+            <span>Enable automatic scheduling</span>
+          </label>
+          <small class="help-text" *ngIf="assignmentType === 'none'">
+            Assignment required for scheduling
+          </small>
+        </div>
+
+        <!-- Schedule Configuration (if enabled) -->
+        <div *ngIf="enableScheduling && assignmentType !== 'none'" class="schedule-config">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="scheduleDay">Day</label>
+              <select
+                id="scheduleDay"
+                [(ngModel)]="scheduleDay"
+                class="form-control"
+                [disabled]="isSaving"
+              >
+                <option *ngFor="let day of DAYS_OF_WEEK" [value]="day">
+                  {{ day }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="scheduleTime">Time</label>
+              <input
+                type="time"
+                id="scheduleTime"
+                [(ngModel)]="scheduleTime"
+                class="form-control"
+                [disabled]="isSaving"
+              />
+            </div>
+          </div>
+
+          <div class="schedule-preview">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Plan will be scheduled every {{ scheduleDay }} at {{ scheduleTime }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Validation Messages -->
+    <div *ngIf="errorMessage" class="validation-error">
+      <i class="fas fa-exclamation-triangle"></i>
+      <p>{{ errorMessage }}</p>
+    </div>
+
+  </div>
+
+</div>

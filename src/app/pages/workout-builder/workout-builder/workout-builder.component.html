@@ -2,24 +2,24 @@
   <!-- Header -->
   <div class="header">
     <button class="btn-back" (click)="goBack()">
-      ← Back to Plans
+      ← Back to Workout Builder
     </button>
-    <h1 *ngIf="plan">🎯 Building Workout for: {{ plan.name }}</h1>
+    <h1>💪 Create New Workout</h1>
   </div>
 
   <!-- Loading State -->
   <div *ngIf="loading" class="loading">
-    <p>Loading workout plan...</p>
+    <p>Loading videos...</p>
   </div>
 
   <!-- Error State -->
   <div *ngIf="error" class="error-message">
     <p>{{ error }}</p>
-    <button (click)="loadPlan()">Retry</button>
+    <button (click)="loadVideos()">Retry</button>
   </div>
 
   <!-- Main Builder -->
-  <div *ngIf="!loading && !error && plan" class="builder-main">
+  <div *ngIf="!loading && !error" class="builder-main">
 
     <!-- Workout Configuration -->
     <div class="workout-config">

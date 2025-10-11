@@ -1,0 +1,547 @@
+/**
+ * Workouts List Component Styles
+ * Created: October 11, 2025
+ * Phase 3: Frontend Implementation - Task 6
+ */
+
+.workouts-list-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  // ============================================================================
+  // HEADER SECTION
+  // ============================================================================
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #e0e0e0;
+
+    .header-left {
+      h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+      }
+
+      .subtitle {
+        margin: 0;
+        font-size: 1rem;
+        color: #7f8c8d;
+      }
+    }
+
+    .header-right {
+      .btn-primary {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+      }
+    }
+  }
+
+  // ============================================================================
+  // TOOLBAR SECTION
+  // ============================================================================
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+
+    .search-box {
+      flex: 1;
+      min-width: 250px;
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      i {
+        position: absolute;
+        left: 1rem;
+        color: #7f8c8d;
+      }
+
+      input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+
+        &:focus {
+          outline: none;
+          border-color: #3498db;
+          box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+      }
+    }
+
+    .filters {
+      display: flex;
+      gap: 0.75rem;
+
+      .filter-select {
+        padding: 0.75rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background: white;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+          border-color: #3498db;
+        }
+
+        &:focus {
+          outline: none;
+          border-color: #3498db;
+          box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+      }
+    }
+
+    .bulk-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-left: auto;
+
+      .selection-count {
+        padding: 0.5rem 1rem;
+        background: #3498db;
+        color: white;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+    }
+  }
+
+  // ============================================================================
+  // STATE DISPLAYS
+  // ============================================================================
+
+  .loading-state,
+  .error-state,
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+
+    i {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      color: #95a5a6;
+    }
+
+    h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.5rem;
+      color: #2c3e50;
+    }
+
+    p {
+      margin: 0 0 1.5rem 0;
+      font-size: 1rem;
+      color: #7f8c8d;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  .error-state {
+    i {
+      color: #e74c3c;
+    }
+  }
+
+  // ============================================================================
+  // SELECT ALL BAR
+  // ============================================================================
+
+  .select-all-bar {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid #e0e0e0;
+    border-bottom: none;
+  }
+
+  // ============================================================================
+  // WORKOUTS GRID
+  // ============================================================================
+
+  .workouts-grid {
+    .workout-card {
+      display: grid;
+      grid-template-columns: 50px 1fr auto;
+      gap: 1rem;
+      padding: 1.5rem;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-top: none;
+      transition: all 0.2s;
+
+      &:first-of-type {
+        border-top: 1px solid #e0e0e0;
+        border-radius: 0;
+      }
+
+      &:last-of-type {
+        border-radius: 0 0 8px 8px;
+      }
+
+      &:hover {
+        background: #f8f9fa;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .card-checkbox {
+        display: flex;
+        align-items: flex-start;
+        padding-top: 0.5rem;
+      }
+
+      .card-content {
+        cursor: pointer;
+        flex: 1;
+
+        .category-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.4rem 0.8rem;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: white;
+          margin-bottom: 1rem;
+        }
+
+        .workout-name {
+          margin: 0 0 1rem 0;
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: #2c3e50;
+        }
+
+        .workout-stats {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1.5rem;
+          margin-bottom: 0.75rem;
+
+          .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+
+            i {
+              color: #3498db;
+            }
+          }
+        }
+
+        .bodypoints-info {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 0.75rem;
+          background: #fff3cd;
+          border-radius: 6px;
+          font-size: 0.85rem;
+          color: #856404;
+          margin-bottom: 0.75rem;
+          width: fit-content;
+
+          i {
+            color: #f39c12;
+          }
+        }
+
+        .workout-date {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.85rem;
+          color: #95a5a6;
+
+          i {
+            font-size: 0.8rem;
+          }
+        }
+      }
+
+      .card-actions {
+        display: flex;
+        align-items: flex-start;
+        padding-top: 0.5rem;
+
+        .btn-icon {
+          padding: 0.5rem;
+          background: transparent;
+          border: 1px solid #ddd;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.2s;
+          color: #7f8c8d;
+
+          &:hover {
+            background: #3498db;
+            border-color: #3498db;
+            color: white;
+          }
+
+          i {
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+  }
+
+  // ============================================================================
+  // CHECKBOX STYLES
+  // ============================================================================
+
+  .checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    user-select: none;
+
+    input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+
+      &:checked ~ .checkmark {
+        background-color: #3498db;
+        border-color: #3498db;
+
+        &:after {
+          display: block;
+        }
+      }
+    }
+
+    .checkmark {
+      position: relative;
+      height: 20px;
+      width: 20px;
+      background-color: white;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      transition: all 0.2s;
+
+      &:after {
+        content: "";
+        position: absolute;
+        display: none;
+        left: 6px;
+        top: 2px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+    }
+
+    &:hover .checkmark {
+      border-color: #3498db;
+    }
+
+    .label-text {
+      font-size: 0.95rem;
+      color: #2c3e50;
+      font-weight: 500;
+    }
+  }
+
+  // ============================================================================
+  // FOOTER INFO
+  // ============================================================================
+
+  .footer-info {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 0 0 8px 8px;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+    text-align: center;
+
+    p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #7f8c8d;
+
+      span {
+        font-weight: 600;
+        color: #3498db;
+      }
+    }
+  }
+
+  // ============================================================================
+  // BUTTON STYLES
+  // ============================================================================
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &.btn-primary {
+      background: #3498db;
+      color: white;
+
+      &:hover {
+        background: #2980b9;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+      }
+
+      &:disabled {
+        background: #bdc3c7;
+        cursor: not-allowed;
+        transform: none;
+      }
+    }
+
+    &.btn-secondary {
+      background: white;
+      color: #3498db;
+      border: 1px solid #3498db;
+
+      &:hover {
+        background: #3498db;
+        color: white;
+      }
+
+      &:disabled {
+        background: #f8f9fa;
+        color: #bdc3c7;
+        border-color: #bdc3c7;
+        cursor: not-allowed;
+      }
+    }
+
+    &.btn-ghost {
+      background: transparent;
+      color: #7f8c8d;
+
+      &:hover {
+        background: #f8f9fa;
+        color: #2c3e50;
+      }
+    }
+  }
+
+  // ============================================================================
+  // ANIMATIONS
+  // ============================================================================
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  // ============================================================================
+  // RESPONSIVE DESIGN
+  // ============================================================================
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+
+      .header-right {
+        width: 100%;
+
+        .btn-primary {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    }
+
+    .toolbar {
+      flex-direction: column;
+
+      .search-box {
+        width: 100%;
+      }
+
+      .filters {
+        width: 100%;
+        flex-direction: column;
+
+        .filter-select {
+          width: 100%;
+        }
+      }
+
+      .bulk-actions {
+        width: 100%;
+        margin-left: 0;
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+    }
+
+    .workouts-grid {
+      .workout-card {
+        grid-template-columns: 40px 1fr;
+        gap: 0.75rem;
+        padding: 1rem;
+
+        .card-actions {
+          grid-column: 2;
+          padding-top: 0.5rem;
+        }
+      }
+    }
+  }
+}

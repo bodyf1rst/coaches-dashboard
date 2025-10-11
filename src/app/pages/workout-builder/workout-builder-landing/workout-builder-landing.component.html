@@ -1,0 +1,122 @@
+<div class="landing-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>🎯 Workout Builder</h1>
+    <p class="subtitle">Create custom workouts and build comprehensive workout plans</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">
+    <p>Loading...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-message">
+    <p>{{ error }}</p>
+    <button (click)="loadStats()">Retry</button>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading && !error" class="main-content">
+    <!-- Stats Cards -->
+    <div class="stats-section">
+      <div class="stat-card workouts-card">
+        <div class="stat-icon">🏋️</div>
+        <div class="stat-content">
+          <h3>{{ stats.totalWorkouts }}</h3>
+          <p>Workouts Created</p>
+        </div>
+      </div>
+
+      <div class="stat-card plans-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-content">
+          <h3>{{ stats.totalPlans }}</h3>
+          <p>Plans Created</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Primary Action Buttons -->
+    <div class="action-buttons">
+      <button class="btn-primary btn-create-workout" (click)="navigateToCreateWorkout()">
+        <div class="btn-icon">🏋️</div>
+        <div class="btn-content">
+          <h2>Create New Workout</h2>
+          <p>Build a custom workout with exercises, sets, reps, and rest timers</p>
+        </div>
+        <div class="btn-arrow">→</div>
+      </button>
+
+      <button class="btn-primary btn-create-plan" (click)="navigateToCreatePlan()">
+        <div class="btn-icon">📋</div>
+        <div class="btn-content">
+          <h2>Create New Plan</h2>
+          <p>Select 2-7 workouts and build a comprehensive training plan</p>
+        </div>
+        <div class="btn-arrow">→</div>
+      </button>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="quick-links">
+      <h2>Quick Access</h2>
+      <div class="links-grid">
+        <button class="link-card" (click)="navigateToWorkouts()">
+          <span class="link-icon">💪</span>
+          <span class="link-text">View All Workouts</span>
+          <span class="link-count">({{ stats.totalWorkouts }})</span>
+        </button>
+
+        <button class="link-card" (click)="navigateToPlans()">
+          <span class="link-icon">📋</span>
+          <span class="link-text">View All Plans</span>
+          <span class="link-count">({{ stats.totalPlans }})</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div *ngIf="stats.recentWorkouts.length > 0 || stats.recentPlans.length > 0" class="recent-activity">
+      <h2>Recent Activity</h2>
+
+      <div class="activity-grid">
+        <!-- Recent Workouts -->
+        <div *ngIf="stats.recentWorkouts.length > 0" class="activity-section">
+          <h3>Recent Workouts</h3>
+          <div class="activity-list">
+            <div *ngFor="let workout of stats.recentWorkouts" class="activity-item">
+              <span class="activity-icon">🏋️</span>
+              <span class="activity-name">{{ workout.name }}</span>
+              <span class="activity-meta">{{ workout.created_at | date:'short' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Plans -->
+        <div *ngIf="stats.recentPlans.length > 0" class="activity-section">
+          <h3>Recent Plans</h3>
+          <div class="activity-list">
+            <div *ngFor="let plan of stats.recentPlans" class="activity-item">
+              <span class="activity-icon">📋</span>
+              <span class="activity-name">{{ plan.name }}</span>
+              <span class="activity-meta">{{ plan.created_at | date:'short' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="help-section">
+      <h3>🎯 Getting Started</h3>
+      <ul>
+        <li>✅ <strong>Create Workout:</strong> Build custom workouts with drag-and-drop video exercises</li>
+        <li>✅ <strong>Choose Template:</strong> Select from Strength, Cardio, HIIT, Mobility, Recovery, or Custom</li>
+        <li>✅ <strong>Configure BodyPoints:</strong> Set points per video and completion bonuses</li>
+        <li>✅ <strong>Build Plan:</strong> Combine 2-7 workouts into a comprehensive training plan</li>
+        <li>✅ <strong>Assign to Clients:</strong> Push plans to individual clients or entire organizations</li>
+      </ul>
+    </div>
+  </div>
+</div>

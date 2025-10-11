@@ -38,8 +38,6 @@ interface TemplateBlock {
   styleUrls: ['./workout-builder.component.scss']
 })
 export class WorkoutBuilderComponent implements OnInit {
-  planId: number = 0;
-  plan: WorkoutPlan | null = null;
   workout: Workout | null = null;
   loading = false;
   error = '';
@@ -94,29 +92,7 @@ export class WorkoutBuilderComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.planId = +params['planId'];
-      this.loadPlan();
-      this.loadVideos();
-    });
-  }
-
-  async loadPlan(): Promise<void> {
-    this.loading = true;
-    this.error = '';
-    try {
-      const response = await this.workoutService.getWorkoutPlan(this.planId);
-      if (response.success) {
-        this.plan = response.data;
-      } else {
-        this.error = response.message || 'Failed to load workout plan';
-      }
-    } catch (error: any) {
-      console.error('Error loading workout plan:', error);
-      this.error = 'Error loading workout plan. Please try again.';
-    } finally {
-      this.loading = false;
-    }
+    this.loadVideos();
   }
 
   async loadVideos(): Promise<void> {
@@ -333,7 +309,7 @@ export class WorkoutBuilderComponent implements OnInit {
       return;
     }
 
-    if (this.workoutExercises.length === 0) {
+    if (this.workoutExercises.length === 0 && this.templateBlocks.length === 0) {
       alert('Please add at least one exercise to the workout');
       return;
     }
@@ -342,65 +318,58 @@ export class WorkoutBuilderComponent implements OnInit {
     this.error = '';
 
     try {
-      // Create workout
-      let workoutConfig;
-      if (this.workoutType === 'custom') {
-        workoutConfig = this.buildCustomTemplateJSON();
-      } else {
-        workoutConfig = JSON.stringify({
-          type: this.workoutType,
-          exercises_count: this.workoutExercises.length
-        });
-      }
+      // Prepare exercises array
+      let exercisesToAdd: any[] = [];
 
-      const workoutData = {
-        plan_id: this.planId,
-        name: this.workoutName,
-        workout_type: this.workoutType,
-        workout_config: workoutConfig
-      };
-
-      const workoutResponse = await this.workoutService.createWorkout(workoutData);
-
-      if (!workoutResponse.success) {
-        throw new Error(workoutResponse.message || 'Failed to create workout');
-      }
-
-      const workoutId = workoutResponse.data.workout_id;
-
-      // Add exercises
-      let exercisesToAdd: ExerciseConfig[] = [];
-
-      if (this.workoutType === 'custom') {
+      if (this.workoutType === 'custom' && this.templateBlocks.length > 0) {
         // Flatten all exercises from all blocks
         let order = 1;
         for (const block of this.templateBlocks) {
           for (const exercise of block.exercises) {
-            exercisesToAdd.push({...exercise, exercise_order: order++});
+            exercisesToAdd.push({
+              video_id: exercise.exercise_id,
+              order: order++,
+              sets: exercise.sets || 3,
+              reps: exercise.reps || 10,
+              rest_time_seconds: exercise.rest_timer_seconds || 60
+            });
           }
         }
       } else {
-        exercisesToAdd = this.workoutExercises;
+        // Use traditional exercises
+        exercisesToAdd = this.workoutExercises.map((ex, index) => ({
+          video_id: ex.exercise_id,
+          order: index + 1,
+          sets: ex.sets || 3,
+          reps: ex.reps || 10,
+          rest_time_seconds: ex.rest_timer_seconds || 60
+        }));
       }
 
-      for (const exercise of exercisesToAdd) {
-        const exerciseData: any = {
-          workout_id: workoutId,
-          exercise_id: exercise.exercise_id,
-          sets: exercise.sets || 3,
-          reps: exercise.reps || 10,
-          duration_seconds: exercise.duration_seconds || 60,
-          rest_timer_seconds: exercise.rest_timer_seconds || 60,
-          timer_beep_enabled: exercise.timer_beep_enabled,
-          notes: exercise.notes || '',
-          exercise_order: exercise.exercise_order
-        };
+      // Use the new enhanced API endpoint
+      const requestBody = {
+        name: this.workoutName,
+        coach_id: this.coachId,
+        template_id: this.selectedTemplate?.id || undefined,
+        exercises: exercisesToAdd,
+        bodypoints: {
+          points_per_video: this.bodyPoints.points_per_video,
+          completion_bonus: this.bodyPoints.completion_bonus
+        }
+      };
 
-        await this.workoutService.addExercise(exerciseData);
+      const response = await this.workoutBuilderService.createWorkoutWithVideos(requestBody).toPromise();
+
+      if (!response || !response.success) {
+        throw new Error('Failed to create workout');
       }
 
       const totalExercises = exercisesToAdd.length;
-      alert(`✅ Workout "${this.workoutName}" saved successfully with ${totalExercises} exercises!`);
+      const totalPoints = this.calculateTotalBodyPoints();
+      alert(`✅ Workout "${this.workoutName}" created successfully!\n\n` +
+            `📹 ${totalExercises} exercises\n` +
+            `🎯 ${totalPoints} BodyPoints available`);
+
       this.goBack();
     } catch (error: any) {
       console.error('Error saving workout:', error);

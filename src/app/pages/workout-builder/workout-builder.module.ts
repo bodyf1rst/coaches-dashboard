@@ -9,6 +9,9 @@ import { WorkoutBuilderComponent } from './workout-builder/workout-builder.compo
 import { WorkoutExecutionComponent } from './workout-execution/workout-execution.component';
 import { RestTimerComponent } from '../../components/rest-timer/rest-timer.component';
 import { TemplateSelectorComponent } from '../../components/template-selector/template-selector.component';
+import { WorkoutBuilderLandingComponent } from './workout-builder-landing/workout-builder-landing.component';
+import { WorkoutsListComponent } from './workouts-list/workouts-list.component';
+import { PlanBuilderComponent } from './plan-builder/plan-builder.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +19,10 @@ import { TemplateSelectorComponent } from '../../components/template-selector/te
     WorkoutBuilderComponent,
     WorkoutExecutionComponent,
     RestTimerComponent,
-    TemplateSelectorComponent
+    TemplateSelectorComponent,
+    WorkoutBuilderLandingComponent,
+    WorkoutsListComponent,
+    PlanBuilderComponent
   ],
   imports: [
     CommonModule,

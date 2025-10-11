@@ -1,0 +1,598 @@
+/**
+ * Plan Builder Component Styles
+ * Created: October 11, 2025
+ * Phase 3: Frontend Implementation - Task 7
+ */
+
+.plan-builder-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  // ============================================================================
+  // HEADER SECTION
+  // ============================================================================
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #e0e0e0;
+
+    .header-left {
+      h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+      }
+
+      .subtitle {
+        margin: 0;
+        font-size: 1rem;
+        color: #7f8c8d;
+      }
+    }
+
+    .header-right {
+      display: flex;
+      gap: 1rem;
+    }
+  }
+
+  // ============================================================================
+  // STATE DISPLAYS
+  // ============================================================================
+
+  .loading-state,
+  .error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+
+    i {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      color: #95a5a6;
+    }
+
+    p {
+      margin: 0 0 1.5rem 0;
+      font-size: 1rem;
+      color: #7f8c8d;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  .error-state i {
+    color: #e74c3c;
+  }
+
+  .success-message {
+    padding: 1rem 1.5rem;
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 6px;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    i {
+      color: #28a745;
+      font-size: 1.5rem;
+    }
+
+    p {
+      margin: 0;
+      color: #155724;
+      font-weight: 600;
+    }
+  }
+
+  .validation-error {
+    padding: 1rem 1.5rem;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 6px;
+    margin-top: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    i {
+      color: #e74c3c;
+      font-size: 1.5rem;
+    }
+
+    p {
+      margin: 0;
+      color: #721c24;
+    }
+  }
+
+  // ============================================================================
+  // MAIN CONTENT
+  // ============================================================================
+
+  .plan-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  // ============================================================================
+  // SECTION STYLING
+  // ============================================================================
+
+  .config-section,
+  .workouts-section,
+  .assignment-section,
+  .schedule-section {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+
+    .section-header {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e0e0e0;
+
+      h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      .help-text {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        i {
+          color: #3498db;
+        }
+      }
+    }
+  }
+
+  // ============================================================================
+  // FORM STYLING
+  // ============================================================================
+
+  .form-group {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #2c3e50;
+      font-size: 0.95rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+
+      &:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+      }
+
+      &:disabled {
+        background: #f8f9fa;
+        cursor: not-allowed;
+      }
+    }
+
+    .help-text {
+      display: block;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: #7f8c8d;
+    }
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  // ============================================================================
+  // PLAN STATS
+  // ============================================================================
+
+  .plan-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 6px;
+
+      i {
+        font-size: 2rem;
+        color: #3498db;
+      }
+
+      .stat-content {
+        display: flex;
+        flex-direction: column;
+
+        .stat-value {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #2c3e50;
+        }
+
+        .stat-label {
+          font-size: 0.85rem;
+          color: #7f8c8d;
+        }
+      }
+    }
+  }
+
+  // ============================================================================
+  // DRAG & DROP WORKOUT LIST
+  // ============================================================================
+
+  .workout-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .workout-item {
+    display: grid;
+    grid-template-columns: 40px 60px 1fr 40px;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: #3498db;
+      box-shadow: 0 2px 8px rgba(52, 152, 219, 0.1);
+    }
+
+    // Drag handle
+    .drag-handle {
+      cursor: grab;
+      color: #95a5a6;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+
+      &:hover {
+        color: #3498db;
+      }
+
+      &:active {
+        cursor: grabbing;
+      }
+    }
+
+    // Workout number
+    .workout-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      color: white;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    // Workout info
+    .workout-info {
+      h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      .workout-meta {
+        display: flex;
+        gap: 1.5rem;
+        font-size: 0.85rem;
+        color: #7f8c8d;
+
+        span {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+
+          i {
+            color: #3498db;
+          }
+        }
+      }
+    }
+
+    // Remove button
+    .btn-remove {
+      padding: 0.5rem;
+      background: transparent;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #e74c3c;
+      transition: all 0.2s;
+
+      &:hover:not(:disabled) {
+        background: #e74c3c;
+        border-color: #e74c3c;
+        color: white;
+      }
+
+      &:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  // Drag preview
+  .workout-drag-preview {
+    .preview-content {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: white;
+      border: 2px solid #3498db;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      font-weight: 600;
+      color: #2c3e50;
+
+      i {
+        color: #3498db;
+      }
+    }
+  }
+
+  // Drag placeholder
+  .workout-placeholder {
+    min-height: 80px;
+    background: #f8f9fa;
+    border: 2px dashed #3498db;
+    border-radius: 8px;
+  }
+
+  // While dragging
+  .cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+
+  // ============================================================================
+  // RADIO AND CHECKBOX STYLING
+  // ============================================================================
+
+  .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      transition: all 0.2s;
+
+      &:hover {
+        border-color: #3498db;
+        background: #f8f9fa;
+      }
+
+      input[type="radio"] {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+
+    input[type="checkbox"] {
+      cursor: pointer;
+      width: 18px;
+      height: 18px;
+    }
+
+    span {
+      font-weight: 500;
+    }
+  }
+
+  // ============================================================================
+  // SCHEDULE PREVIEW
+  // ============================================================================
+
+  .schedule-preview {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 6px;
+    margin-top: 1rem;
+
+    i {
+      color: #1976d2;
+      font-size: 1.2rem;
+    }
+
+    span {
+      color: #0d47a1;
+      font-weight: 500;
+    }
+  }
+
+  // ============================================================================
+  // BUTTON STYLES
+  // ============================================================================
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &.btn-primary {
+      background: #3498db;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background: #2980b9;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+      }
+
+      &:disabled {
+        background: #bdc3c7;
+        cursor: not-allowed;
+        transform: none;
+      }
+    }
+
+    &.btn-secondary {
+      background: white;
+      color: #3498db;
+      border: 1px solid #3498db;
+
+      &:hover:not(:disabled) {
+        background: #3498db;
+        color: white;
+      }
+
+      &:disabled {
+        background: #f8f9fa;
+        color: #bdc3c7;
+        border-color: #bdc3c7;
+        cursor: not-allowed;
+      }
+    }
+
+    &.btn-ghost {
+      background: transparent;
+      color: #7f8c8d;
+
+      &:hover:not(:disabled) {
+        background: #f8f9fa;
+        color: #2c3e50;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  // ============================================================================
+  // ANIMATIONS
+  // ============================================================================
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  // ============================================================================
+  // RESPONSIVE DESIGN
+  // ============================================================================
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+
+      .header-right {
+        width: 100%;
+        flex-direction: column;
+
+        button {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    }
+
+    .plan-stats {
+      grid-template-columns: 1fr;
+    }
+
+    .workout-item {
+      grid-template-columns: 40px 1fr 40px;
+      gap: 0.75rem;
+
+      .workout-number {
+        display: none;
+      }
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+}
