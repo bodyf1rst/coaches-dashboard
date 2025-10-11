@@ -630,6 +630,31 @@
           />
         </div>
 
+        <!-- Filter Dropdowns -->
+        <div class="filter-dropdowns">
+          <select
+            [(ngModel)]="selectedMuscleGroup"
+            (change)="filterVideos()"
+            class="filter-select"
+          >
+            <option value="">💪 All Muscles</option>
+            <option *ngFor="let muscle of muscleGroupOptions" [value]="muscle">
+              {{ muscle }}
+            </option>
+          </select>
+
+          <select
+            [(ngModel)]="selectedWorkoutType"
+            (change)="filterVideos()"
+            class="filter-select"
+          >
+            <option value="">🏋️ All Types</option>
+            <option *ngFor="let type of workoutTypeOptions" [value]="type">
+              {{ type }}
+            </option>
+          </select>
+        </div>
+
         <!-- Videos -->
         <div *ngIf="loadingVideos" class="loading-videos">
           <p>Loading videos...</p>
