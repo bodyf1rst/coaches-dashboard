@@ -95,6 +95,9 @@ export class WorkoutBuilderComponent implements OnInit {
   // Saving state
   saving = false;
 
+  // Preview modal state
+  showPreviewModal = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -327,6 +330,31 @@ export class WorkoutBuilderComponent implements OnInit {
     this.workoutExercises.forEach((ex, index) => {
       ex.exercise_order = index + 1;
     });
+  }
+
+  // Preview Modal Methods
+  openPreviewModal(): void {
+    // Validate before showing preview
+    if (!this.workoutName.trim()) {
+      alert('Please enter a workout name');
+      return;
+    }
+
+    if (this.workoutExercises.length === 0 && this.templateBlocks.length === 0) {
+      alert('Please add at least one exercise to your workout');
+      return;
+    }
+
+    this.showPreviewModal = true;
+  }
+
+  closePreviewModal(): void {
+    this.showPreviewModal = false;
+  }
+
+  confirmAndSaveWorkout(): void {
+    this.closePreviewModal();
+    this.saveWorkout();
   }
 
   async saveWorkout(): Promise<void> {

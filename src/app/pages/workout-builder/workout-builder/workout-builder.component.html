@@ -706,10 +706,10 @@
       </button>
       <button
         class="btn-save"
-        (click)="saveWorkout()"
+        (click)="openPreviewModal()"
         [disabled]="saving || workoutExercises.length === 0 || !workoutName.trim()"
       >
-        <span *ngIf="!saving">💾 Save Workout</span>
+        <span *ngIf="!saving">�️ Preview & Save</span>
         <span *ngIf="saving">⏳ Saving...</span>
       </button>
     </div>
@@ -724,6 +724,97 @@
         <li>✅ Rest timer beeps when finished (1-120 seconds)</li>
         <li>✅ Choose workout type: Traditional, EMOM, AMRAP, Circuit, Tabata, Superset, or Custom</li>
       </ul>
+    </div>
+  </div>
+
+  <!-- Preview Modal -->
+  <div *ngIf="showPreviewModal" class="preview-modal-overlay" (click)="closePreviewModal()">
+    <div class="preview-modal" (click)="$event.stopPropagation()">
+      <div class="preview-header">
+        <h2>👁️ Workout Preview</h2>
+        <button class="btn-close" (click)="closePreviewModal()">✕</button>
+      </div>
+
+      <div class="preview-content">
+        <!-- Workout Info -->
+        <div class="preview-section">
+          <h3>{{ workoutName }}</h3>
+          <div class="preview-stats">
+            <div class="stat-item">
+              <span class="stat-icon">🏋️</span>
+              <span class="stat-label">{{ workoutType }}</span>
+            </div>
+            <div class="stat-item" *ngIf="selectedTemplate">
+              <span class="stat-icon">📋</span>
+              <span class="stat-label">{{ selectedTemplate.name }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">📹</span>
+              <span class="stat-label">{{ workoutExercises.length }} exercises</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">⏱️</span>
+              <span class="stat-label">~{{ calculateEstimatedDuration() }} min</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">⭐</span>
+              <span class="stat-label">{{ calculateTotalBodyPoints() }} points</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exercise List -->
+        <div class="preview-section">
+          <h4>Exercises:</h4>
+          <div class="preview-exercises">
+            <div *ngFor="let exercise of workoutExercises; let i = index" class="preview-exercise">
+              <span class="exercise-num">{{ i + 1 }}</span>
+              <img
+                [src]="exercise.video?.thumbnail_url"
+                [alt]="exercise.video?.video_title"
+                class="exercise-thumb"
+                onerror="this.src='assets/images/placeholder.png'"
+              />
+              <div class="exercise-details">
+                <div class="exercise-title">{{ exercise.video?.video_title }}</div>
+                <div class="exercise-config">
+                  {{ exercise.sets }} sets × {{ exercise.reps }} reps
+                  <span *ngIf="exercise.rest_timer_seconds"> • {{ exercise.rest_timer_seconds }}s rest</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BodyPoints Details -->
+        <div class="preview-section bodypoints-preview">
+          <h4>⭐ BodyPoints Configuration:</h4>
+          <div class="bodypoints-details">
+            <div class="detail-row">
+              <span>Points per video:</span>
+              <span class="detail-value">{{ bodyPoints.points_per_video }}</span>
+            </div>
+            <div class="detail-row">
+              <span>Completion bonus:</span>
+              <span class="detail-value">{{ bodyPoints.completion_bonus }}</span>
+            </div>
+            <div class="detail-row total">
+              <span>Total possible:</span>
+              <span class="detail-value">{{ calculateTotalBodyPoints() }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="preview-actions">
+        <button class="btn-secondary" (click)="closePreviewModal()">
+          ✏️ Edit Workout
+        </button>
+        <button class="btn-primary" (click)="confirmAndSaveWorkout()" [disabled]="saving">
+          <span *ngIf="!saving">💾 Confirm & Save</span>
+          <span *ngIf="saving">⏳ Saving...</span>
+        </button>
+      </div>
     </div>
   </div>
 </div>
